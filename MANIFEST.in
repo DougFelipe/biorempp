@@ -1,0 +1,4 @@
+include README.rst
+include LICENSE.txt
+recursive-include src/biorempp/data *
+recursive-include docs *

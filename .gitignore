@@ -1,4 +1,7 @@
 # Temporary and binary files
+agente.json
+biorempp_setup.sh
+tdd.json
 *~
 *.py[cod]
 *.so
