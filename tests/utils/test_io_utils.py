@@ -324,7 +324,7 @@ class TestSaveDataframeOutput:
         filename = "permission_test.csv"
 
         # Act & Assert
-        with patch("biorempp.utils.io_utils.pd.DataFrame.to_csv") as mock_to_csv:
+        with patch.object(df, "to_csv") as mock_to_csv:
             mock_to_csv.side_effect = PermissionError("Permission denied")
 
             with pytest.raises(PermissionError):
