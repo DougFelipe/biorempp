@@ -1,16 +1,7 @@
 import argparse
-import os
 import sys
 
-# Ensure 'src' is in sys.path for local development
-THIS_DIR = os.path.dirname(os.path.abspath(__file__))
-SRC_DIR = os.path.abspath(os.path.join(THIS_DIR, ".."))
-if SRC_DIR not in sys.path:
-    sys.path.insert(0, SRC_DIR)
-
-from biorempp.input_processing.input_loader import load_and_merge_input  # noqa: E402
-
-# ... resto do main.py ...
+from biorempp.pipelines.input_processing import run_input_processing_pipeline
 
 
 def main():
@@ -22,44 +13,39 @@ def main():
     )
     parser.add_argument(
         "--database",
-        default=None,  # <---- ALTERADO para None por padrão!
+        default=None,
         help="Path to the BioRemPP database CSV file (default: auto-resolve)",
     )
     parser.add_argument(
-        "--preview-rows",
-        type=int,
-        default=5,
-        help="Number of DataFrame rows to preview (default: 5)",
+        "--output-dir",
+        default="outputs/merged_data",
+        help="Directory to save merged result (default: outputs/merged_data/)",
+    )
+    parser.add_argument(
+        "--output-filename",
+        default="merged_input.txt",
+        help="Filename for the merged DataFrame output (default: merged_input.txt)",
+    )
+    parser.add_argument(
+        "--sep",
+        default=";",
+        help="Separator for the output file (default: ';')",
     )
 
     args = parser.parse_args()
 
-    # Resolva automaticamente o caminho do banco SE não for passado via --database
-    if args.database is None:
-        args.database = os.path.join(THIS_DIR, "data", "database_biorempp.csv")
-
-    # Read input file
-    if not os.path.exists(args.input):
-        print(f"Input file not found: {args.input}")
-        sys.exit(1)
-    with open(args.input, "r", encoding="utf-8") as f:
-        input_content = f.read()
-
-    # Run the pipeline
-    df, error = load_and_merge_input(
-        input_content,
-        os.path.basename(args.input),
-        database_filepath=args.database,
-        optimize_types=True,
-    )
-
-    if error:
-        print(f"[BioRemPP] Pipeline error: {error}")
+    try:
+        output_path = run_input_processing_pipeline(
+            input_path=args.input,
+            database_path=args.database,
+            output_dir=args.output_dir,
+            output_filename=args.output_filename,
+            sep=args.sep,
+        )
+        print(f"[BioRemPP] Output processed and saved to: {output_path}")
+    except Exception as e:
+        print(f"[BioRemPP] Pipeline error: {e}")
         sys.exit(2)
-    else:
-        print("[BioRemPP] Merged DataFrame preview:")
-        print(df.head(args.preview_rows))
-        print(f"[BioRemPP] DataFrame shape: {df.shape}")
 
 
 if __name__ == "__main__":
