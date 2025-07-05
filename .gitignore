@@ -1,4 +1,5 @@
 # Temporary and binary files
+outputs/
 agente.json
 biorempp_setup.sh
 tdd.json
