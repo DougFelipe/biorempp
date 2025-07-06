@@ -19,10 +19,11 @@ def load_and_merge_input(
     filename: str,
     database_filepath: str = "src/biorempp/data/database_biorempp.csv",
     optimize_types: bool = True,
+    merge_function=None,
 ) -> tuple:
     """
     Complete pipeline: validates, processes, and merges the input .txt
-    with the BioRemPP database.
+    with the specified database.
 
     Parameters
     ----------
@@ -35,6 +36,8 @@ def load_and_merge_input(
         (default: src/biorempp/data/database_biorempp.csv).
     optimize_types : bool, optional
         If True, applies dtype optimization to the DataFrames.
+    merge_function : callable, optional
+        Function to use for merging. If None, uses merge_input_with_biorempp.
 
     Returns
     -------
@@ -51,6 +54,10 @@ def load_and_merge_input(
     """
     logger.info("Starting input validation and merging pipeline.")
 
+    # Use default merge function if none provided
+    if merge_function is None:
+        merge_function = merge_input_with_biorempp
+
     # 1. Validate and parse input
     df_input, error = validate_and_process_input(contents, filename)
     if error:
@@ -59,7 +66,7 @@ def load_and_merge_input(
 
     # 2. Merge with reference database
     try:
-        df_merged = merge_input_with_biorempp(
+        df_merged = merge_function(
             df_input,
             database_filepath=database_filepath,
             optimize_types=optimize_types,
