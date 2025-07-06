@@ -119,3 +119,154 @@ This project has been set up using [PyScaffold] 4.6 and the [dsproject extension
 [Google style]: http://google.github.io/styleguide/pyguide.html#38-comments-and-docstrings
 [PyScaffold]: https://pyscaffold.org/
 [dsproject extension]: https://github.com/pyscaffold/pyscaffoldext-dsproject
+
+## Development & Contributing
+
+### 📋 Commit Guidelines
+
+This project follows [Conventional Commits](https://conventionalcommits.org/) specification for automated versioning and changelog generation.
+
+#### Commit Message Format
+
+```
+<type>[optional scope]: <description>
+
+[optional body]
+
+[optional footer(s)]
+```
+
+#### Commit Types
+
+- **feat**: A new feature (triggers minor version bump)
+- **fix**: A bug fix (triggers patch version bump)
+- **docs**: Documentation only changes
+- **style**: Changes that do not affect the meaning of the code
+- **refactor**: Code change that neither fixes a bug nor adds a feature
+- **perf**: Code change that improves performance
+- **test**: Adding missing tests or correcting existing tests
+- **build**: Changes that affect the build system or external dependencies
+- **ci**: Changes to CI configuration files and scripts
+- **chore**: Other changes that don't modify src or test files
+- **revert**: Reverts a previous commit
+
+#### Breaking Changes
+
+For breaking changes, add `!` after the type or add `BREAKING CHANGE:` in the footer:
+
+```bash
+feat!: redesign API interface
+
+BREAKING CHANGE: The API interface has been completely redesigned
+```
+
+#### Examples
+
+```bash
+# Feature addition (minor version bump)
+feat: add KEGG pathway analysis functionality
+
+# Bug fix (patch version bump)
+fix: resolve memory leak in data processing pipeline
+
+# Breaking change (major version bump)
+feat!: migrate to new input validation system
+
+# Documentation update (no version bump)
+docs: update installation instructions
+```
+
+### 🚀 Release Process
+
+This project uses automated semantic versioning powered by [semantic-release](https://semantic-release.gitbook.io/).
+
+#### How Releases Work
+
+1. **Automatic**: Releases are automatically triggered on every push to the `main` branch
+2. **Version Calculation**: Based on conventional commit messages since the last release
+3. **Changelog**: Automatically generated and updated
+4. **GitHub Release**: Created with release notes and distribution files
+5. **Tags**: Git tags are automatically created and pushed
+
+#### Version Bumping Rules
+
+| Commit Type | Example | Version Bump |
+|-------------|---------|--------------|
+| `fix:` | `fix: resolve input validation bug` | Patch (1.0.0 → 1.0.1) |
+| `feat:` | `feat: add new analysis pipeline` | Minor (1.0.0 → 1.1.0) |
+| `feat!:` or `BREAKING CHANGE:` | `feat!: redesign API` | Major (1.0.0 → 2.0.0) |
+| `docs:`, `style:`, `test:` | `docs: update README` | No release |
+
+#### Manual Release
+
+If needed, you can trigger a release manually:
+
+```bash
+# Via GitHub Actions (recommended)
+gh workflow run release.yml
+
+# Or locally (requires setup)
+npm run semantic-release
+```
+
+### 🛠 Development Workflow
+
+1. **Fork and Clone**
+   ```bash
+   git clone https://github.com/DougFelipe/biorempp.git
+   cd biorempp
+   ```
+
+2. **Setup Environment**
+   ```bash
+   conda env create -f environment.yml
+   conda activate biorempp
+   pip install -e .
+   ```
+
+3. **Create Feature Branch**
+   ```bash
+   git checkout -b feat/your-feature-name
+   ```
+
+4. **Make Changes and Test**
+   ```bash
+   # Run tests
+   pytest tests/
+
+   # Check code style
+   flake8 src/ tests/ --max-line-length=88
+
+   # Run all checks
+   tox
+   ```
+
+5. **Commit with Conventional Format**
+   ```bash
+   git add .
+   git commit -m "feat: add new feature description"
+   ```
+
+6. **Push and Create PR**
+   ```bash
+   git push origin feat/your-feature-name
+   # Create PR via GitHub UI
+   ```
+
+### 📦 Release Artifacts
+
+Each release automatically generates:
+
+- **Source Distribution** (`.tar.gz`)
+- **Wheel Distribution** (`.whl`)
+- **GitHub Release** with changelog
+- **Updated CHANGELOG.md**
+- **Git Tags** following semver
+
+### 🔧 Setup for Maintainers
+
+To enable automated releases, ensure the following secrets are configured in GitHub:
+
+- `GH_TOKEN`: Personal Access Token with `repo` and `write:packages` permissions
+
+For more details, see the [Contributing Guidelines](CONTRIBUTING.md).
