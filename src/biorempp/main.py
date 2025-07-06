@@ -2,6 +2,11 @@ import argparse
 import sys
 
 from biorempp.pipelines.input_processing import run_input_processing_pipeline
+from biorempp.utils.logging_config import get_logger, setup_logging
+
+# Initialize centralized logging
+setup_logging(level="INFO", console_output=True)
+logger = get_logger("main")
 
 
 def main():
@@ -35,6 +40,9 @@ def main():
     args = parser.parse_args()
 
     try:
+        logger.info("Starting BioRemPP input processing pipeline")
+        logger.debug(f"Input parameters: {vars(args)}")
+
         output_path = run_input_processing_pipeline(
             input_path=args.input,
             database_path=args.database,
@@ -42,8 +50,11 @@ def main():
             output_filename=args.output_filename,
             sep=args.sep,
         )
+
+        logger.info(f"Pipeline completed successfully. Output saved to: {output_path}")
         print(f"[BioRemPP] Output processed and saved to: {output_path}")
     except Exception as e:
+        logger.error(f"Pipeline failed with error: {e}", exc_info=True)
         print(f"[BioRemPP] Pipeline error: {e}")
         sys.exit(2)
 

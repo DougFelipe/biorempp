@@ -14,3 +14,9 @@ except PackageNotFoundError:  # pragma: no cover
     __version__ = "unknown"
 finally:
     del version, PackageNotFoundError
+
+# Initialize centralized logging system
+from biorempp.utils.logging_config import setup_logging
+
+# Set up default logging configuration
+setup_logging(level="INFO", console_output=True, format_style="detailed")

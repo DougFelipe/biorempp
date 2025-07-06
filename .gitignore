@@ -1,4 +1,5 @@
 # Temporary and binary files
+issues/
 outputs/
 agente.json
 biorempp_setup.sh

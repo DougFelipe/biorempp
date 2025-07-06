@@ -5,14 +5,13 @@ Central orchestration function for loading, validating,
 and merging FASTA-like input with the BioRemPP database.
 """
 
-import logging
-
 from biorempp.input_processing.biorempp_merge_processing import (
     merge_input_with_biorempp,
 )
 from biorempp.input_processing.input_validator import validate_and_process_input
+from biorempp.utils.logging_config import get_logger
 
-logger = logging.getLogger("biorempp.input_loader")
+logger = get_logger("input_processing.input_loader")
 
 
 def load_and_merge_input(

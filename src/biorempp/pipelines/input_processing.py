@@ -9,6 +9,9 @@ import os
 
 from biorempp.input_processing.input_loader import load_and_merge_input
 from biorempp.utils.io_utils import save_dataframe_output
+from biorempp.utils.logging_config import get_logger
+
+logger = get_logger("pipelines.input_processing")
 
 
 def run_input_processing_pipeline(
@@ -49,16 +52,27 @@ def run_input_processing_pipeline(
     RuntimeError
         If there is an error in processing or merging.
     """
+    logger.info(f"Starting input processing pipeline for: {input_path}")
+    logger.debug(
+        f"Pipeline parameters - database: {database_path}, "
+        f"output_dir: {output_dir}, optimize_types: {optimize_types}"
+    )
+
     if not os.path.exists(input_path):
-        raise FileNotFoundError(f"Input file not found: {input_path}")
+        error_msg = f"Input file not found: {input_path}"
+        logger.error(error_msg)
+        raise FileNotFoundError(error_msg)
 
     if database_path is None:
         this_dir = os.path.dirname(os.path.abspath(__file__))
         database_path = os.path.join(this_dir, "..", "data", "database_biorempp.csv")
+        logger.debug(f"Using default database path: {database_path}")
 
+    logger.info(f"Reading input file: {input_path}")
     with open(input_path, "r", encoding="utf-8") as f:
         input_content = f.read()
 
+    logger.info("Loading and merging input data")
     df, error = load_and_merge_input(
         input_content,
         os.path.basename(input_path),
@@ -67,12 +81,17 @@ def run_input_processing_pipeline(
     )
 
     if error:
-        raise RuntimeError(f"Pipeline error: {error}")
+        error_msg = f"Pipeline error: {error}"
+        logger.error(error_msg)
+        raise RuntimeError(error_msg)
 
+    logger.info(f"Saving merged DataFrame to: {output_dir}/{output_filename}")
     output_path = save_dataframe_output(
         df,
         output_dir=output_dir,
         filename=output_filename,
         sep=sep,
     )
+
+    logger.info(f"Pipeline completed successfully. Output saved to: {output_path}")
     return output_path
