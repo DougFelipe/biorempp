@@ -301,3 +301,101 @@ def mock_biorempp_db_csv(tmp_path):
     file_path = tmp_path / "biorempp_db.csv"
     df.to_csv(file_path, sep=";", index=False)
     return str(file_path)
+
+
+# ---------------------
+# Mocks para KEGG degradation pathways
+# ---------------------
+@pytest.fixture
+def mock_kegg_degradation_pathways_csv(tmp_path):
+    """
+    Gera um CSV temporário com estrutura e conteúdo similar ao banco
+    KEGG degradation pathways real.
+    """
+    data = [
+        # K00001 - Multiplos pathways
+        ["K00001", "Naphthalene", "E1.1.1.1"],
+        ["K00001", "Cytochrome P450", "E1.1.1.1"],
+        ["K00001", "Aromatic", "E1.1.1.1"],
+        ["K00001", "Cl. alkane and Cl.alkene", "E1.1.1.1"],
+        # K00002 - Diferentes pathways
+        ["K00002", "Aromatic", "AKR1A1"],
+        ["K00002", "Caprolactam", "AKR1A1"],
+        # K00003-K00020 - Dados para testes diversos
+        ["K00003", "Benzoate", "GS3"],
+        ["K00004", "Toluene", "BDH"],
+        ["K00005", "Xylene", "gldA"],
+        ["K00006", "Styrene", "GPD1"],
+        ["K00007", "Aminobenzoate", "dalD"],
+        ["K00008", "Fluorobenzoate", "SORD"],
+        ["K00009", "Nitrotoluene", "mtlD"],
+        ["K00010", "Cl. cyclohexane and Cl. benzene", "G10"],
+        ["K00011", "Cytochrome P450", "AKR1B"],
+        ["K00012", "Aromatic", "AKR1B2"],
+        ["K00013", "Naphthalene", "GEN13"],
+        ["K00014", "Benzoate", "GEN14"],
+        ["K00015", "Toluene", "GEN15"],
+        ["K00016", "Xylene", "GEN16"],
+        ["K00017", "Styrene", "GEN17"],
+        ["K00018", "Aromatic", "GEN18"],
+        ["K00019", "Caprolactam", "BDH1"],
+        ["K00020", "Cytochrome P450", "GEN20"],
+        # Alguns KOs adicionais para testes de cobertura
+        ["K00022", "Caprolactam", "HADH"],
+        ["K00055", "Xylene", "E1.1.1.90"],
+        ["K00055", "Toluene", "E1.1.1.90"],
+        ["K00055", "Aromatic", "E1.1.1.90"],
+        ["K00074", "Benzoate", "paaH"],
+        ["K00078", "Cytochrome P450", "DHDH"],
+        ["K00079", "Cytochrome P450", "CBR1"],
+        ["K00081", "Cytochrome P450", "CBR2"],
+        ["K00084", "Cytochrome P450", "CBR3"],
+        ["K00114", "Cl. alkane and Cl.alkene", "exaA"],
+        ["K00121", "Aromatic", "frmA"],
+        ["K00121", "Naphthalene", "frmA"],
+        ["K00121", "Cytochrome P450", "frmA"],
+        ["K00121", "Cl. alkane and Cl.alkene", "frmA"],
+        ["K00128", "Cl. alkane and Cl.alkene", "ALDH"],
+        ["K00129", "Cytochrome P450", "ALDH3"],
+        ["K00141", "Aromatic", "xylC"],
+        ["K00141", "Toluene", "xylC"],
+        ["K00141", "Aminobenzoate", "xylC"],
+        ["K00141", "Xylene", "xylC"],
+        ["K00146", "Styrene", "feaB"],
+        ["K00148", "Cl. alkane and Cl.alkene", "fdhA"],
+        ["K00151", "Aromatic", "hpaE"],
+        ["K00152", "Aromatic", "nahF"],
+        ["K00152", "Naphthalene", "nahF"],
+    ]
+
+    columns = ["ko", "pathname", "genesymbol"]
+    df = pd.DataFrame(data, columns=columns)
+    file_path = tmp_path / "kegg_degradation_pathways.csv"
+    df.to_csv(file_path, sep=";", index=False)
+    return str(file_path)
+
+
+@pytest.fixture
+def mock_kegg_degradation_pathways_dataframe():
+    """
+    Retorna um DataFrame com dados de mock do KEGG degradation pathways
+    para testes que não precisam de arquivo.
+    """
+    data = [
+        # K00001 - Multiplos pathways
+        ["K00001", "Naphthalene", "E1.1.1.1"],
+        ["K00001", "Cytochrome P450", "E1.1.1.1"],
+        ["K00001", "Aromatic", "E1.1.1.1"],
+        ["K00001", "Cl. alkane and Cl.alkene", "E1.1.1.1"],
+        # K00002 - Diferentes pathways
+        ["K00002", "Aromatic", "AKR1A1"],
+        ["K00002", "Caprolactam", "AKR1A1"],
+        # Dados para testes diversos
+        ["K00003", "Benzoate", "GS3"],
+        ["K00008", "Fluorobenzoate", "SORD"],
+        ["K00011", "Cytochrome P450", "AKR1B"],
+        ["K00020", "Cytochrome P450", "GEN20"],
+    ]
+
+    columns = ["ko", "pathname", "genesymbol"]
+    return pd.DataFrame(data, columns=columns)

@@ -1,22 +1,25 @@
 """
-Módulo de processamento e validação de dados de entrada para o BioRemPP.
+Input processing and validation module for BioRemPP.
 
-Este subpacote contém funções e utilitários para:
-    - Carregamento de arquivos FASTA-like
-    - Validação de formato e conteúdo dos inputs
-    - Decodificação de arquivos base64
-    - Preparação e otimização de DataFrames para o pipeline de análise
-    - Merge dos dados de entrada com bancos funcionais de referência
+This sub-package contains functions and utilities for:
+    - Loading FASTA-like files
+    - Validating input format and content
+    - Decoding base64 files
+    - Preparing and optimizing DataFrames for analysis pipeline
+    - Merging input data with functional reference databases
 
-Principais funções públicas:
-    - validate_and_process_input: Valida e extrai amostras e KOs do input
-      para DataFrame
-    - merge_input_with_biorempp: Realiza merge do input validado com banco
-      BioRemPP (CSV)
-    - optimize_dtypes_biorempp: Otimiza colunas categóricas para redução de
-      memória
-    - load_and_merge_input: Pipeline de validação e merge, pronto para uso em
-      CLI ou interfaces
+Main public functions:
+    - validate_and_process_input: Validates and extracts samples and KOs from
+      input to DataFrame
+    - merge_input_with_biorempp: Merges validated input with BioRemPP
+      database (CSV)
+    - merge_input_with_kegg: Merges validated input with KEGG degradation
+      pathways database (CSV)
+    - optimize_dtypes_biorempp: Optimizes categorical columns for memory
+      reduction
+    - optimize_dtypes_kegg: Optimizes categorical columns for KEGG data
+    - load_and_merge_input: Validation and merge pipeline, ready for CLI or
+      interface use
 """
 
 from .biorempp_merge_processing import (
@@ -25,10 +28,13 @@ from .biorempp_merge_processing import (
 )
 from .input_loader import load_and_merge_input
 from .input_validator import validate_and_process_input
+from .kegg_merge_processing import merge_input_with_kegg, optimize_dtypes_kegg
 
 __all__ = [
     "validate_and_process_input",
     "merge_input_with_biorempp",
+    "merge_input_with_kegg",
     "optimize_dtypes_biorempp",
+    "optimize_dtypes_kegg",
     "load_and_merge_input",
 ]

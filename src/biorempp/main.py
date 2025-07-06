@@ -1,12 +1,100 @@
 import argparse
 import sys
 
-from biorempp.pipelines.input_processing import run_input_processing_pipeline
+from biorempp.pipelines.input_processing import (
+    run_all_processing_pipelines,
+    run_biorempp_processing_pipeline,
+    run_kegg_processing_pipeline,
+)
 from biorempp.utils.logging_config import get_logger, setup_logging
 
 # Initialize centralized logging
 setup_logging(level="INFO", console_output=True)
 logger = get_logger("main")
+
+
+def get_pipeline_function(pipeline_type):
+    """
+    Return the appropriate pipeline function based on the pipeline type.
+
+    This function acts as a dispatcher/router for different pipeline types,
+    making it easy to add new pipeline types in the future.
+
+    Parameters
+    ----------
+    pipeline_type : str
+        The type of pipeline to run ('all', 'biorempp', or 'kegg')
+
+    Returns
+    -------
+    callable
+        The pipeline function to execute
+
+    Raises
+    ------
+    ValueError
+        If pipeline_type is not supported
+    """
+    pipeline_map = {
+        "all": run_all_processing_pipelines,
+        "biorempp": run_biorempp_processing_pipeline,
+        "kegg": run_kegg_processing_pipeline,
+    }
+
+    if pipeline_type not in pipeline_map:
+        available_types = ", ".join(pipeline_map.keys())
+        raise ValueError(
+            f"Unsupported pipeline type: {pipeline_type}. "
+            f"Available types: {available_types}"
+        )
+
+    return pipeline_map[pipeline_type]
+
+
+def run_pipeline(pipeline_type, args):
+    """
+    Execute the specified pipeline with the given arguments.
+
+    Parameters
+    ----------
+    pipeline_type : str
+        The type of pipeline to run
+    args : argparse.Namespace
+        Parsed command line arguments
+
+    Returns
+    -------
+    str or dict
+        Path to the output file (for single pipelines) or dictionary with
+        paths (for 'all' pipeline)
+    """
+    pipeline_function = get_pipeline_function(pipeline_type)
+
+    # Common parameters for all pipelines
+    common_params = {
+        "input_path": args.input,
+        "output_dir": args.output_dir,
+        "sep": args.sep,
+        "optimize_types": True,
+    }
+
+    # Add pipeline-specific parameters
+    if pipeline_type == "biorempp":
+        common_params["database_path"] = args.database
+        common_params["output_filename"] = args.output_filename
+    elif pipeline_type == "kegg":
+        common_params["kegg_database_path"] = args.database
+        common_params["output_filename"] = args.output_filename
+    elif pipeline_type == "all":
+        common_params["biorempp_database_path"] = args.biorempp_database
+        common_params["kegg_database_path"] = args.kegg_database
+        common_params["biorempp_output_filename"] = args.biorempp_output_filename
+        common_params["kegg_output_filename"] = args.kegg_output_filename
+
+    logger.info(f"Running {pipeline_type} pipeline")
+    logger.debug(f"Pipeline parameters: {common_params}")
+
+    return pipeline_function(**common_params)
 
 
 def main():
@@ -17,19 +105,49 @@ def main():
         "--input", required=True, help="Path to the FASTA-like input file (.txt)"
     )
     parser.add_argument(
+        "--pipeline-type",
+        choices=["all", "biorempp", "kegg"],
+        default="all",
+        help="Type of pipeline to run (default: all - runs both pipelines)",
+    )
+    parser.add_argument(
         "--database",
         default=None,
-        help="Path to the BioRemPP database CSV file (default: auto-resolve)",
+        help="Path to database CSV file for single pipeline modes "
+        "(default: auto-resolve based on pipeline type)",
+    )
+    parser.add_argument(
+        "--biorempp-database",
+        default=None,
+        help="Path to BioRemPP database CSV file for 'all' mode "
+        "(default: auto-resolve)",
+    )
+    parser.add_argument(
+        "--kegg-database",
+        default=None,
+        help="Path to KEGG degradation pathways CSV file for 'all' mode "
+        "(default: auto-resolve)",
     )
     parser.add_argument(
         "--output-dir",
-        default="outputs/merged_data",
-        help="Directory to save merged result (default: outputs/merged_data/)",
+        default="outputs/results_table",
+        help="Directory to save results (default: outputs/results_table/)",
     )
     parser.add_argument(
         "--output-filename",
         default="merged_input.txt",
-        help="Filename for the merged DataFrame output (default: merged_input.txt)",
+        help="Filename for single pipeline output (default: merged_input.txt)",
+    )
+    parser.add_argument(
+        "--biorempp-output-filename",
+        default="BioRemPP_Results.txt",
+        help="Filename for BioRemPP output in 'all' mode "
+        "(default: BioRemPP_Results.txt)",
+    )
+    parser.add_argument(
+        "--kegg-output-filename",
+        default="KEGG_Results.txt",
+        help="Filename for KEGG output in 'all' mode (default: KEGG_Results.txt)",
     )
     parser.add_argument(
         "--sep",
@@ -40,19 +158,24 @@ def main():
     args = parser.parse_args()
 
     try:
-        logger.info("Starting BioRemPP input processing pipeline")
+        logger.info("Starting BioRemPP processing pipeline")
         logger.debug(f"Input parameters: {vars(args)}")
 
-        output_path = run_input_processing_pipeline(
-            input_path=args.input,
-            database_path=args.database,
-            output_dir=args.output_dir,
-            output_filename=args.output_filename,
-            sep=args.sep,
-        )
+        output_path = run_pipeline(args.pipeline_type, args)
 
-        logger.info(f"Pipeline completed successfully. Output saved to: {output_path}")
-        print(f"[BioRemPP] Output processed and saved to: {output_path}")
+        if isinstance(output_path, dict):
+            # Multiple outputs from 'all' pipeline
+            logger.info("All pipelines completed successfully")
+            print("[BioRemPP] All processing pipelines completed successfully:")
+            for pipeline_name, path in output_path.items():
+                logger.info(f"{pipeline_name.upper()} output saved to: {path}")
+                print(f"  [{pipeline_name.upper()}] Output: {path}")
+        else:
+            # Single output from individual pipeline
+            logger.info(
+                f"Pipeline completed successfully. Output saved to: {output_path}"
+            )
+            print(f"[BioRemPP] Output processed and saved to: {output_path}")
     except Exception as e:
         logger.error(f"Pipeline failed with error: {e}", exc_info=True)
         print(f"[BioRemPP] Pipeline error: {e}")
