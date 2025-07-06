@@ -7,6 +7,7 @@ database. The merged result is saved using a generic output function.
 
 import os
 
+from biorempp.input_processing.hadeg_merge_processing import merge_input_with_hadeg
 from biorempp.input_processing.input_loader import load_and_merge_input
 from biorempp.input_processing.kegg_merge_processing import merge_input_with_kegg
 from biorempp.utils.io_utils import save_dataframe_output
@@ -190,22 +191,114 @@ def run_kegg_processing_pipeline(
     return output_path
 
 
-def run_all_processing_pipelines(
+def run_hadeg_processing_pipeline(
     input_path,
-    biorempp_database_path=None,
-    kegg_database_path=None,
+    hadeg_database_path=None,
     output_dir="outputs/results_table",
-    biorempp_output_filename="BioRemPP_Results.txt",
-    kegg_output_filename="KEGG_Results.txt",
+    output_filename="HADEG_Results.txt",
     sep=";",
     optimize_types=True,
 ):
     """
-    Run both BioRemPP and KEGG processing pipelines.
+    Run the HADEG (Hydrocarbon Degradation Database) processing pipeline.
 
-    This pipeline validates, processes, and merges FASTA-like input with both
-    the BioRemPP database and KEGG degradation pathways database. The merged
-    results are saved as separate txt files in the same directory.
+    This pipeline validates, processes, and merges FASTA-like input with the
+    HADEG database. The merged result is saved as a txt file.
+
+    Parameters
+    ----------
+    input_path : str
+        Path to the input .txt file (FASTA-like format).
+    hadeg_database_path : str or None
+        Path to the HADEG database CSV file. If None, uses default path.
+    output_dir : str
+        Directory where the merged DataFrame will be saved.
+    output_filename : str
+        Name of the output file.
+    sep : str
+        Separator for output (default: ';').
+    optimize_types : bool
+        Whether to optimize DataFrame dtypes (default: True).
+
+    Returns
+    -------
+    str
+        Path to the saved output file.
+
+    Raises
+    ------
+    FileNotFoundError
+        If the input file does not exist.
+    RuntimeError
+        If there is an error in processing or merging.
+    """
+    logger.info(f"Starting HADEG processing pipeline for: {input_path}")
+    logger.debug(
+        f"Pipeline parameters - database: {hadeg_database_path}, "
+        f"output_dir: {output_dir}, optimize_types: {optimize_types}"
+    )
+
+    if not os.path.exists(input_path):
+        error_msg = f"Input file not found: {input_path}"
+        logger.error(error_msg)
+        raise FileNotFoundError(error_msg)
+
+    if hadeg_database_path is None:
+        this_dir = os.path.dirname(os.path.abspath(__file__))
+        hadeg_database_path = os.path.join(this_dir, "..", "data", "database_hadeg.csv")
+        logger.debug(f"Using default HADEG database path: {hadeg_database_path}")
+
+    logger.info(f"Reading input file: {input_path}")
+    with open(input_path, "r", encoding="utf-8") as f:
+        input_content = f.read()
+
+    logger.info("Loading and merging input data with HADEG database")
+    df, error = load_and_merge_input(
+        input_content,
+        os.path.basename(input_path),
+        database_filepath=hadeg_database_path,
+        optimize_types=optimize_types,
+        merge_function=merge_input_with_hadeg,
+    )
+
+    if error:
+        error_msg = f"HADEG Pipeline error: {error}"
+        logger.error(error_msg)
+        raise RuntimeError(error_msg)
+
+    logger.info(f"Saving merged DataFrame to: {output_dir}/{output_filename}")
+    output_path = save_dataframe_output(
+        df,
+        output_dir=output_dir,
+        filename=output_filename,
+        sep=sep,
+    )
+
+    logger.info(
+        f"HADEG Pipeline completed successfully. Output saved to: {output_path}"
+    )
+    return output_path
+
+
+def run_all_processing_pipelines(
+    input_path,
+    biorempp_database_path=None,
+    kegg_database_path=None,
+    hadeg_database_path=None,
+    output_dir="outputs/results_table",
+    biorempp_output_filename="BioRemPP_Results.txt",
+    kegg_output_filename="KEGG_Results.txt",
+    hadeg_output_filename="HADEG_Results.txt",
+    sep=";",
+    optimize_types=True,
+):
+    """
+    Run all processing pipelines: BioRemPP, KEGG, and HADEG.
+
+    This pipeline validates, processes, and merges FASTA-like input with
+    the BioRemPP database, KEGG degradation pathways database, and HADEG
+    database. The merged results are saved as separate txt files in the
+    same directory.
 
     Parameters
     ----------
@@ -214,14 +307,18 @@ def run_all_processing_pipelines(
     biorempp_database_path : str or None
         Path to the BioRemPP database CSV file. If None, uses default path.
     kegg_database_path : str or None
-        Path to the KEGG degradation pathways CSV file. If None, uses default path.
+        Path to the KEGG degradation pathways CSV file. If None, uses default.
+    hadeg_database_path : str or None
+        Path to the HADEG database CSV file. If None, uses default path.
     output_dir : str
-        Directory where both merged DataFrames will be saved
+        Directory where all merged DataFrames will be saved
         (default: outputs/results_table).
     biorempp_output_filename : str
         Name of the BioRemPP output file (default: BioRemPP_Results.txt).
     kegg_output_filename : str
         Name of the KEGG output file (default: KEGG_Results.txt).
+    hadeg_output_filename : str
+        Name of the HADEG output file (default: HADEG_Results.txt).
     sep : str
         Separator for output (default: ';').
     optimize_types : bool
@@ -292,6 +389,24 @@ def run_all_processing_pipelines(
         logger.error(error_msg)
         errors.append(error_msg)
 
+    # Run HADEG pipeline
+    try:
+        logger.info("Running HADEG processing pipeline")
+        hadeg_output_path = run_hadeg_processing_pipeline(
+            input_path=input_path,
+            hadeg_database_path=hadeg_database_path,
+            output_dir=output_dir,
+            output_filename=hadeg_output_filename,
+            sep=sep,
+            optimize_types=optimize_types,
+        )
+        output_paths["hadeg"] = hadeg_output_path
+        logger.info(f"HADEG pipeline completed: {hadeg_output_path}")
+    except Exception as e:
+        error_msg = f"HADEG pipeline failed: {e}"
+        logger.error(error_msg)
+        errors.append(error_msg)
+
     # Check if any pipeline failed
     if errors:
         combined_error = "; ".join(errors)
@@ -301,5 +416,6 @@ def run_all_processing_pipelines(
     logger.info("All processing pipelines completed successfully")
     logger.info(f"BioRemPP results: {output_paths.get('biorempp')}")
     logger.info(f"KEGG results: {output_paths.get('kegg')}")
+    logger.info(f"HADEG results: {output_paths.get('hadeg')}")
 
     return output_paths

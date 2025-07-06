@@ -399,3 +399,213 @@ def mock_kegg_degradation_pathways_dataframe():
 
     columns = ["ko", "pathname", "genesymbol"]
     return pd.DataFrame(data, columns=columns)
+
+
+# ---------------------
+# Mocks para HADEG Database
+# ---------------------
+
+
+@pytest.fixture
+def mock_hadeg_database_csv(tmp_path):
+    """
+    Generate a temporary CSV with structure and content similar to the real
+    HADEG (Hydrocarbon Degradation Database).
+
+    The HADEG database contains genes involved in hydrocarbon degradation
+    pathways across different compound categories.
+    """
+    data = [
+        # Alkanes degradation pathways
+        ["ahpC", "K24119", "A_Finnerty_pathway", "Alkanes"],
+        ["ahpC", "K03386", "A_Finnerty_pathway", "Alkanes"],
+        ["ahpF", "K03387", "A_Finnerty_pathway", "Alkanes"],
+        ["alkB", "K00496", "A_Terminal/biterminal_oxidation", "Alkanes"],
+        ["alkB", "K00496", "A_Terminal/biterminal_oxidation", "Alkanes"],
+        ["alkF_rubA_rdx", "K00496", "A_Terminal/biterminal_oxidation", "Alkanes"],
+        ["alkG_rubA_rdx", "K03618", "A_Terminal/biterminal_oxidation", "Alkanes"],
+        ["alkG_rubA_rdx", "K05297", "A_Terminal/biterminal_oxidation", "Alkanes"],
+        ["alkH_ald", "K00128", "A_Auxiliar_alkane_gene", "Alkanes"],
+        ["alkH_ald", "K00154", "A_Auxiliar_alkane_gene", "Alkanes"],
+        ["alkJ_adh", "K00108", "A_Auxiliar_alkane_gene", "Alkanes"],
+        ["alkL", "K07275", "A_Hydrocarbon_uptake", "Alkanes"],
+        ["alkS", "K21748", "A_Auxiliar_alkane_gene", "Alkanes"],
+        ["prmC", "K16158", "A_Subterminal_oxidation", "Alkanes"],
+        ["ssuD", "K04091", "A_Auxiliar_alkane_gene", "Alkanes"],
+        # Alkenes degradation pathways
+        ["etnE", "K00549", "B_Ethene_and_chloroethene_degradation", "Alkenes"],
+        ["etnE", "K22363", "B_Ethene_and_chloroethene_degradation", "Alkenes"],
+        ["isoA", "K16242", "B_Isoprene_degradation", "Alkenes"],
+        ["isoA", "K15760", "B_Isoprene_degradation", "Alkenes"],
+        ["isoB", "K22359", "B_Isoprene_degradation", "Alkenes"],
+        ["isoC", "K05710", "B_Isoprene_degradation", "Alkenes"],
+        ["isoD", "K15763", "B_Isoprene_degradation", "Alkenes"],
+        ["isoE", "K22358", "B_Isoprene_degradation", "Alkenes"],
+        ["mpdB", "K20927", "B_2-methylpropene_degradation", "Alkenes"],
+        ["mpdC", "K00128", "B_2-methylpropene_degradation", "Alkenes"],
+        ["xamoA", "K22357", "B_Propene_degradation", "Alkenes"],
+        ["xamoB", "K22359", "B_Propene_degradation", "Alkenes"],
+        # Aromatics degradation pathways
+        ["abmA", "K00354", "C_Anthranilate_degradation", "Aromatics"],
+        ["abmA", "K09461", "C_Anthranilate_degradation", "Aromatics"],
+        ["abmG1", "K08295", "C_Anthranilate_degradation", "Aromatics"],
+        ["andAa", "K18249", "C_Anthranilate_degradation", "Aromatics"],
+        ["andAb", "K00363", "C_Anthranilate_degradation", "Aromatics"],
+        ["andAb", "K05710", "C_Anthranilate_degradation", "Aromatics"],
+        # Biosurfactant pathways
+        ["amsY", "K15659", "E_Amphisin", "Biosurfactant"],
+        ["arfA", "K15658", "E_Arthrofactin", "Biosurfactant"],
+        ["arfB", "K15659", "E_Arthrofactin", "Biosurfactant"],
+        ["arfC", "K15660", "E_Arthrofactin", "Biosurfactant"],
+        ["at", "K00661", "E_Sophorolipids", "Biosurfactant"],
+        # Polymers degradation pathways
+        ["AAW51_2473", "K21104", "D_PET", "Polymers"],
+        ["AAW51_2473", "K21104", "D_PCL", "Polymers"],
+        ["AFUA_4G03560", "K03932", "D_PET", "Polymers"],
+        ["ALC24_4107", "K03932", "D_PHB", "Polymers"],
+        ["AvCA6_03910", "K05973", "D_PHB", "Polymers"],
+        # Additional test data - reusing some KOs from other fixtures
+        ["testGene1", "K00001", "Test_pathway", "Alkanes"],
+        ["testGene2", "K00002", "Test_pathway", "Alkenes"],
+        ["testGene3", "K00003", "Test_pathway", "Aromatics"],
+        ["testGene8", "K00008", "Test_pathway", "Biosurfactant"],
+        ["testGene11", "K00011", "Test_pathway", "Polymers"],
+        ["testGene20", "K00020", "Test_pathway", "Alkanes"],
+    ]
+
+    columns = ["Gene", "ko", "Pathway", "compound_pathway"]
+    df = pd.DataFrame(data, columns=columns)
+    file_path = tmp_path / "hadeg_database.csv"
+    df.to_csv(file_path, sep=";", index=False)
+    return str(file_path)
+
+
+@pytest.fixture
+def mock_hadeg_database_dataframe():
+    """
+    Return a DataFrame with mock HADEG database data for tests that don't
+    need a file.
+
+    Contains representative samples from all compound pathway categories:
+    Alkanes, Alkenes, Aromatics, Biosurfactant, and Polymers.
+    """
+    data = [
+        # Alkanes - various pathways
+        ["alkB", "K00496", "A_Terminal/biterminal_oxidation", "Alkanes"],
+        ["ahpC", "K24119", "A_Finnerty_pathway", "Alkanes"],
+        ["alkH_ald", "K00128", "A_Auxiliar_alkane_gene", "Alkanes"],
+        ["alkS", "K21748", "A_Auxiliar_alkane_gene", "Alkanes"],
+        ["prmC", "K16158", "A_Subterminal_oxidation", "Alkanes"],
+        # Alkenes - various pathways
+        ["etnE", "K00549", "B_Ethene_and_chloroethene_degradation", "Alkenes"],
+        ["isoA", "K16242", "B_Isoprene_degradation", "Alkenes"],
+        ["mpdB", "K20927", "B_2-methylpropene_degradation", "Alkenes"],
+        ["xamoA", "K22357", "B_Propene_degradation", "Alkenes"],
+        # Aromatics
+        ["abmA", "K00354", "C_Anthranilate_degradation", "Aromatics"],
+        ["andAa", "K18249", "C_Anthranilate_degradation", "Aromatics"],
+        # Biosurfactant
+        ["amsY", "K15659", "E_Amphisin", "Biosurfactant"],
+        ["arfA", "K15658", "E_Arthrofactin", "Biosurfactant"],
+        # Polymers
+        ["AAW51_2473", "K21104", "D_PET", "Polymers"],
+        ["AFUA_4G03560", "K03932", "D_PET", "Polymers"],
+        # Test data with common KOs
+        ["testGene1", "K00001", "Test_pathway", "Alkanes"],
+        ["testGene2", "K00002", "Test_pathway", "Alkenes"],
+        ["testGene8", "K00008", "Test_pathway", "Aromatics"],
+        ["testGene20", "K00020", "Test_pathway", "Biosurfactant"],
+    ]
+
+    columns = ["Gene", "ko", "Pathway", "compound_pathway"]
+    return pd.DataFrame(data, columns=columns)
+
+
+@pytest.fixture
+def mock_hadeg_minimal_dataframe():
+    """
+    Return a minimal HADEG DataFrame for basic testing scenarios.
+    Contains only essential data for merge operations.
+    """
+    data = [
+        ["alkB", "K00001", "A_Terminal_oxidation", "Alkanes"],
+        ["etnE", "K00002", "B_Ethene_degradation", "Alkenes"],
+        ["abmA", "K00008", "C_Anthranilate_degradation", "Aromatics"],
+    ]
+
+    columns = ["Gene", "ko", "Pathway", "compound_pathway"]
+    return pd.DataFrame(data, columns=columns)
+
+
+@pytest.fixture
+def mock_hadeg_database_with_duplicates():
+    """
+    Return a HADEG DataFrame with duplicate ko entries to test
+    multiple pathways for the same ortholog.
+    """
+    data = [
+        # Multiple pathways for K00496 (alkB gene)
+        ["alkB", "K00496", "A_Terminal/biterminal_oxidation", "Alkanes"],
+        ["alkB", "K00496", "A_Terminal/biterminal_oxidation", "Alkanes"],
+        ["alkF_rubA_rdx", "K00496", "A_Terminal/biterminal_oxidation", "Alkanes"],
+        ["alkG_rubA3_rdx", "K00496", "A_Terminal/biterminal_oxidation", "Alkanes"],
+        # Multiple pathways for K05710
+        ["isoC", "K05710", "B_Isoprene_degradation", "Alkenes"],
+        ["xamoC", "K05710", "B_Propene_degradation", "Alkenes"],
+        ["andAb", "K05710", "C_Anthranilate_degradation", "Aromatics"],
+        # Single pathway entries for comparison
+        ["amsY", "K15659", "E_Amphisin", "Biosurfactant"],
+        ["AAW51_2473", "K21104", "D_PET", "Polymers"],
+    ]
+
+    columns = ["Gene", "ko", "Pathway", "compound_pathway"]
+    return pd.DataFrame(data, columns=columns)
+
+
+@pytest.fixture
+def mock_hadeg_database_missing_columns(tmp_path):
+    """
+    Generate a temporary CSV missing the 'ko' column for error testing.
+    """
+    data = [
+        ["alkB", "A_Terminal/biterminal_oxidation", "Alkanes"],
+        ["etnE", "B_Ethene_degradation", "Alkenes"],
+    ]
+
+    columns = ["Gene", "Pathway", "compound_pathway"]  # Missing 'ko'
+    df = pd.DataFrame(data, columns=columns)
+    file_path = tmp_path / "hadeg_invalid.csv"
+    df.to_csv(file_path, sep=";", index=False)
+    return str(file_path)
+
+
+@pytest.fixture
+def mock_hadeg_empty_dataframe():
+    """
+    Return an empty HADEG DataFrame with correct columns for testing
+    edge cases.
+    """
+    columns = ["Gene", "ko", "Pathway", "compound_pathway"]
+    return pd.DataFrame(columns=columns)
+
+
+@pytest.fixture
+def sample_input_data_for_hadeg():
+    """
+    Return sample input data specifically designed to test HADEG merging.
+    Contains KOs that should match with the HADEG database fixtures.
+    """
+    data = [
+        ["SampleA", "K00001"],
+        ["SampleA", "K00496"],
+        ["SampleA", "K16242"],
+        ["SampleB", "K00002"],
+        ["SampleB", "K00354"],
+        ["SampleB", "K15659"],
+        ["SampleC", "K00008"],
+        ["SampleC", "K21104"],
+        ["SampleC", "K99999"],  # Non-matching KO for testing
+    ]
+
+    columns = ["sample", "ko"]
+    return pd.DataFrame(data, columns=columns)

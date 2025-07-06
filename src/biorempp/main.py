@@ -4,6 +4,7 @@ import sys
 from biorempp.pipelines.input_processing import (
     run_all_processing_pipelines,
     run_biorempp_processing_pipeline,
+    run_hadeg_processing_pipeline,
     run_kegg_processing_pipeline,
 )
 from biorempp.utils.logging_config import get_logger, setup_logging
@@ -23,7 +24,7 @@ def get_pipeline_function(pipeline_type):
     Parameters
     ----------
     pipeline_type : str
-        The type of pipeline to run ('all', 'biorempp', or 'kegg')
+        The type of pipeline to run ('all', 'biorempp', 'kegg', or 'hadeg')
 
     Returns
     -------
@@ -39,6 +40,7 @@ def get_pipeline_function(pipeline_type):
         "all": run_all_processing_pipelines,
         "biorempp": run_biorempp_processing_pipeline,
         "kegg": run_kegg_processing_pipeline,
+        "hadeg": run_hadeg_processing_pipeline,
     }
 
     if pipeline_type not in pipeline_map:
@@ -85,11 +87,16 @@ def run_pipeline(pipeline_type, args):
     elif pipeline_type == "kegg":
         common_params["kegg_database_path"] = args.database
         common_params["output_filename"] = args.output_filename
+    elif pipeline_type == "hadeg":
+        common_params["hadeg_database_path"] = args.database
+        common_params["output_filename"] = args.output_filename
     elif pipeline_type == "all":
         common_params["biorempp_database_path"] = args.biorempp_database
         common_params["kegg_database_path"] = args.kegg_database
+        common_params["hadeg_database_path"] = args.hadeg_database
         common_params["biorempp_output_filename"] = args.biorempp_output_filename
         common_params["kegg_output_filename"] = args.kegg_output_filename
+        common_params["hadeg_output_filename"] = args.hadeg_output_filename
 
     logger.info(f"Running {pipeline_type} pipeline")
     logger.debug(f"Pipeline parameters: {common_params}")
@@ -106,9 +113,9 @@ def main():
     )
     parser.add_argument(
         "--pipeline-type",
-        choices=["all", "biorempp", "kegg"],
+        choices=["all", "biorempp", "kegg", "hadeg"],
         default="all",
-        help="Type of pipeline to run (default: all - runs both pipelines)",
+        help="Type of pipeline to run (default: all - runs all pipelines)",
     )
     parser.add_argument(
         "--database",
@@ -126,6 +133,12 @@ def main():
         "--kegg-database",
         default=None,
         help="Path to KEGG degradation pathways CSV file for 'all' mode "
+        "(default: auto-resolve)",
+    )
+    parser.add_argument(
+        "--hadeg-database",
+        default=None,
+        help="Path to HADEG database CSV file for 'all' mode "
         "(default: auto-resolve)",
     )
     parser.add_argument(
@@ -148,6 +161,11 @@ def main():
         "--kegg-output-filename",
         default="KEGG_Results.txt",
         help="Filename for KEGG output in 'all' mode (default: KEGG_Results.txt)",
+    )
+    parser.add_argument(
+        "--hadeg-output-filename",
+        default="HADEG_Results.txt",
+        help="Filename for HADEG output in 'all' mode (default: HADEG_Results.txt)",
     )
     parser.add_argument(
         "--sep",
