@@ -6,12 +6,13 @@ pipeline BioRemPP.
 """
 
 import base64
-import logging
 import re
 
 import pandas as pd
 
-logger = logging.getLogger("biorempp.input_validator")
+from biorempp.utils.logging_config import get_logger
+
+logger = get_logger("input_processing.input_validator")
 
 
 def validate_and_process_input(contents: str, filename: str):

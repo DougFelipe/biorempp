@@ -8,14 +8,18 @@ database. The merged result is saved using a generic output function.
 import os
 
 from biorempp.input_processing.input_loader import load_and_merge_input
+from biorempp.input_processing.kegg_merge_processing import merge_input_with_kegg
 from biorempp.utils.io_utils import save_dataframe_output
+from biorempp.utils.logging_config import get_logger
+
+logger = get_logger("pipelines.input_processing")
 
 
-def run_input_processing_pipeline(
+def run_biorempp_processing_pipeline(
     input_path,
     database_path=None,
-    output_dir="outputs/merged_data",
-    output_filename="merged_input.txt",
+    output_dir="outputs/results_table",
+    output_filename="BioRemPP_Results.txt",
     sep=";",
     optimize_types=True,
 ):
@@ -49,16 +53,27 @@ def run_input_processing_pipeline(
     RuntimeError
         If there is an error in processing or merging.
     """
+    logger.info(f"Starting input processing pipeline for: {input_path}")
+    logger.debug(
+        f"Pipeline parameters - database: {database_path}, "
+        f"output_dir: {output_dir}, optimize_types: {optimize_types}"
+    )
+
     if not os.path.exists(input_path):
-        raise FileNotFoundError(f"Input file not found: {input_path}")
+        error_msg = f"Input file not found: {input_path}"
+        logger.error(error_msg)
+        raise FileNotFoundError(error_msg)
 
     if database_path is None:
         this_dir = os.path.dirname(os.path.abspath(__file__))
         database_path = os.path.join(this_dir, "..", "data", "database_biorempp.csv")
+        logger.debug(f"Using default database path: {database_path}")
 
+    logger.info(f"Reading input file: {input_path}")
     with open(input_path, "r", encoding="utf-8") as f:
         input_content = f.read()
 
+    logger.info("Loading and merging input data")
     df, error = load_and_merge_input(
         input_content,
         os.path.basename(input_path),
@@ -67,12 +82,224 @@ def run_input_processing_pipeline(
     )
 
     if error:
-        raise RuntimeError(f"Pipeline error: {error}")
+        error_msg = f"Pipeline error: {error}"
+        logger.error(error_msg)
+        raise RuntimeError(error_msg)
 
+    logger.info(f"Saving merged DataFrame to: {output_dir}/{output_filename}")
     output_path = save_dataframe_output(
         df,
         output_dir=output_dir,
         filename=output_filename,
         sep=sep,
     )
+
+    logger.info(f"Pipeline completed successfully. Output saved to: {output_path}")
     return output_path
+
+
+def run_kegg_processing_pipeline(
+    input_path,
+    kegg_database_path=None,
+    output_dir="outputs/results_table",
+    output_filename="KEGG_Results.txt",
+    sep=";",
+    optimize_types=True,
+):
+    """
+    Run the KEGG degradation pathway processing pipeline.
+
+    This pipeline validates, processes, and merges FASTA-like input with the KEGG
+    degradation pathways database. The merged result is saved as a txt file.
+
+    Parameters
+    ----------
+    input_path : str
+        Path to the input .txt file (FASTA-like format).
+    kegg_database_path : str or None
+        Path to the KEGG degradation pathways CSV file. If None, uses default path.
+    output_dir : str
+        Directory where the merged DataFrame will be saved.
+    output_filename : str
+        Name of the output file.
+    sep : str
+        Separator for output (default: ';').
+    optimize_types : bool
+        Whether to optimize DataFrame dtypes (default: True).
+
+    Returns
+    -------
+    str
+        Path to the saved output file.
+
+    Raises
+    ------
+    FileNotFoundError
+        If the input file does not exist.
+    RuntimeError
+        If there is an error in processing or merging.
+    """
+    from biorempp.input_processing.input_validator import validate_and_process_input
+
+    logger.info(f"Starting KEGG processing pipeline for: {input_path}")
+    logger.debug(
+        f"Pipeline parameters - kegg_database: {kegg_database_path}, "
+        f"output_dir: {output_dir}, optimize_types: {optimize_types}"
+    )
+
+    if not os.path.exists(input_path):
+        error_msg = f"Input file not found: {input_path}"
+        logger.error(error_msg)
+        raise FileNotFoundError(error_msg)
+
+    if kegg_database_path is None:
+        this_dir = os.path.dirname(os.path.abspath(__file__))
+        kegg_database_path = os.path.join(
+            this_dir, "..", "data", "kegg_degradation_pathways.csv"
+        )
+        logger.debug(f"Using default KEGG database path: {kegg_database_path}")
+
+    logger.info(f"Reading input file: {input_path}")
+    with open(input_path, "r", encoding="utf-8") as f:
+        input_content = f.read()
+
+    # Validate and process input
+    logger.info("Validating and processing input data")
+    df, error = validate_and_process_input(input_content, os.path.basename(input_path))
+
+    if error:
+        error_msg = f"KEGG pipeline validation error: {error}"
+        logger.error(error_msg)
+        raise RuntimeError(error_msg)
+
+    # Merge with KEGG database
+    logger.info("Merging with KEGG degradation pathways")
+    kegg_merged_df = merge_input_with_kegg(
+        df, kegg_filepath=kegg_database_path, optimize_types=optimize_types
+    )
+
+    logger.info(f"Saving KEGG merged DataFrame to: {output_dir}/{output_filename}")
+    output_path = save_dataframe_output(
+        kegg_merged_df,
+        output_dir=output_dir,
+        filename=output_filename,
+        sep=sep,
+    )
+
+    logger.info(f"KEGG pipeline completed successfully. Output saved to: {output_path}")
+    return output_path
+
+
+def run_all_processing_pipelines(
+    input_path,
+    biorempp_database_path=None,
+    kegg_database_path=None,
+    output_dir="outputs/results_table",
+    biorempp_output_filename="BioRemPP_Results.txt",
+    kegg_output_filename="KEGG_Results.txt",
+    sep=";",
+    optimize_types=True,
+):
+    """
+    Run both BioRemPP and KEGG processing pipelines.
+
+    This pipeline validates, processes, and merges FASTA-like input with both
+    the BioRemPP database and KEGG degradation pathways database. The merged
+    results are saved as separate txt files in the same directory.
+
+    Parameters
+    ----------
+    input_path : str
+        Path to the input .txt file (FASTA-like format).
+    biorempp_database_path : str or None
+        Path to the BioRemPP database CSV file. If None, uses default path.
+    kegg_database_path : str or None
+        Path to the KEGG degradation pathways CSV file. If None, uses default path.
+    output_dir : str
+        Directory where both merged DataFrames will be saved
+        (default: outputs/results_table).
+    biorempp_output_filename : str
+        Name of the BioRemPP output file (default: BioRemPP_Results.txt).
+    kegg_output_filename : str
+        Name of the KEGG output file (default: KEGG_Results.txt).
+    sep : str
+        Separator for output (default: ';').
+    optimize_types : bool
+        Whether to optimize DataFrame dtypes (default: True).
+
+    Returns
+    -------
+    dict
+        Dictionary with paths to both saved output files:
+        {'biorempp': path_to_biorempp_output, 'kegg': path_to_kegg_output}
+
+    Raises
+    ------
+    FileNotFoundError
+        If the input file does not exist.
+    RuntimeError
+        If there is an error in processing or merging either pipeline.
+    """
+    logger.info(f"Starting combined processing pipelines for: {input_path}")
+    logger.debug(
+        f"Pipeline parameters - biorempp_database: {biorempp_database_path}, "
+        f"kegg_database: {kegg_database_path}, output_dir: {output_dir}, "
+        f"optimize_types: {optimize_types}"
+    )
+
+    if not os.path.exists(input_path):
+        error_msg = f"Input file not found: {input_path}"
+        logger.error(error_msg)
+        raise FileNotFoundError(error_msg)
+
+    # Prepare output paths - both files will be saved in the same directory
+    output_paths = {}
+    errors = []
+
+    # Run BioRemPP pipeline
+    try:
+        logger.info("Running BioRemPP processing pipeline")
+        biorempp_output_path = run_biorempp_processing_pipeline(
+            input_path=input_path,
+            database_path=biorempp_database_path,
+            output_dir=output_dir,
+            output_filename=biorempp_output_filename,
+            sep=sep,
+            optimize_types=optimize_types,
+        )
+        output_paths["biorempp"] = biorempp_output_path
+        logger.info(f"BioRemPP pipeline completed: {biorempp_output_path}")
+    except Exception as e:
+        error_msg = f"BioRemPP pipeline failed: {e}"
+        logger.error(error_msg)
+        errors.append(error_msg)
+
+    # Run KEGG pipeline
+    try:
+        logger.info("Running KEGG processing pipeline")
+        kegg_output_path = run_kegg_processing_pipeline(
+            input_path=input_path,
+            kegg_database_path=kegg_database_path,
+            output_dir=output_dir,
+            output_filename=kegg_output_filename,
+            sep=sep,
+            optimize_types=optimize_types,
+        )
+        output_paths["kegg"] = kegg_output_path
+        logger.info(f"KEGG pipeline completed: {kegg_output_path}")
+    except Exception as e:
+        error_msg = f"KEGG pipeline failed: {e}"
+        logger.error(error_msg)
+        errors.append(error_msg)
+
+    # Check if any pipeline failed
+    if errors:
+        combined_error = "; ".join(errors)
+        logger.error(f"One or more pipelines failed: {combined_error}")
+        raise RuntimeError(f"Pipeline failures: {combined_error}")
+
+    logger.info("All processing pipelines completed successfully")
+    logger.info(f"BioRemPP results: {output_paths.get('biorempp')}")
+    logger.info(f"KEGG results: {output_paths.get('kegg')}")
+
+    return output_paths

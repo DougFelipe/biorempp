@@ -1,9 +1,10 @@
-import logging
 import os
 
 import pandas as pd
 
-logger = logging.getLogger("biorempp.biorempp_merge_processing")
+from biorempp.utils.logging_config import get_logger
+
+logger = get_logger("input_processing.biorempp_merge_processing")
 
 
 def merge_input_with_biorempp(
