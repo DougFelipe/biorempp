@@ -6,6 +6,7 @@ from biorempp.pipelines.input_processing import (
     run_biorempp_processing_pipeline,
     run_hadeg_processing_pipeline,
     run_kegg_processing_pipeline,
+    run_toxcsm_processing_pipeline,
 )
 from biorempp.utils.logging_config import get_logger, setup_logging
 
@@ -24,7 +25,7 @@ def get_pipeline_function(pipeline_type):
     Parameters
     ----------
     pipeline_type : str
-        The type of pipeline to run ('all', 'biorempp', 'kegg', or 'hadeg')
+        The type of pipeline to run ('all', 'biorempp', 'kegg', 'hadeg', or 'toxcsm')
 
     Returns
     -------
@@ -41,6 +42,7 @@ def get_pipeline_function(pipeline_type):
         "biorempp": run_biorempp_processing_pipeline,
         "kegg": run_kegg_processing_pipeline,
         "hadeg": run_hadeg_processing_pipeline,
+        "toxcsm": run_toxcsm_processing_pipeline,
     }
 
     if pipeline_type not in pipeline_map:
@@ -78,25 +80,33 @@ def run_pipeline(pipeline_type, args):
         "output_dir": args.output_dir,
         "sep": args.sep,
         "optimize_types": True,
+        "add_timestamp": args.add_timestamp and not args.no_timestamp,
     }
 
     # Add pipeline-specific parameters
     if pipeline_type == "biorempp":
         common_params["database_path"] = args.database
-        common_params["output_filename"] = args.output_filename
+        common_params["output_filename"] = (
+            args.output_filename or "BioRemPP_Results.txt"
+        )
     elif pipeline_type == "kegg":
         common_params["kegg_database_path"] = args.database
-        common_params["output_filename"] = args.output_filename
+        common_params["output_filename"] = args.output_filename or "KEGG_Results.txt"
     elif pipeline_type == "hadeg":
         common_params["hadeg_database_path"] = args.database
-        common_params["output_filename"] = args.output_filename
+        common_params["output_filename"] = args.output_filename or "HADEG_Results.txt"
+    elif pipeline_type == "toxcsm":
+        common_params["toxcsm_database_path"] = args.database
+        common_params["output_filename"] = args.output_filename or "ToxCSM.txt"
     elif pipeline_type == "all":
         common_params["biorempp_database_path"] = args.biorempp_database
         common_params["kegg_database_path"] = args.kegg_database
         common_params["hadeg_database_path"] = args.hadeg_database
+        common_params["toxcsm_database_path"] = args.toxcsm_database
         common_params["biorempp_output_filename"] = args.biorempp_output_filename
         common_params["kegg_output_filename"] = args.kegg_output_filename
         common_params["hadeg_output_filename"] = args.hadeg_output_filename
+        common_params["toxcsm_output_filename"] = args.toxcsm_output_filename
 
     logger.info(f"Running {pipeline_type} pipeline")
     logger.debug(f"Pipeline parameters: {common_params}")
@@ -113,7 +123,7 @@ def main():
     )
     parser.add_argument(
         "--pipeline-type",
-        choices=["all", "biorempp", "kegg", "hadeg"],
+        choices=["all", "biorempp", "kegg", "hadeg", "toxcsm"],
         default="all",
         help="Type of pipeline to run (default: all - runs all pipelines)",
     )
@@ -142,14 +152,21 @@ def main():
         "(default: auto-resolve)",
     )
     parser.add_argument(
+        "--toxcsm-database",
+        default=None,
+        help="Path to ToxCSM database CSV file for 'all' mode "
+        "(default: auto-resolve)",
+    )
+    parser.add_argument(
         "--output-dir",
         default="outputs/results_table",
         help="Directory to save results (default: outputs/results_table/)",
     )
     parser.add_argument(
         "--output-filename",
-        default="merged_input.txt",
-        help="Filename for single pipeline output (default: merged_input.txt)",
+        default=None,
+        help="Filename for single pipeline output "
+        "(auto-resolved by pipeline type if not provided)",
     )
     parser.add_argument(
         "--biorempp-output-filename",
@@ -168,9 +185,25 @@ def main():
         help="Filename for HADEG output in 'all' mode (default: HADEG_Results.txt)",
     )
     parser.add_argument(
+        "--toxcsm-output-filename",
+        default="ToxCSM.txt",
+        help="Filename for ToxCSM output in 'all' mode (default: ToxCSM.txt)",
+    )
+    parser.add_argument(
         "--sep",
         default=";",
         help="Separator for the output file (default: ';')",
+    )
+    parser.add_argument(
+        "--add-timestamp",
+        action="store_true",
+        default=True,
+        help="Add timestamp to output filenames (default: True)",
+    )
+    parser.add_argument(
+        "--no-timestamp",
+        action="store_true",
+        help="Disable timestamp in output filenames",
     )
 
     args = parser.parse_args()
