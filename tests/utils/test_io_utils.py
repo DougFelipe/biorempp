@@ -34,8 +34,10 @@ class TestSaveDataframeOutput:
         output_dir = str(tmp_path / "test_output")
         filename = "test_data.csv"
 
-        # Act
-        result_path = save_dataframe_output(df, output_dir, filename)
+        # Act - disable timestamp for predictable test
+        result_path = save_dataframe_output(
+            df, output_dir, filename, add_timestamp=False
+        )
 
         # Assert
         assert os.path.exists(result_path)
@@ -194,8 +196,10 @@ class TestSaveDataframeOutput:
         output_dir = str(tmp_path / "test_output")
         filename = "path_test.csv"
 
-        # Act
-        result_path = save_dataframe_output(df, output_dir, filename)
+        # Act - disable timestamp for predictable test
+        result_path = save_dataframe_output(
+            df, output_dir, filename, add_timestamp=False
+        )
 
         # Assert
         expected_path = os.path.join(output_dir, filename)
@@ -349,3 +353,48 @@ class TestSaveDataframeOutput:
 
         # Assert
         assert os.path.exists(result_path)
+
+    def test_save_dataframe_output_with_timestamp(self, tmp_path):
+        """
+        Test saving DataFrame with timestamp enabled (default behavior).
+
+        Verifies that the function adds timestamp to filename when enabled.
+        """
+        # Arrange
+        df = pd.DataFrame({"test": [1]})
+        output_dir = str(tmp_path / "test_output")
+        filename = "timestamped_test.csv"
+
+        # Act - use default timestamp behavior (True)
+        result_path = save_dataframe_output(df, output_dir, filename)
+
+        # Assert
+        assert os.path.exists(result_path)
+        # Should not be the exact filename since timestamp is added
+        expected_path_no_timestamp = os.path.join(output_dir, filename)
+        assert result_path != expected_path_no_timestamp
+        # Should contain timestamp pattern
+        assert "_2025" in result_path  # Year in timestamp
+        assert "timestamped_test_" in result_path
+        assert result_path.endswith(".csv")
+
+    def test_save_dataframe_output_timestamp_disabled(self, tmp_path):
+        """
+        Test saving DataFrame with timestamp explicitly disabled.
+
+        Verifies that the function does not add timestamp when disabled.
+        """
+        # Arrange
+        df = pd.DataFrame({"test": [1]})
+        output_dir = str(tmp_path / "test_output")
+        filename = "no_timestamp_test.csv"
+
+        # Act
+        result_path = save_dataframe_output(
+            df, output_dir, filename, add_timestamp=False
+        )
+
+        # Assert
+        assert os.path.exists(result_path)
+        expected_path = os.path.join(output_dir, filename)
+        assert result_path == expected_path
