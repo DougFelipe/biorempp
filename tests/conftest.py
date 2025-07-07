@@ -609,3 +609,732 @@ def sample_input_data_for_hadeg():
 
     columns = ["sample", "ko"]
     return pd.DataFrame(data, columns=columns)
+
+
+# ---------------------
+# Mocks para o banco ToxCSM
+# ---------------------
+
+
+@pytest.fixture
+def mock_toxcsm_minimal_csv(tmp_path):
+    """
+    Generate a temporary CSV with one row and all fields filled from ToxCSM database.
+    Used for basic functionality testing with complete data.
+    """
+    header_line = (
+        "SMILES;cpd;ChEBI;compoundname;value_NR_AR;label_NR_AR;"
+        "value_NR_AR_LBD;label_NR_AR_LBD;value_NR_AhR;label_NR_AhR;"
+        "value_NR_Aromatase;label_NR_Aromatase;value_NR_ER;label_NR_ER;"
+        "value_NR_ER_LBD;label_NR_ER_LBD;value_NR_PPAR_gamma;"
+        "label_NR_PPAR_gamma;value_NR_GR;label_NR_GR;value_NR_TR;"
+        "label_NR_TR;value_SR_ARE;label_SR_ARE;value_SR_ATAD5;"
+        "label_SR_ATAD5;value_SR_HSE;label_SR_HSE;value_SR_MMP;"
+        "label_SR_MMP;value_SR_p53;label_SR_p53;"
+        "value_Gen_AMES_Mutagenesis;label_Gen_AMES_Mutagenesis;"
+        "value_Gen_Carcinogenesis;label_Gen_Carcinogenesis;"
+        "value_Gen_Micronucleus;label_Gen_Micronucleus;"
+        "value_Env_Fathead_Minnow;label_Env_Fathead_Minnow;"
+        "value_Env_T_Pyriformis;label_Env_T_Pyriformis;"
+        "value_Env_Honey_Bee;label_Env_Honey_Bee;"
+        "value_Env_Biodegradation;label_Env_Biodegradation;"
+        "value_Env_Crustacean;label_Env_Crustacean;value_Env_Avian;"
+        "label_Env_Avian;value_Org_Skin_Sensitisation;"
+        "label_Org_Skin_Sensitisation;value_Org_hERG_I_Inhibitor;"
+        "label_Org_hERG_I_Inhibitor;value_Org_hERG_II_Inhibitor;"
+        "label_Org_hERG_II_Inhibitor;value_Org_Liver_Injury_I;"
+        "label_Org_Liver_Injury_I;value_Org_Liver_Injury_II;"
+        "label_Org_Liver_Injury_II;value_Org_Eye_Irritation;"
+        "label_Org_Eye_Irritation;value_Org_Eye_Corrosion;"
+        "label_Org_Eye_Corrosion;value_Org_Respiratory_Disease;"
+        "label_Org_Respiratory_Disease"
+    )
+    data_line = (
+        "[Ba++];C13881;37136;Barium cation;0.05;High Safety;0.08;"
+        "High Safety;0;High Safety;0;High Safety;0.12;High Safety;0.02;"
+        "High Safety;0.01;High Safety;0.15;High Safety;0.11;"
+        "High Safety;0.11;High Safety;0.01;High Safety;0;High Safety;"
+        "0.44;Low Safety;0.05;High Safety;0.3;Medium Safety;0.15;"
+        "High Safety;0.5;Low Toxicity;0.12;High Safety;0.73;"
+        "Medium Toxicity;1;High Toxicity;0.01;High Safety;0.16;"
+        "High Safety;0.01;High Safety;0.46;Low Safety;0.06;"
+        "High Safety;0.31;Medium Safety;0.01;High Safety;0.38;"
+        "Low Safety;0.96;High Toxicity;0.49;Low Safety;0.3;Medium Safety"
+    )
+    content = f"{header_line}\n{data_line}\n"
+    file_path = tmp_path / "toxcsm_minimal.csv"
+    file_path.write_text(content)
+    return str(file_path)
+
+
+@pytest.fixture
+def mock_toxcsm_extremos_csv(tmp_path):
+    """
+    Generate a CSV with extreme values: high toxicity and high safety compounds.
+    Used for testing edge cases and boundary value analysis.
+    """
+    header_line = (
+        "SMILES;cpd;ChEBI;compoundname;value_NR_AR;label_NR_AR;"
+        "value_NR_AR_LBD;label_NR_AR_LBD;value_NR_AhR;label_NR_AhR;"
+        "value_NR_Aromatase;label_NR_Aromatase;value_NR_ER;label_NR_ER;"
+        "value_NR_ER_LBD;label_NR_ER_LBD;value_NR_PPAR_gamma;"
+        "label_NR_PPAR_gamma;value_NR_GR;label_NR_GR;value_NR_TR;"
+        "label_NR_TR;value_SR_ARE;label_SR_ARE;value_SR_ATAD5;"
+        "label_SR_ATAD5;value_SR_HSE;label_SR_HSE;value_SR_MMP;"
+        "label_SR_MMP;value_SR_p53;label_SR_p53;"
+        "value_Gen_AMES_Mutagenesis;label_Gen_AMES_Mutagenesis;"
+        "value_Gen_Carcinogenesis;label_Gen_Carcinogenesis;"
+        "value_Gen_Micronucleus;label_Gen_Micronucleus;"
+        "value_Env_Fathead_Minnow;label_Env_Fathead_Minnow;"
+        "value_Env_T_Pyriformis;label_Env_T_Pyriformis;"
+        "value_Env_Honey_Bee;label_Env_Honey_Bee;"
+        "value_Env_Biodegradation;label_Env_Biodegradation;"
+        "value_Env_Crustacean;label_Env_Crustacean;value_Env_Avian;"
+        "label_Env_Avian;value_Org_Skin_Sensitisation;"
+        "label_Org_Skin_Sensitisation;value_Org_hERG_I_Inhibitor;"
+        "label_Org_hERG_I_Inhibitor;value_Org_hERG_II_Inhibitor;"
+        "label_Org_hERG_II_Inhibitor;value_Org_Liver_Injury_I;"
+        "label_Org_Liver_Injury_I;value_Org_Liver_Injury_II;"
+        "label_Org_Liver_Injury_II;value_Org_Eye_Irritation;"
+        "label_Org_Eye_Irritation;value_Org_Eye_Corrosion;"
+        "label_Org_Eye_Corrosion;value_Org_Respiratory_Disease;"
+        "label_Org_Respiratory_Disease"
+    )
+    toxic_line = (
+        "[ToxHigh];C99999;99999;Toxic Compound;1;High Toxicity;1;"
+        "High Toxicity;1;High Toxicity;1;High Toxicity;1;High Toxicity;1;"
+        "High Toxicity;1;High Toxicity;1;High Toxicity;1;High Toxicity;1;"
+        "High Toxicity;1;High Toxicity;1;High Toxicity;1;High Toxicity;1;"
+        "High Toxicity;1;High Toxicity;1;High Toxicity;1;High Toxicity;1;"
+        "High Toxicity;1;High Toxicity;1;High Toxicity;1;High Toxicity;1;"
+        "High Toxicity;1;High Toxicity;1;High Toxicity;1;High Toxicity;1;"
+        "High Toxicity;1;High Toxicity;1;High Toxicity;1;High Toxicity;1;"
+        "High Toxicity;1;High Toxicity;1;High Toxicity;1;High Toxicity"
+    )
+    safe_line = (
+        "[Safe];C88888;88888;Safe Compound;0;High Safety;0;High Safety;0;"
+        "High Safety;0;High Safety;0;High Safety;0;High Safety;0;"
+        "High Safety;0;High Safety;0;High Safety;0;High Safety;0;"
+        "High Safety;0;High Safety;0;High Safety;0;High Safety;0;"
+        "High Safety;0;High Safety;0;High Safety;0;High Safety;0;"
+        "High Safety;0;High Safety;0;High Safety;0;High Safety;0;"
+        "High Safety;0;High Safety;0;High Safety;0;High Safety;0;"
+        "High Safety;0;High Safety;0;High Safety;0;High Safety;0;"
+        "High Safety;0;High Safety;0;High Safety;0;High Safety"
+    )
+    # Add more compounds for better testing coverage
+    medium_line = (
+        "[Medium];C11111;11111;Medium Compound;0.5;Medium Safety;0.4;"
+        "Low Safety;0.6;Medium Toxicity;0.3;Medium Safety;0.7;"
+        "Medium Toxicity;0.2;Medium Safety;0.8;Medium Toxicity;0.5;"
+        "Medium Safety;0.4;Low Safety;0.6;Medium Toxicity;0.3;"
+        "Medium Safety;0.7;Medium Toxicity;0.2;Medium Safety;0.8;"
+        "Medium Toxicity;0.5;Medium Safety;0.4;Low Safety;0.6;"
+        "Medium Toxicity;0.3;Medium Safety;0.7;Medium Toxicity;0.2;"
+        "Medium Safety;0.8;Medium Toxicity;0.5;Medium Safety;0.4;"
+        "Low Safety;0.6;Medium Toxicity;0.3;Medium Safety;0.7;"
+        "Medium Toxicity;0.2;Medium Safety;0.8;Medium Toxicity;0.5;"
+        "Medium Safety;0.4;Low Safety;0.6;Medium Toxicity"
+    )
+
+    content = f"{header_line}\n{toxic_line}\n{safe_line}\n{medium_line}\n"
+    file_path = tmp_path / "toxcsm_extremos.csv"
+    file_path.write_text(content)
+    return str(file_path)
+
+
+@pytest.fixture
+def mock_toxcsm_missing_values_csv(tmp_path):
+    """
+    Generate a CSV with missing values in some endpoints.
+
+    This fixture creates a ToxCSM CSV file with intentional missing values
+    to test handling of incomplete data. Some endpoints have empty values
+    or missing labels to simulate real-world data quality issues.
+    """
+    header_line = (
+        "SMILES;cpd;ChEBI;compoundname;value_NR_AR;label_NR_AR;"
+        "value_NR_AR_LBD;label_NR_AR_LBD;value_NR_AhR;label_NR_AhR;"
+        "value_NR_Aromatase;label_NR_Aromatase;value_NR_ER;label_NR_ER;"
+        "value_NR_ER_LBD;label_NR_ER_LBD;value_NR_PPAR_gamma;"
+        "label_NR_PPAR_gamma;value_NR_GR;label_NR_GR;value_NR_TR;"
+        "label_NR_TR;value_SR_ARE;label_SR_ARE;value_SR_ATAD5;"
+        "label_SR_ATAD5;value_SR_HSE;label_SR_HSE;value_SR_MMP;"
+        "label_SR_MMP;value_SR_p53;label_SR_p53;"
+        "value_Gen_AMES_Mutagenesis;label_Gen_AMES_Mutagenesis;"
+        "value_Gen_Carcinogenesis;label_Gen_Carcinogenesis;"
+        "value_Gen_Micronucleus;label_Gen_Micronucleus;"
+        "value_Env_Fathead_Minnow;label_Env_Fathead_Minnow;"
+        "value_Env_T_Pyriformis;label_Env_T_Pyriformis;"
+        "value_Env_Honey_Bee;label_Env_Honey_Bee;"
+        "value_Env_Biodegradation;label_Env_Biodegradation;"
+        "value_Env_Crustacean;label_Env_Crustacean;value_Env_Avian;"
+        "label_Env_Avian;value_Org_Skin_Sensitisation;"
+        "label_Org_Skin_Sensitisation;value_Org_hERG_I_Inhibitor;"
+        "label_Org_hERG_I_Inhibitor;value_Org_hERG_II_Inhibitor;"
+        "label_Org_hERG_II_Inhibitor;value_Org_Liver_Injury_I;"
+        "label_Org_Liver_Injury_I;value_Org_Liver_Injury_II;"
+        "label_Org_Liver_Injury_II;value_Org_Eye_Irritation;"
+        "label_Org_Eye_Irritation;value_Org_Eye_Corrosion;"
+        "label_Org_Eye_Corrosion;value_Org_Respiratory_Disease;"
+        "label_Org_Respiratory_Disease"
+    )
+
+    # First compound with missing values in various places
+    missing_line_1 = (
+        "[Miss1];C77777;77777;Missing Compound 1;0.1;Medium Safety;;"
+        ";0.2;Low Safety;;;;0.3;Medium Safety;;;;0.4;Low Safety;;"
+        ";;0.5;Low Safety;;;;0.6;Medium Toxicity;;;;0.7;High Toxicity;"
+        ";;;0.8;High Toxicity;;;;0.9;High Toxicity;;;;1;High Toxicity"
+    )
+
+    # Second compound with different missing pattern
+    missing_line_2 = (
+        "[Miss2];C66666;66666;Missing Compound 2;;High Safety;0.15;"
+        "High Safety;;High Safety;0.25;Medium Safety;;High Safety;0.35;"
+        "Medium Safety;;High Safety;0.45;Low Safety;;High Safety;0.55;"
+        "Low Safety;;High Safety;0.65;Medium Toxicity;;High Safety;0.75;"
+        "High Toxicity;;High Safety;0.85;High Toxicity;;High Safety;0.95;"
+        "High Toxicity;;High Safety;0.05;High Safety;;High Safety;0.15;"
+        "High Safety;;High Safety;0.25;Medium Safety;;High Safety;0.35;"
+        "Medium Safety;;High Safety;0.45;Low Safety"
+    )
+
+    # Third compound with complete missing sections
+    missing_line_3 = (
+        "[Miss3];C55555;55555;Missing Compound 3;0.2;Medium Safety;0.3;"
+        "Medium Safety;0.4;Low Safety;0.5;Low Safety;;;;;;;;"
+        ";;;;;;;;;;;;;;0.6;Medium Toxicity;0.7;High Toxicity;0.8;"
+        "High Toxicity;0.9;High Toxicity;1;High Toxicity;0.1;High Safety;"
+        "0.2;Medium Safety;0.3;Medium Safety;0.4;Low Safety;0.5;Low Safety;"
+        "0.6;Medium Toxicity;0.7;High Toxicity;0.8;High Toxicity;0.9;"
+        "High Toxicity;1;High Toxicity"
+    )
+
+    content = (
+        f"{header_line}\n"
+        f"{missing_line_1}\n"
+        f"{missing_line_2}\n"
+        f"{missing_line_3}\n"
+    )
+    file_path = tmp_path / "toxcsm_missing.csv"
+    file_path.write_text(content)
+    return str(file_path)
+
+
+@pytest.fixture
+def mock_toxcsm_duplicates_csv(tmp_path):
+    """
+    Generate a CSV with duplicate entries (same cpd and SMILES).
+
+    This fixture creates a ToxCSM CSV file with intentional duplicates
+    to test deduplication logic and handling of redundant data.
+    Includes multiple compounds with varying toxicity profiles.
+    """
+    header_line = (
+        "SMILES;cpd;ChEBI;compoundname;value_NR_AR;label_NR_AR;"
+        "value_NR_AR_LBD;label_NR_AR_LBD;value_NR_AhR;label_NR_AhR;"
+        "value_NR_Aromatase;label_NR_Aromatase;value_NR_ER;label_NR_ER;"
+        "value_NR_ER_LBD;label_NR_ER_LBD;value_NR_PPAR_gamma;"
+        "label_NR_PPAR_gamma;value_NR_GR;label_NR_GR;value_NR_TR;"
+        "label_NR_TR;value_SR_ARE;label_SR_ARE;value_SR_ATAD5;"
+        "label_SR_ATAD5;value_SR_HSE;label_SR_HSE;value_SR_MMP;"
+        "label_SR_MMP;value_SR_p53;label_SR_p53;"
+        "value_Gen_AMES_Mutagenesis;label_Gen_AMES_Mutagenesis;"
+        "value_Gen_Carcinogenesis;label_Gen_Carcinogenesis;"
+        "value_Gen_Micronucleus;label_Gen_Micronucleus;"
+        "value_Env_Fathead_Minnow;label_Env_Fathead_Minnow;"
+        "value_Env_T_Pyriformis;label_Env_T_Pyriformis;"
+        "value_Env_Honey_Bee;label_Env_Honey_Bee;"
+        "value_Env_Biodegradation;label_Env_Biodegradation;"
+        "value_Env_Crustacean;label_Env_Crustacean;value_Env_Avian;"
+        "label_Env_Avian;value_Org_Skin_Sensitisation;"
+        "label_Org_Skin_Sensitisation;value_Org_hERG_I_Inhibitor;"
+        "label_Org_hERG_I_Inhibitor;value_Org_hERG_II_Inhibitor;"
+        "label_Org_hERG_II_Inhibitor;value_Org_Liver_Injury_I;"
+        "label_Org_Liver_Injury_I;value_Org_Liver_Injury_II;"
+        "label_Org_Liver_Injury_II;value_Org_Eye_Irritation;"
+        "label_Org_Eye_Irritation;value_Org_Eye_Corrosion;"
+        "label_Org_Eye_Corrosion;value_Org_Respiratory_Disease;"
+        "label_Org_Respiratory_Disease"
+    )
+
+    # First duplicate entry
+    duplicate_line_1 = (
+        "[Dup];C12345;54321;Duplicate Compound;0.2;Medium Safety;0.3;"
+        "Medium Safety;0.4;Low Safety;0.5;Low Safety;0.6;Medium Toxicity;"
+        "0.7;High Toxicity;0.8;High Toxicity;0.9;High Toxicity;1;"
+        "High Toxicity;0.1;High Safety;0.2;Medium Safety;0.3;"
+        "Medium Safety;0.4;Low Safety;0.5;Low Safety;0.6;Medium Toxicity;"
+        "0.7;High Toxicity;0.8;High Toxicity;0.9;High Toxicity;1;"
+        "High Toxicity;0.1;High Safety;0.2;Medium Safety;0.3;"
+        "Medium Safety;0.4;Low Safety;0.5;Low Safety;0.6;Medium Toxicity;"
+        "0.7;High Toxicity;0.8;High Toxicity;0.9;High Toxicity;1;"
+        "High Toxicity;0.1;High Safety;0.2;Medium Safety;0.3;"
+        "Medium Safety;0.4;Low Safety;0.5;Low Safety;0.6;Medium Toxicity;"
+        "0.7;High Toxicity;0.8;High Toxicity;0.9;High Toxicity;1;"
+        "High Toxicity"
+    )
+
+    # Second duplicate entry (exact same as first)
+    duplicate_line_2 = duplicate_line_1
+
+    # Third entry - different compound with some duplicates
+    duplicate_line_3 = (
+        "[Dup2];C67890;09876;Another Duplicate;0.3;Medium Safety;0.4;"
+        "Low Safety;0.5;Low Safety;0.6;Medium Toxicity;0.7;High Toxicity;"
+        "0.8;High Toxicity;0.9;High Toxicity;1;High Toxicity;0.2;"
+        "Medium Safety;0.3;Medium Safety;0.4;Low Safety;0.5;Low Safety;"
+        "0.6;Medium Toxicity;0.7;High Toxicity;0.8;High Toxicity;0.9;"
+        "High Toxicity;1;High Toxicity;0.2;Medium Safety;0.3;"
+        "Medium Safety;0.4;Low Safety;0.5;Low Safety;0.6;Medium Toxicity;"
+        "0.7;High Toxicity;0.8;High Toxicity;0.9;High Toxicity;1;"
+        "High Toxicity;0.2;Medium Safety;0.3;Medium Safety;0.4;"
+        "Low Safety;0.5;Low Safety;0.6;Medium Toxicity;0.7;High Toxicity;"
+        "0.8;High Toxicity;0.9;High Toxicity;1;High Toxicity"
+    )
+
+    # Fourth entry - another duplicate of the third
+    duplicate_line_4 = duplicate_line_3
+
+    content = (
+        f"{header_line}\n"
+        f"{duplicate_line_1}\n"
+        f"{duplicate_line_2}\n"
+        f"{duplicate_line_3}\n"
+        f"{duplicate_line_4}\n"
+    )
+    file_path = tmp_path / "toxcsm_duplicates.csv"
+    file_path.write_text(content)
+    return str(file_path)
+
+
+@pytest.fixture
+def mock_toxcsm_dataframe():
+    """
+    Return a sample ToxCSM DataFrame with varied compounds.
+
+    This fixture provides a pandas DataFrame with representative ToxCSM data
+    including compounds with different toxicity profiles (safe, toxic, medium).
+    Used for testing DataFrame-based operations and analysis functions.
+    """
+    # Define sample data with diverse toxicity profiles
+    data = [
+        # Barium cation - mixed safety profile
+        [
+            "[Ba++]",
+            "C13881",
+            "37136",
+            "Barium cation",
+            0.05,
+            "High Safety",
+            0.08,
+            "High Safety",
+            0,
+            "High Safety",
+            0,
+            "High Safety",
+            0.12,
+            "High Safety",
+            0.02,
+            "High Safety",
+            0.01,
+            "High Safety",
+            0.15,
+            "High Safety",
+            0.11,
+            "High Safety",
+            0.11,
+            "High Safety",
+            0.01,
+            "High Safety",
+            0,
+            "High Safety",
+            0.44,
+            "Low Safety",
+            0.05,
+            "High Safety",
+            0.3,
+            "Medium Safety",
+            0.15,
+            "High Safety",
+            0.5,
+            "Low Toxicity",
+            0.12,
+            "High Safety",
+            0.73,
+            "Medium Toxicity",
+            1,
+            "High Toxicity",
+            0.01,
+            "High Safety",
+            0.16,
+            "High Safety",
+            0.01,
+            "High Safety",
+            0.46,
+            "Low Safety",
+            0.06,
+            "High Safety",
+            0.31,
+            "Medium Safety",
+            0.01,
+            "High Safety",
+            0.38,
+            "Low Safety",
+            0.96,
+            "High Toxicity",
+            0.49,
+            "Low Safety",
+            0.3,
+            "Medium Safety",
+        ],
+        # Highly toxic compound - all high toxicity
+        [
+            "[ToxHigh]",
+            "C99999",
+            "99999",
+            "Toxic Compound",
+            1,
+            "High Toxicity",
+            1,
+            "High Toxicity",
+            1,
+            "High Toxicity",
+            1,
+            "High Toxicity",
+            1,
+            "High Toxicity",
+            1,
+            "High Toxicity",
+            1,
+            "High Toxicity",
+            1,
+            "High Toxicity",
+            1,
+            "High Toxicity",
+            1,
+            "High Toxicity",
+            1,
+            "High Toxicity",
+            1,
+            "High Toxicity",
+            1,
+            "High Toxicity",
+            1,
+            "High Toxicity",
+            1,
+            "High Toxicity",
+            1,
+            "High Toxicity",
+            1,
+            "High Toxicity",
+            1,
+            "High Toxicity",
+            1,
+            "High Toxicity",
+            1,
+            "High Toxicity",
+            1,
+            "High Toxicity",
+            1,
+            "High Toxicity",
+            1,
+            "High Toxicity",
+            1,
+            "High Toxicity",
+            1,
+            "High Toxicity",
+            1,
+            "High Toxicity",
+            1,
+            "High Toxicity",
+            1,
+            "High Toxicity",
+            1,
+            "High Toxicity",
+            1,
+            "High Toxicity",
+            1,
+            "High Toxicity",
+        ],
+        # Safe compound - all high safety
+        [
+            "[Safe]",
+            "C88888",
+            "88888",
+            "Safe Compound",
+            0,
+            "High Safety",
+            0,
+            "High Safety",
+            0,
+            "High Safety",
+            0,
+            "High Safety",
+            0,
+            "High Safety",
+            0,
+            "High Safety",
+            0,
+            "High Safety",
+            0,
+            "High Safety",
+            0,
+            "High Safety",
+            0,
+            "High Safety",
+            0,
+            "High Safety",
+            0,
+            "High Safety",
+            0,
+            "High Safety",
+            0,
+            "High Safety",
+            0,
+            "High Safety",
+            0,
+            "High Safety",
+            0,
+            "High Safety",
+            0,
+            "High Safety",
+            0,
+            "High Safety",
+            0,
+            "High Safety",
+            0,
+            "High Safety",
+            0,
+            "High Safety",
+            0,
+            "High Safety",
+            0,
+            "High Safety",
+            0,
+            "High Safety",
+            0,
+            "High Safety",
+            0,
+            "High Safety",
+            0,
+            "High Safety",
+            0,
+            "High Safety",
+            0,
+            "High Safety",
+            0,
+            "High Safety",
+            0,
+            "High Safety",
+        ],
+        # Medium toxicity compound - mixed profile
+        [
+            "[Medium]",
+            "C44444",
+            "44444",
+            "Medium Compound",
+            0.4,
+            "Low Safety",
+            0.5,
+            "Low Safety",
+            0.3,
+            "Medium Safety",
+            0.6,
+            "Medium Toxicity",
+            0.2,
+            "Medium Safety",
+            0.7,
+            "Medium Toxicity",
+            0.4,
+            "Low Safety",
+            0.3,
+            "Medium Safety",
+            0.5,
+            "Low Safety",
+            0.6,
+            "Medium Toxicity",
+            0.2,
+            "Medium Safety",
+            0.8,
+            "Medium Toxicity",
+            0.3,
+            "Medium Safety",
+            0.4,
+            "Low Safety",
+            0.5,
+            "Low Safety",
+            0.6,
+            "Medium Toxicity",
+            0.7,
+            "Medium Toxicity",
+            0.2,
+            "Medium Safety",
+            0.3,
+            "Medium Safety",
+            0.4,
+            "Low Safety",
+            0.5,
+            "Low Safety",
+            0.6,
+            "Medium Toxicity",
+            0.7,
+            "Medium Toxicity",
+            0.2,
+            "Medium Safety",
+            0.3,
+            "Medium Safety",
+            0.4,
+            "Low Safety",
+            0.5,
+            "Low Safety",
+            0.6,
+            "Medium Toxicity",
+            0.7,
+            "Medium Toxicity",
+            0.2,
+            "Medium Safety",
+            0.3,
+            "Medium Safety",
+        ],
+        # Edge case compound - boundary values
+        [
+            "[Edge]",
+            "C33333",
+            "33333",
+            "Edge Case Compound",
+            0.49,
+            "Low Safety",
+            0.51,
+            "Low Safety",
+            0.29,
+            "Medium Safety",
+            0.71,
+            "Medium Toxicity",
+            0.19,
+            "High Safety",
+            0.81,
+            "High Toxicity",
+            0.39,
+            "Low Safety",
+            0.61,
+            "Medium Toxicity",
+            0.09,
+            "High Safety",
+            0.91,
+            "High Toxicity",
+            0.49,
+            "Low Safety",
+            0.51,
+            "Low Safety",
+            0.29,
+            "Medium Safety",
+            0.71,
+            "Medium Toxicity",
+            0.19,
+            "High Safety",
+            0.81,
+            "High Toxicity",
+            0.39,
+            "Low Safety",
+            0.61,
+            "Medium Toxicity",
+            0.09,
+            "High Safety",
+            0.91,
+            "High Toxicity",
+            0.49,
+            "Low Safety",
+            0.51,
+            "Low Safety",
+            0.29,
+            "Medium Safety",
+            0.71,
+            "Medium Toxicity",
+            0.19,
+            "High Safety",
+            0.81,
+            "High Toxicity",
+            0.39,
+            "Low Safety",
+            0.61,
+            "Medium Toxicity",
+            0.09,
+            "High Safety",
+            0.91,
+            "High Toxicity",
+        ],
+    ]
+
+    # Column names for ToxCSM database
+    columns = [
+        "SMILES",
+        "cpd",
+        "ChEBI",
+        "compoundname",
+        "value_NR_AR",
+        "label_NR_AR",
+        "value_NR_AR_LBD",
+        "label_NR_AR_LBD",
+        "value_NR_AhR",
+        "label_NR_AhR",
+        "value_NR_Aromatase",
+        "label_NR_Aromatase",
+        "value_NR_ER",
+        "label_NR_ER",
+        "value_NR_ER_LBD",
+        "label_NR_ER_LBD",
+        "value_NR_PPAR_gamma",
+        "label_NR_PPAR_gamma",
+        "value_NR_GR",
+        "label_NR_GR",
+        "value_NR_TR",
+        "label_NR_TR",
+        "value_SR_ARE",
+        "label_SR_ARE",
+        "value_SR_ATAD5",
+        "label_SR_ATAD5",
+        "value_SR_HSE",
+        "label_SR_HSE",
+        "value_SR_MMP",
+        "label_SR_MMP",
+        "value_SR_p53",
+        "label_SR_p53",
+        "value_Gen_AMES_Mutagenesis",
+        "label_Gen_AMES_Mutagenesis",
+        "value_Gen_Carcinogenesis",
+        "label_Gen_Carcinogenesis",
+        "value_Gen_Micronucleus",
+        "label_Gen_Micronucleus",
+        "value_Env_Fathead_Minnow",
+        "label_Env_Fathead_Minnow",
+        "value_Env_T_Pyriformis",
+        "label_Env_T_Pyriformis",
+        "value_Env_Honey_Bee",
+        "label_Env_Honey_Bee",
+        "value_Env_Biodegradation",
+        "label_Env_Biodegradation",
+        "value_Env_Crustacean",
+        "label_Env_Crustacean",
+        "value_Env_Avian",
+        "label_Env_Avian",
+        "value_Org_Skin_Sensitisation",
+        "label_Org_Skin_Sensitisation",
+        "value_Org_hERG_I_Inhibitor",
+        "label_Org_hERG_I_Inhibitor",
+        "value_Org_hERG_II_Inhibitor",
+        "label_Org_hERG_II_Inhibitor",
+        "value_Org_Liver_Injury_I",
+        "label_Org_Liver_Injury_I",
+        "value_Org_Liver_Injury_II",
+        "label_Org_Liver_Injury_II",
+        "value_Org_Eye_Irritation",
+        "label_Org_Eye_Irritation",
+        "value_Org_Eye_Corrosion",
+        "label_Org_Eye_Corrosion",
+        "value_Org_Respiratory_Disease",
+        "label_Org_Respiratory_Disease",
+    ]
+
+    return pd.DataFrame(data, columns=columns)
