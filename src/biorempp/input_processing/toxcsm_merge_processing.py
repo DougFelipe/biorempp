@@ -88,6 +88,25 @@ def merge_input_with_toxcsm(
                 "Column 'cpd' must be present in both input and ToxCSM DataFrames."
             )
 
+    # Handle potential column conflicts before merge
+    # Check for overlapping columns (excluding merge key)
+    input_cols = set(input_data.columns)
+    db_cols = set(database_df.columns)
+    overlap_cols = input_cols.intersection(db_cols) - {"cpd"}
+
+    if overlap_cols:
+        logger.info(f"Found overlapping columns: {overlap_cols}")
+        # For overlapping columns, prioritize input data and drop from database
+        # except for ToxCSM-specific columns which should be kept
+        toxcsm_specific_cols = {"SMILES", "ChEBI"} | {
+            col for col in database_df.columns if col.startswith(("value_", "label_"))
+        }
+
+        cols_to_drop = overlap_cols - toxcsm_specific_cols
+        if cols_to_drop:
+            logger.info(f"Dropping overlapping columns from database: {cols_to_drop}")
+            database_df = database_df.drop(columns=list(cols_to_drop))
+
     # Perform merge on 'cpd' column
     merged_df = pd.merge(input_data, database_df, on="cpd", how="inner")
 
