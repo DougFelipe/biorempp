@@ -1,4 +1,5 @@
 import argparse
+import os
 import sys
 
 from biorempp.pipelines.input_processing import (
@@ -8,6 +9,7 @@ from biorempp.pipelines.input_processing import (
     run_kegg_processing_pipeline,
     run_toxcsm_processing_pipeline,
 )
+from biorempp.pipelines.plot_processing import run_gene_pathway_plotting_pipeline
 from biorempp.pipelines.processing_post_merge import run_post_merge_processing_pipeline
 from biorempp.utils.logging_config import get_logger, setup_logging
 
@@ -75,9 +77,12 @@ def run_pipeline(pipeline_type, args):
     """
     pipeline_function = get_pipeline_function(pipeline_type)
 
+    # Resolve input path to handle common relative path scenarios
+    resolved_input_path = resolve_input_path(args.input)
+
     # Common parameters for all pipelines
     common_params = {
-        "input_path": args.input,
+        "input_path": resolved_input_path,
         "output_dir": args.output_dir,
         "sep": args.sep,
         "optimize_types": True,
@@ -113,6 +118,65 @@ def run_pipeline(pipeline_type, args):
     logger.debug(f"Pipeline parameters: {common_params}")
 
     return pipeline_function(**common_params)
+
+
+def resolve_input_path(input_path):
+    """
+    Resolve input path to handle common relative path scenarios.
+
+    This function tries multiple common paths to help users who might be
+    running from different directories.
+
+    Parameters
+    ----------
+    input_path : str
+        The input path provided by the user
+
+    Returns
+    -------
+    str
+        Resolved absolute path to the input file
+
+    Raises
+    ------
+    FileNotFoundError
+        If the input file cannot be found in any of the tried locations
+    """
+    # If the path already exists as-is, use it
+    if os.path.exists(input_path):
+        return os.path.abspath(input_path)
+
+    # Try common path resolutions
+    possible_paths = [
+        input_path,  # Original path
+        os.path.join("src", input_path),  # Try with src/ prefix
+        os.path.join("..", input_path),  # Try one level up
+        os.path.join("..", "src", input_path),  # Try ../src/
+    ]
+
+    # Also try resolving relative to the package location
+    try:
+        package_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        project_root = os.path.dirname(package_dir)
+        possible_paths.extend(
+            [
+                os.path.join(project_root, input_path),
+                os.path.join(project_root, "src", input_path),
+            ]
+        )
+    except Exception:
+        pass  # Skip if we can't determine package location
+
+    # Try each possible path
+    for path in possible_paths:
+        if os.path.exists(path):
+            logger.info(f"Resolved input path: {input_path} -> {path}")
+            return os.path.abspath(path)
+
+    # If none work, raise an error with helpful information
+    error_msg = f"Input file not found: {input_path}\nTried paths:\n"
+    error_msg += "\n".join(f"  - {path}" for path in possible_paths)
+    raise FileNotFoundError(error_msg)
 
 
 def main():
@@ -212,12 +276,30 @@ def main():
         default="false",
         help="Run post-merge KO analysis pipeline (default: false)",
     )
+    parser.add_argument(
+        "--enable-gene-pathway-plotting",
+        action="store_true",
+        default=True,
+        help="Enable gene pathway plotting after analysis (default: True)",
+    )
+    parser.add_argument(
+        "--disable-gene-pathway-plotting",
+        action="store_true",
+        help="Disable gene pathway plotting",
+    )
 
     args = parser.parse_args()
 
     try:
         logger.info("Starting BioRemPP processing pipeline")
         logger.debug(f"Input parameters: {vars(args)}")
+
+        # Resolve the input path robustly
+        resolved_input_path = resolve_input_path(args.input)
+        logger.info(f"Resolved input path: {resolved_input_path}")
+
+        # Update the args object with the resolved input path
+        args.input = resolved_input_path
 
         output_path = run_pipeline(args.pipeline_type, args)
 
@@ -249,6 +331,31 @@ def main():
             except Exception as e:
                 logger.error(f"Post-merge analysis failed: {e}")
                 print(f"[BioRemPP] Warning: Post-merge analysis failed: {e}")
+
+        # Run gene pathway plotting if enabled
+        plotting_enabled = (
+            args.enable_gene_pathway_plotting and not args.disable_gene_pathway_plotting
+        )
+
+        if plotting_enabled:
+            logger.info("Running gene pathway plotting pipeline...")
+            print("[BioRemPP] Generating gene pathway plots...")
+
+            try:
+                plotting_output_path = run_gene_pathway_plotting_pipeline(
+                    data_type="biorempp",
+                    output_dir="outputs/plots",
+                    plot_format="png",
+                    use_plotly=True,
+                )
+                logger.info(f"Gene pathway plotting completed: {plotting_output_path}")
+                print(
+                    f"[BioRemPP] Gene pathway plotting completed: "
+                    f"{plotting_output_path}"
+                )
+            except Exception as e:
+                logger.error(f"Gene pathway plotting failed: {e}")
+                print(f"[BioRemPP] Warning: Gene pathway plotting failed: {e}")
 
     except Exception as e:
         logger.error(f"Pipeline failed with error: {e}", exc_info=True)
