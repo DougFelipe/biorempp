@@ -709,6 +709,7 @@ def mock_toxcsm_extremos_csv(tmp_path):
         "High Toxicity;1;High Toxicity;1;High Toxicity;1;High Toxicity;1;"
         "High Toxicity;1;High Toxicity;1;High Toxicity;1;High Toxicity;1;"
         "High Toxicity;1;High Toxicity;1;High Toxicity;1;High Toxicity;1;"
+        "High Toxicity;1;High Toxicity;1;High Toxicity;1;High Toxicity;1;"
         "High Toxicity;1;High Toxicity;1;High Toxicity;1;High Toxicity"
     )
     safe_line = (
@@ -1055,8 +1056,6 @@ def mock_toxcsm_dataframe():
             "High Toxicity",
             1,
             "High Toxicity",
-            1,
-            "High Toxicity",
         ],
         # Safe compound - all high safety
         [
@@ -1064,6 +1063,8 @@ def mock_toxcsm_dataframe():
             "C88888",
             "88888",
             "Safe Compound",
+            0,
+            "High Safety",
             0,
             "High Safety",
             0,
@@ -1337,4 +1338,183 @@ def mock_toxcsm_dataframe():
         "label_Org_Respiratory_Disease",
     ]
 
+    return pd.DataFrame(data, columns=columns)
+
+
+# ---------------------
+# Mocks para dados mergeados BioRemPP (para análise de pathways)
+# ---------------------
+
+
+@pytest.fixture
+def mock_merged_biorempp_basic():
+    """
+    Return a basic merged BioRemPP DataFrame with sample and ko columns.
+    Contains 3 samples with varying KO counts for testing basic functionality.
+    """
+    data = [
+        ["Sample1", "K00001"],
+        ["Sample1", "K00002"],
+        ["Sample2", "K00001"],
+        ["Sample2", "K00003"],
+        ["Sample3", "K00001"],
+    ]
+    columns = ["sample", "ko"]
+    return pd.DataFrame(data, columns=columns)
+
+
+@pytest.fixture
+def mock_merged_biorempp_single_sample():
+    """
+    Return a merged BioRemPP DataFrame with single sample for edge case testing.
+    Contains duplicate KOs to test deduplication logic.
+    """
+    data = [
+        ["Sample1", "K00001"],
+        ["Sample1", "K00002"],
+        ["Sample1", "K00001"],  # Duplicate
+    ]
+    columns = ["sample", "ko"]
+    return pd.DataFrame(data, columns=columns)
+
+
+@pytest.fixture
+def mock_merged_biorempp_with_duplicates():
+    """
+    Return a merged BioRemPP DataFrame with duplicate KO identifiers.
+    Tests deduplication within samples.
+    """
+    data = [
+        ["Sample1", "K00001"],
+        ["Sample1", "K00001"],  # Duplicate
+        ["Sample1", "K00002"],
+        ["Sample1", "K00002"],  # Duplicate
+        ["Sample1", "K00003"],
+    ]
+    columns = ["sample", "ko"]
+    return pd.DataFrame(data, columns=columns)
+
+
+@pytest.fixture
+def mock_merged_biorempp_with_missing_values():
+    """
+    Return a merged BioRemPP DataFrame with None/NaN values in ko column.
+    Tests handling of missing KO identifiers.
+    """
+    data = [
+        ["Sample1", "K00001"],
+        ["Sample1", None],
+        ["Sample2", "K00002"],
+        ["Sample2", "K00003"],
+    ]
+    columns = ["sample", "ko"]
+    return pd.DataFrame(data, columns=columns)
+
+
+@pytest.fixture
+def mock_merged_biorempp_mixed_types():
+    """
+    Return a merged BioRemPP DataFrame with mixed data types in ko column.
+    Tests handling of non-string KO identifiers.
+    """
+    data = [
+        ["Sample1", "K00001"],
+        ["Sample1", 123],  # Integer KO
+        ["Sample1", "K00002"],
+    ]
+    columns = ["sample", "ko"]
+    return pd.DataFrame(data, columns=columns)
+
+
+@pytest.fixture
+def mock_merged_biorempp_with_extra_columns():
+    """
+    Return a merged BioRemPP DataFrame with extra columns beyond sample and ko.
+    Tests that analysis works with additional data present.
+    """
+    data = [
+        ["Sample1", "K00001", "Gene1", "Pathway1"],
+        ["Sample2", "K00002", "Gene2", "Pathway2"],
+    ]
+    columns = ["sample", "ko", "gene", "pathway"]
+    return pd.DataFrame(data, columns=columns)
+
+
+@pytest.fixture
+def mock_merged_biorempp_large_dataset():
+    """
+    Return a larger merged BioRemPP DataFrame for performance testing.
+    Contains 100 samples with 10 KOs each, randomly assigned.
+    """
+    import random
+
+    random.seed(42)  # For reproducible results
+
+    samples = [f"Sample{i}" for i in range(1, 101) for _ in range(10)]
+    kos = [f"K{i:05d}" for i in range(1, 1001)]
+
+    data = [[sample, random.choice(kos)] for sample in samples]
+    columns = ["sample", "ko"]
+    return pd.DataFrame(data, columns=columns)
+
+
+@pytest.fixture
+def mock_merged_biorempp_empty():
+    """
+    Return an empty merged BioRemPP DataFrame with correct columns.
+    For testing edge cases with no data.
+    """
+    columns = ["sample", "ko"]
+    return pd.DataFrame(columns=columns)
+
+
+@pytest.fixture
+def mock_merged_biorempp_missing_columns():
+    """
+    Return a DataFrame missing required columns for error testing.
+    Has sample_id and ko_id instead of sample and ko.
+    """
+    data = [
+        ["Sample1", "K00001"],
+        ["Sample2", "K00002"],
+    ]
+    columns = ["sample_id", "ko_id"]  # Wrong column names
+    return pd.DataFrame(data, columns=columns)
+
+
+@pytest.fixture
+def mock_merged_biorempp_comprehensive():
+    """
+    Return a comprehensive merged BioRemPP DataFrame that matches the mock data
+    from other fixtures. This uses KOs that exist in the mock databases for
+    integration testing.
+    """
+    data = [
+        # Sample1 - Multiple KOs from BioRemPP mock data
+        ["Sample1", "K00001"],
+        ["Sample1", "K00002"],
+        ["Sample1", "K00003"],
+        ["Sample1", "K00008"],
+        ["Sample1", "K00011"],
+        # Sample2 - Different set of KOs
+        ["Sample2", "K00004"],
+        ["Sample2", "K00005"],
+        ["Sample2", "K00006"],
+        ["Sample2", "K00020"],
+        # Sample3 - Overlapping KOs with Sample1
+        ["Sample3", "K00001"],
+        ["Sample3", "K00008"],
+        ["Sample3", "K00010"],
+        # Sample4 - Single KO
+        ["Sample4", "K00019"],
+        # Sample5 - Many KOs (for testing sorting)
+        ["Sample5", "K00012"],
+        ["Sample5", "K00013"],
+        ["Sample5", "K00014"],
+        ["Sample5", "K00015"],
+        ["Sample5", "K00016"],
+        ["Sample5", "K00017"],
+        ["Sample5", "K00018"],
+    ]
+    columns = ["sample", "ko"]
     return pd.DataFrame(data, columns=columns)

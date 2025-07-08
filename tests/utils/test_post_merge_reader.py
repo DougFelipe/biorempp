@@ -42,38 +42,38 @@ class TestPostMergeDataReader:
         """Helper method to create sample DataFrame content."""
         if data_type == "biorempp":
             return (
-                "sample\tko\tgenesymbol\tgenename\tcpd\tcompoundclass\t"
-                "referenceAG\tcompoundname\tenzyme_activity\n"
-                "Sample1\tK00001\tGST\tglutathione S-transferase\tC00001\t"
-                "Chlorinated\tWFD\tTest compound 1\ttransferase\n"
-                "Sample1\tK00002\tOXD\toxidase enzyme\tC00002\t"
-                "Aromatic\tEPC\tTest compound 2\toxidase\n"
-                "Sample2\tK00003\tHYD\thydrolase enzyme\tC00003\t"
-                "Alkane\tCONAMA\tTest compound 3\thydrolase\n"
+                "sample;ko;genesymbol;genename;cpd;compoundclass;"
+                "referenceAG;compoundname;enzyme_activity\n"
+                "Sample1;K00001;GST;glutathione S-transferase;C00001;"
+                "Chlorinated;WFD;Test compound 1;transferase\n"
+                "Sample1;K00002;OXD;oxidase enzyme;C00002;"
+                "Aromatic;EPC;Test compound 2;oxidase\n"
+                "Sample2;K00003;HYD;hydrolase enzyme;C00003;"
+                "Alkane;CONAMA;Test compound 3;hydrolase\n"
             )
         elif data_type == "hadeg":
             return (
-                "sample\tko\tGene\tPathway\tcompound_pathway\n"
-                "Sample1\tK00001\tisoI\tB_Isoprene_degradation\tAlkenes\n"
-                "Sample1\tK00002\txamoF\tB_Propene_degradation\tAlkenes\n"
+                "sample;ko;Gene;Pathway;compound_pathway\n"
+                "Sample1;K00001;isoI;B_Isoprene_degradation;Alkenes\n"
+                "Sample1;K00002;xamoF;B_Propene_degradation;Alkenes\n"
             )
         elif data_type == "kegg":
             return (
-                "sample\tko\tpathname\tgenesymbol\n"
-                "Sample1\tK00001\tCytochrome P450\tGST\n"
-                "Sample1\tK00002\tToluene\tE3.1.1.45\n"
+                "sample;ko;pathname;genesymbol\n"
+                "Sample1;K00001;Cytochrome P450;GST\n"
+                "Sample1;K00002;Toluene;E3.1.1.45\n"
             )
         elif data_type == "toxcsm":
             return (
-                "sample\tko\tgenesymbol\tgenename\tcpd\tcompoundclass\t"
-                "referenceAG\tcompoundname\tenzyme_activity\tSMILES\t"
-                "ChEBI\tvalue_NR_AR\tlabel_NR_AR\n"
-                "Sample1\tK00001\tGST\tglutathione S-transferase\tC00001\t"
-                "Chlorinated\tWFD\tAchlor\ttransferase\tCCc1cccc(CC)c1\t"
-                "2533\t0.0\tHigh Safety\n"
-                "Sample1\tK00002\tOXD\toxidase enzyme\tC00002\t"
-                "Aromatic\tEPC\tBenzene\toxidase\tc1ccccc1\t241\t"
-                "0.5\tLow Toxicity\n"
+                "sample;ko;genesymbol;genename;cpd;compoundclass;"
+                "referenceAG;compoundname;enzyme_activity;SMILES;"
+                "ChEBI;value_NR_AR;label_NR_AR\n"
+                "Sample1;K00001;GST;glutathione S-transferase;C00001;"
+                "Chlorinated;WFD;Achlor;transferase;CCc1cccc(CC)c1;"
+                "2533;0.0;High Safety\n"
+                "Sample1;K00002;OXD;oxidase enzyme;C00002;"
+                "Aromatic;EPC;Benzene;oxidase;c1ccccc1;241;"
+                "0.5;Low Toxicity\n"
             )
 
     def test_init_default_results_dir(self):
@@ -155,10 +155,10 @@ class TestPostMergeDataReader:
         """Test that load_latest selects the most recent file."""
         content_old = self._create_sample_dataframe_content("biorempp")
         content_new = (
-            "sample\tko\tgenesymbol\tgenename\tcpd\tcompoundclass\t"
-            "referenceAG\tcompoundname\tenzyme_activity\n"
-            "Sample3\tK00004\tNEW\tnew enzyme\tC00004\t"
-            "New_class\tNEW_REF\tNewest compound\tnew_activity\n"
+            "sample;ko;genesymbol;genename;cpd;compoundclass;"
+            "referenceAG;compoundname;enzyme_activity\n"
+            "Sample3;K00004;NEW;new enzyme;C00004;"
+            "New_class;NEW_REF;Newest compound;new_activity\n"
         )
 
         # Create files with different timestamps
@@ -214,7 +214,7 @@ class TestPostMergeDataReader:
 
     def test_load_latest_file_without_expected_columns(self):
         """Test loading file without expected columns (should warn but not fail)."""
-        content_no_expected_cols = "Custom_Column1\tCustom_Column2\n" "Value1\tValue2\n"
+        content_no_expected_cols = "Custom_Column1;Custom_Column2\n" "Value1;Value2\n"
         self._create_test_file(
             "BioRemPP_Results_20240101_120000.txt", content_no_expected_cols
         )

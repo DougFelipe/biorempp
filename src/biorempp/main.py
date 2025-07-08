@@ -8,6 +8,7 @@ from biorempp.pipelines.input_processing import (
     run_kegg_processing_pipeline,
     run_toxcsm_processing_pipeline,
 )
+from biorempp.pipelines.processing_post_merge import run_post_merge_processing_pipeline
 from biorempp.utils.logging_config import get_logger, setup_logging
 
 # Initialize centralized logging
@@ -205,6 +206,12 @@ def main():
         action="store_true",
         help="Disable timestamp in output filenames",
     )
+    parser.add_argument(
+        "--run-post-merge",
+        choices=["true", "false"],
+        default="false",
+        help="Run post-merge KO analysis pipeline (default: false)",
+    )
 
     args = parser.parse_args()
 
@@ -227,6 +234,22 @@ def main():
                 f"Pipeline completed successfully. Output saved to: {output_path}"
             )
             print(f"[BioRemPP] Output processed and saved to: {output_path}")
+
+        # Run post-merge analysis if requested
+        if args.run_post_merge == "true":
+            logger.info("Running post-merge KO analysis pipeline...")
+            print("[BioRemPP] Running post-merge KO analysis...")
+
+            try:
+                ko_output_path = run_post_merge_processing_pipeline(
+                    data_type="biorempp", output_dir="outputs/analysis_results"
+                )
+                logger.info(f"Post-merge analysis completed: {ko_output_path}")
+                print(f"[BioRemPP] KO analysis completed: {ko_output_path}")
+            except Exception as e:
+                logger.error(f"Post-merge analysis failed: {e}")
+                print(f"[BioRemPP] Warning: Post-merge analysis failed: {e}")
+
     except Exception as e:
         logger.error(f"Pipeline failed with error: {e}", exc_info=True)
         print(f"[BioRemPP] Pipeline error: {e}")

@@ -220,7 +220,7 @@ class PostMergeDataReader:
         try:
             # Read the file
             logger.debug(f"Reading file: {latest_file}")
-            df = pd.read_csv(latest_file, sep="\t")
+            df = pd.read_csv(latest_file, sep=";")
 
             # Validate the DataFrame
             self._validate_dataframe(df, data_type)
