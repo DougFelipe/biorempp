@@ -8,7 +8,7 @@ including tests for valid data, malformed data, and missing column scenarios.
 import pandas as pd
 import pytest
 
-from biorempp.analysis.gene_pathway_analysis import GenePathwayAnalyzer
+from biorempp.analysis.gene_pathway_analysis_processing import GenePathwayAnalyzer
 
 
 class TestGenePathwayAnalyzer:

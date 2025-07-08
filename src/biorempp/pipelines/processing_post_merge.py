@@ -7,7 +7,7 @@ data from BioRemPP, focusing on KO counting analysis.
 
 import os
 
-from biorempp.analysis.gene_pathway_analysis import GenePathwayAnalyzer
+from biorempp.analysis.gene_pathway_analysis_processing import GenePathwayAnalyzer
 from biorempp.utils.io_utils import save_dataframe_output
 from biorempp.utils.logging_config import get_logger
 from biorempp.utils.post_merge_reader import PostMergeDataReader
