@@ -271,21 +271,14 @@ def main():
         help="Disable timestamp in output filenames",
     )
     parser.add_argument(
-        "--run-post-merge",
-        choices=["true", "false"],
-        default="false",
-        help="Run post-merge KO analysis pipeline (default: false)",
+        "--disable-post-merge",
+        action="store_true",
+        help="Disable post-merge KO analysis pipeline (runs by default)",
     )
     parser.add_argument(
         "--enable-gene-pathway-plotting",
         action="store_true",
-        default=True,
-        help="Enable gene pathway plotting after analysis (default: True)",
-    )
-    parser.add_argument(
-        "--disable-gene-pathway-plotting",
-        action="store_true",
-        help="Disable gene pathway plotting",
+        help="Enable gene pathway plotting after analysis (disabled by default)",
     )
 
     args = parser.parse_args()
@@ -317,15 +310,21 @@ def main():
             )
             print(f"[BioRemPP] Output processed and saved to: {output_path}")
 
-        # Run post-merge analysis if requested
-        if args.run_post_merge == "true":
+        # Run post-merge analysis by default (unless disabled)
+        post_merge_data = None
+        if not args.disable_post_merge:
             logger.info("Running post-merge KO analysis pipeline...")
             print("[BioRemPP] Running post-merge KO analysis...")
 
             try:
-                ko_output_path = run_post_merge_processing_pipeline(
-                    data_type="biorempp", output_dir="outputs/analysis_results"
+                result = run_post_merge_processing_pipeline(
+                    data_type="biorempp",
+                    output_dir="outputs/analysis_results",
+                    return_dataframes=True,
                 )
+                ko_output_path, merged_df, ko_results = result
+                post_merge_data = {"merged_df": merged_df, "ko_counts_df": ko_results}
+
                 logger.info(f"Post-merge analysis completed: {ko_output_path}")
                 print(f"[BioRemPP] KO analysis completed: {ko_output_path}")
             except Exception as e:
@@ -333,21 +332,29 @@ def main():
                 print(f"[BioRemPP] Warning: Post-merge analysis failed: {e}")
 
         # Run gene pathway plotting if enabled
-        plotting_enabled = (
-            args.enable_gene_pathway_plotting and not args.disable_gene_pathway_plotting
-        )
-
-        if plotting_enabled:
+        if args.enable_gene_pathway_plotting:
             logger.info("Running gene pathway plotting pipeline...")
             print("[BioRemPP] Generating gene pathway plots...")
 
             try:
-                plotting_output_path = run_gene_pathway_plotting_pipeline(
-                    data_type="biorempp",
-                    output_dir="outputs/plots",
-                    plot_format="png",
-                    use_plotly=True,
-                )
+                # Pass DataFrames directly if available for better efficiency
+                if post_merge_data:
+                    plotting_output_path = run_gene_pathway_plotting_pipeline(
+                        data_type="biorempp",
+                        output_dir="outputs/plots",
+                        plot_format="png",
+                        use_plotly=True,
+                        merged_df=post_merge_data["merged_df"],
+                        ko_counts_df=post_merge_data["ko_counts_df"],
+                    )
+                else:
+                    plotting_output_path = run_gene_pathway_plotting_pipeline(
+                        data_type="biorempp",
+                        output_dir="outputs/plots",
+                        plot_format="png",
+                        use_plotly=True,
+                    )
+
                 logger.info(f"Gene pathway plotting completed: {plotting_output_path}")
                 print(
                     f"[BioRemPP] Gene pathway plotting completed: "

@@ -6,6 +6,7 @@ data from BioRemPP, focusing on KO counting analysis.
 """
 
 import os
+from typing import Union
 
 from biorempp.analysis.gene_pathway_analysis_processing import GenePathwayAnalyzer
 from biorempp.utils.io_utils import save_dataframe_output
@@ -20,7 +21,8 @@ def run_post_merge_processing_pipeline(
     output_dir: str = "outputs/analysis_results",
     output_filename: str = None,
     results_dir: str = None,
-) -> str:
+    return_dataframes: bool = False,
+) -> Union[str, tuple]:
     """
     Run the post-merge processing pipeline for KO analysis.
 
@@ -40,11 +42,15 @@ def run_post_merge_processing_pipeline(
     results_dir : str, optional
         Directory containing post-merge result files.
         If None, uses default from PostMergeDataReader.
+    return_dataframes : bool, optional
+        If True, returns (output_path, merged_df, ko_results).
+        If False, returns only output_path. Default: False.
 
     Returns
     -------
-    str
-        Path to the saved analysis file.
+    str or tuple
+        If return_dataframes=False: Path to the saved analysis file.
+        If return_dataframes=True: (output_path, merged_df, ko_results).
 
     Raises
     ------
@@ -58,6 +64,11 @@ def run_post_merge_processing_pipeline(
     >>> # Process BioRemPP data
     >>> output_path = run_post_merge_processing_pipeline('biorempp')
     >>> print(f"Results saved to: {output_path}")
+    >>>
+    >>> # Get DataFrames for further processing
+    >>> output_path, merged_df, ko_results = run_post_merge_processing_pipeline(
+    ...     'biorempp', return_dataframes=True
+    ... )
     """
     logger.info(f"Starting post-merge processing pipeline for {data_type}")
 
@@ -94,4 +105,7 @@ def run_post_merge_processing_pipeline(
         f"Results saved to: {output_path}"
     )
 
-    return output_path
+    if return_dataframes:
+        return output_path, merged_df, ko_results
+    else:
+        return output_path

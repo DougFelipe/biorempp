@@ -7,7 +7,10 @@ post-merge analysis results, specifically for gene pathway analysis.
 
 from datetime import datetime
 from pathlib import Path
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
+
+if TYPE_CHECKING:
+    import pandas as pd
 
 from biorempp.analysis.gene_pathway_analysis_plotter import GenePathwayPlotter
 from biorempp.analysis.gene_pathway_analysis_processing import GenePathwayAnalyzer
@@ -22,18 +25,20 @@ def run_gene_pathway_plotting_pipeline(
     output_dir: Optional[str] = None,
     plot_format: str = "png",
     use_plotly: bool = True,
+    merged_df: Optional["pd.DataFrame"] = None,
+    ko_counts_df: Optional["pd.DataFrame"] = None,
 ) -> str:
     """
     Run the gene pathway plotting pipeline.
 
-    This pipeline loads the latest post-merge data, performs KO analysis,
-    and generates plots saving them to the outputs/plots directory.
+    This pipeline can either load the latest post-merge data or use provided
+    DataFrames to generate plots, saving them to the outputs/plots directory.
 
     Parameters
     ----------
     data_type : str, optional
         Type of data to load ('biorempp', 'hadeg', 'kegg', 'toxcsm').
-        Default is 'biorempp'.
+        Default is 'biorempp'. Ignored if merged_df is provided.
     output_dir : str, optional
         Output directory for plots. If None, uses 'outputs/plots/'.
     plot_format : str, optional
@@ -42,6 +47,10 @@ def run_gene_pathway_plotting_pipeline(
     use_plotly : bool, optional
         Whether to use Plotly (True) or matplotlib (False) for plotting.
         Default is True.
+    merged_df : pd.DataFrame, optional
+        Pre-loaded merged DataFrame. If provided, skips file loading.
+    ko_counts_df : pd.DataFrame, optional
+        Pre-computed KO counts DataFrame. If provided, skips KO analysis.
 
     Returns
     -------
@@ -57,25 +66,41 @@ def run_gene_pathway_plotting_pipeline(
 
     Examples
     --------
+    >>> # Load data and plot
     >>> plot_path = run_gene_pathway_plotting_pipeline()
     >>> print(f"Plot saved to: {plot_path}")
+    >>>
+    >>> # Use pre-loaded DataFrames (more efficient)
+    >>> plot_path = run_gene_pathway_plotting_pipeline(
+    ...     merged_df=my_merged_df, ko_counts_df=my_ko_counts
+    ... )
     """
     logger.info(f"Starting gene pathway plotting pipeline for {data_type}")
 
     try:
         # Initialize components
-        data_reader = PostMergeDataReader()
-        analyzer = GenePathwayAnalyzer()
         plotter = GenePathwayPlotter()
 
-        logger.info("Loading latest post-merge data...")
-        # Load the latest data
-        merged_df = data_reader.load_latest(data_type)
-        logger.info(f"Loaded data with shape: {merged_df.shape}")
+        # Use provided DataFrames or load from files
+        if ko_counts_df is not None:
+            logger.info("Using provided KO counts DataFrame")
+        elif merged_df is not None:
+            logger.info("Using provided merged DataFrame, performing KO analysis")
+            analyzer = GenePathwayAnalyzer()
+            ko_counts_df = analyzer.analyze_ko_counts_per_sample(merged_df)
+        else:
+            logger.info("Loading latest post-merge data...")
+            data_reader = PostMergeDataReader()
+            analyzer = GenePathwayAnalyzer()
 
-        # Perform KO analysis
-        logger.info("Performing KO counts analysis...")
-        ko_counts_df = analyzer.analyze_ko_counts_per_sample(merged_df)
+            # Load the latest data
+            merged_df = data_reader.load_latest(data_type)
+            logger.info(f"Loaded data with shape: {merged_df.shape}")
+
+            # Perform KO analysis
+            logger.info("Performing KO counts analysis...")
+            ko_counts_df = analyzer.analyze_ko_counts_per_sample(merged_df)
+
         logger.info(f"KO analysis completed. Found {len(ko_counts_df)} samples")
 
         # Generate timestamp for filename
