@@ -85,14 +85,14 @@ def run_post_merge_processing_pipeline(
     logger.info("Performing KO counts analysis...")
     ko_results = analyzer.analyze_ko_counts_per_sample(merged_df)
 
-    # Prepare output
+    # Prepare output for basic KO analysis
     if output_filename is None:
         output_filename = "ko_counts.txt"
 
     # Ensure output directory exists
     os.makedirs(output_dir, exist_ok=True)
 
-    # Save results
+    # Save basic KO counts results
     output_path = save_dataframe_output(
         df=ko_results,
         output_dir=output_dir,
@@ -100,10 +100,85 @@ def run_post_merge_processing_pipeline(
         add_timestamp=True,
     )
 
+    # Additional analyses for KEGG data
+    additional_outputs = []
+    if data_type.lower() == "kegg":
+        logger.info("Performing additional KEGG-specific analyses...")
+
+        # Check if required columns for KEGG analysis are present
+        required_kegg_columns = ["sample", "pathname", "ko"]
+        if all(col in merged_df.columns for col in required_kegg_columns):
+
+            # Analysis 1: KO per pathway per sample
+            logger.info("Performing KO per pathway per sample analysis...")
+            try:
+                pathway_results = analyzer.analyze_ko_per_pathway_per_sample(merged_df)
+                pathway_output_path = save_dataframe_output(
+                    df=pathway_results,
+                    output_dir=output_dir,
+                    filename="ko_per_pathway_per_sample.txt",
+                    add_timestamp=True,
+                )
+                additional_outputs.append(pathway_output_path)
+                logger.info(f"Pathway analysis saved to: {pathway_output_path}")
+            except Exception as e:
+                logger.error(f"Error in pathway analysis: {e}")
+
+            # Additional pathway-specific analyses for representative pathways
+            if "pathname" in merged_df.columns:
+                try:
+                    # Get top 3 most frequent pathways for detailed analysis
+                    top_pathways = (
+                        merged_df["pathname"].value_counts().head(3).index.tolist()
+                    )
+
+                    for pathway in top_pathways:
+                        logger.info(f"Performing analysis for pathway: {pathway}")
+                        pathway_specific_results = (
+                            analyzer.analyze_ko_per_sample_for_pathway(
+                                merged_df, pathway
+                            )
+                        )
+                        # Clean pathway name for filename
+                        clean_pathway = (
+                            pathway.replace(" ", "_")
+                            .replace("/", "_")
+                            .replace("\\", "_")
+                        )
+                        pathway_specific_filename = (
+                            f"ko_per_sample_for_{clean_pathway}.txt"
+                        )
+                        pathway_specific_output_path = save_dataframe_output(
+                            df=pathway_specific_results,
+                            output_dir=output_dir,
+                            filename=pathway_specific_filename,
+                            add_timestamp=True,
+                        )
+                        additional_outputs.append(pathway_specific_output_path)
+                        logger.info(
+                            f"Pathway-specific analysis saved to: "
+                            f"{pathway_specific_output_path}"
+                        )
+                except Exception as e:
+                    logger.error(f"Error in pathway-specific analyses: {e}")
+            else:
+                logger.info(
+                    "No specific pathway provided. "
+                    "Skipping pathway-specific analysis."
+                )
+
+        else:
+            missing_cols = [
+                col for col in required_kegg_columns if col not in merged_df.columns
+            ]
+            logger.warning(f"KEGG analysis skipped. Missing columns: {missing_cols}")
+
     logger.info(
         f"Post-merge processing pipeline completed for {data_type}. "
         f"Results saved to: {output_path}"
     )
+    if additional_outputs:
+        logger.info(f"Additional outputs: {additional_outputs}")
 
     if return_dataframes:
         return output_path, merged_df, ko_results

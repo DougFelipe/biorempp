@@ -78,7 +78,7 @@ def run_pipeline(args):
 
     # Build the pipeline arguments dynamically based on available parameters
     pipeline_kwargs = {
-        "input_file": args.input,
+        "input_path": args.input,
         "output_dir": args.output_dir,
         "add_timestamp": args.add_timestamp,
     }
@@ -133,6 +133,13 @@ def run_post_merge_analysis(args, pipeline_output_path: str):
 
     logger.info(f"Post-merge analysis completed: {analysis_output}")
     print(f"[BioRemPP] KO analysis completed: {analysis_output}")
+
+    # Additional info for KEGG analyses
+    if args.pipeline_type.lower() == "kegg":
+        print("[BioRemPP] KEGG-specific analyses generated:")
+        print("  - KO counts per sample")
+        print("  - KO counts per pathway per sample")
+        print("  - Pathway-specific KO analyses")
 
     return analysis_output
 
