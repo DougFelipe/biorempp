@@ -9,11 +9,33 @@
 [![Twitter](https://img.shields.io/twitter/url/http/shields.io.svg?style=social&label=Twitter)](https://twitter.com/biorempp)
 -->
 
-# biorempp
+# BioRemPP - Bioremediation Potential Profile
 
-> The Bioremediation Potential Profile (BioRemPP) is designed to explore the biotechnological potential of microbial, fungal, and plant genomes for bioremediation purposes
+> 🧬 **Processamento Modular de Dados para Biorremediação** - Ferramenta focada em análise de dados biológicos com visualização externa flexível
 
-A longer description of your project goes here...
+O **BioRemPP v2.0+** é uma ferramenta Python especializada no **processamento modular de dados biológicos** para análise de potencial de biorremediação. Com foco exclusivo no processamento de dados, retorna DataFrames padronizados prontos para visualização externa com máxima flexibilidade.
+
+## ✨ Características Principais
+
+- 🔬 **Processamento Modular**: Sistema baseado em módulos independentes para diferentes tipos de análise
+- 📊 **Saída Padronizada**: DataFrames prontos para qualquer biblioteca de visualização
+- 🚀 **Performance Otimizada**: Foco exclusivo em processamento sem overhead de plotting
+- 🔌 **Integração Fácil**: Compatível com Jupyter, Google Colab, Streamlit, Dash, etc.
+- 🎯 **Flexibilidade Total**: Use Plotly, Matplotlib, Seaborn ou qualquer biblioteca de sua escolha
+
+## 📋 Fluxo de Trabalho
+
+```python
+# 1. Processamento com BioRemPP (retorna DataFrames)
+from biorempp.pipelines.modular_processing import ModularProcessingPipeline
+pipeline = ModularProcessingPipeline()
+results = pipeline.run_processing_pipeline(processor_names, data)
+
+# 2. Visualização externa (sua escolha!)
+import plotly.express as px
+fig = px.bar(results['genepathwayanalyzer'], x='sample', y='ko_count')
+fig.show()
+```
 
 ## Installation
 
@@ -26,31 +48,58 @@ In order to set up the necessary environment:
 2. activate the new environment with:
    ```
    conda activate biorempp
-   ```
+## 🚀 Início Rápido
 
-> **_NOTE:_**  The conda environment will have biorempp installed in editable mode.
-> Some changes, e.g. in `setup.cfg`, might require you to run `pip install -e .` again.
+### Processamento de Dados
+```python
+from biorempp.analysis.module_registry import registry
+from biorempp.pipelines.modular_processing import ModularProcessingPipeline
 
+# 1. Descobrir processadores disponíveis
+registry.auto_discover_modules()
+available_processors = registry.list_processors()
+print(f"Processadores disponíveis: {available_processors}")
 
-Optional and needed only once after `git clone`:
+# 2. Executar pipeline modular
+pipeline = ModularProcessingPipeline()
+results = pipeline.run_processing_pipeline(
+    processor_names=available_processors,
+    input_data=your_dataframe,
+    save_results=False  # Apenas retornar DataFrames
+)
 
-3. install several [pre-commit] git hooks with:
-   ```bash
-   pre-commit install
-   # You might also want to run `pre-commit autoupdate`
-   ```
-   and checkout the configuration under `.pre-commit-config.yaml`.
-   The `-n, --no-verify` flag of `git commit` can be used to deactivate pre-commit hooks temporarily.
+# 3. Resultado: Dict[str, pd.DataFrame] pronto para visualização
+print(f"Resultados processados: {list(results.keys())}")
+```
 
-4. install [nbstripout] git hooks to remove the output cells of committed notebooks with:
-   ```bash
-   nbstripout --install --attributes notebooks/.gitattributes
-   ```
-   This is useful to avoid large diffs due to plots in your notebooks.
-   A simple `nbstripout --uninstall` will revert these changes.
+### Visualização Externa (Exemplos)
+```python
+import plotly.express as px
+import matplotlib.pyplot as plt
 
+# Plotly (interativo)
+if 'genepathwayanalyzer' in results:
+    gene_data = results['genepathwayanalyzer']
+    fig = px.bar(gene_data, x='sample', y='ko_count',
+                title='Gene Pathway Analysis')
+    fig.show()
 
-Then take a look into the `scripts` and `notebooks` folders.
+# Matplotlib (estático)
+if 'compoundclassanalyzer' in results:
+    compound_data = results['compoundclassanalyzer']
+    plt.figure(figsize=(10, 6))
+    plt.bar(compound_data['sample'], compound_data['compound_count'])
+    plt.title('Compound Class Distribution')
+    plt.show()
+```
+
+### 📓 Template Completo
+Veja o **notebook template completo** em:
+- `examples/biorempp_external_visualization_template.ipynb`
+- 🌐 **Compatível com Google Colab!**
+
+### 📖 Documentação Detalhada
+- `docs/EXTERNAL_VISUALIZATION_GUIDE.md` - Guia completo da nova arquitetura
 
 ## Dependency Management & Reproducibility
 

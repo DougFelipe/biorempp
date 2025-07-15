@@ -7,17 +7,19 @@ from post-merge BioRemPP results, including KO counting analysis.
 
 import pandas as pd
 
+from biorempp.analysis.base_processor import BaseDataProcessor
 from biorempp.utils.logging_config import get_logger
 
 logger = get_logger("analysis.gene_pathway_analysis")
 
 
-class GenePathwayAnalyzer:
+class GenePathwayAnalyzer(BaseDataProcessor):
     """
     Analyzer for gene pathway data from BioRemPP pipeline results.
 
     This class provides methods for analyzing post-merge data including
-    KO counting and other statistical analyses.
+    KO counting and other statistical analyses, following the modular
+    architecture pattern.
 
     Attributes
     ----------
@@ -27,38 +29,42 @@ class GenePathwayAnalyzer:
 
     def __init__(self):
         """Initialize the GenePathwayAnalyzer."""
-        self.logger = logger
-        self.logger.info("GenePathwayAnalyzer initialized")
+        super().__init__(
+            name="gene_pathway_analyzer",
+            description="Analyzes KO counts per sample from BioRemPP data",
+        )
 
-    def _validate_dataframe(self, df: pd.DataFrame, required_columns: list) -> None:
+    @property
+    def required_columns(self) -> list:
+        """Return required columns for gene pathway analysis."""
+        return ["sample", "ko"]
+
+    @property
+    def output_columns(self) -> list:
+        """Return output columns from gene pathway analysis."""
+        return ["sample", "ko_count"]
+
+    def process(self, data: pd.DataFrame, **kwargs) -> pd.DataFrame:
         """
-        Validate that DataFrame has required columns.
+        Process gene pathway data and return KO counts per sample.
+
+        This is the main processing method that wraps the existing
+        analyze_ko_counts_per_sample functionality.
 
         Parameters
         ----------
-        df : pd.DataFrame
-            DataFrame to validate.
-        required_columns : list
-            List of required column names.
+        data : pd.DataFrame
+            Input DataFrame with BioRemPP post-merge data
+        **kwargs
+            Additional parameters (unused for this processor)
 
-        Raises
-        ------
-        ValueError
-            If DataFrame is empty or missing required columns.
-        TypeError
-            If input is not a pandas DataFrame.
+        Returns
+        -------
+        pd.DataFrame
+            DataFrame with KO counts per sample
         """
-        if not isinstance(df, pd.DataFrame):
-            raise TypeError("Input must be a pandas DataFrame")
-
-        if df.empty:
-            raise ValueError("DataFrame cannot be empty")
-
-        missing_columns = [col for col in required_columns if col not in df.columns]
-        if missing_columns:
-            raise ValueError(f"Missing required columns: {missing_columns}")
-
-        self.logger.debug(f"DataFrame validation passed: {df.shape}")
+        self.validate_input(data)
+        return self.analyze_ko_counts_per_sample(data)
 
     def analyze_ko_counts_per_sample(self, merged_df: pd.DataFrame) -> pd.DataFrame:
         """
@@ -104,8 +110,7 @@ class GenePathwayAnalyzer:
         self.logger.info("Starting KO counts analysis per sample")
 
         # Validate input DataFrame
-        required_columns = ["sample", "ko"]
-        self._validate_dataframe(merged_df, required_columns)
+        self.validate_input(merged_df)
 
         # Count unique KOs per sample
         self.logger.info("Counting unique KOs per sample...")
