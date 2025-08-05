@@ -25,6 +25,7 @@ __pycache__/*
 .project
 .pydevproject
 .settings
+.pypirc
 .idea
 .vscode
 tags
@@ -46,6 +47,7 @@ coverage.xml
 
 # Build and docs folder/files
 build/*
+dist/
 dist/*
 sdist/*
 docs/api/*
