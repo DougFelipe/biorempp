@@ -12,7 +12,6 @@ from biorempp.pipelines.input_processing import (
     run_toxcsm_processing_pipeline,
 )
 from biorempp.pipelines.modular_processing import ModularProcessingPipeline
-from biorempp.pipelines.processing_post_merge import run_post_merge_processing_pipeline
 from biorempp.utils.logging_config import get_logger, setup_logging
 
 # Initialize centralized logging
@@ -107,43 +106,6 @@ def run_pipeline(args):
     return pipeline_function(**pipeline_kwargs)
 
 
-def run_post_merge_analysis(args, pipeline_output_path: str):
-    """
-    Run post-merge analysis if requested.
-
-    Parameters
-    ----------
-    args : argparse.Namespace
-        Parsed command line arguments
-    pipeline_output_path : str
-        Path to the pipeline output file
-
-    Returns
-    -------
-    str or None
-        Path to the analysis output file, or None if analysis not run
-    """
-    if args.disable_post_merge:
-        return None
-
-    logger.info("Running post-merge KO analysis pipeline...")
-    print("[BioRemPP] Running post-merge KO analysis...")
-
-    analysis_output = run_post_merge_processing_pipeline(data_type=args.pipeline_type)
-
-    logger.info(f"Post-merge analysis completed: {analysis_output}")
-    print(f"[BioRemPP] KO analysis completed: {analysis_output}")
-
-    # Additional info for KEGG analyses
-    if args.pipeline_type.lower() == "kegg":
-        print("[BioRemPP] KEGG-specific analyses generated:")
-        print("  - KO counts per sample")
-        print("  - KO counts per pathway per sample")
-        print("  - Pathway-specific KO analyses")
-
-    return analysis_output
-
-
 def run_modular_pipeline(args) -> Dict[str, Any]:
     """
     Run the modular processing pipeline.
@@ -232,10 +194,7 @@ def print_modular_results(results_summary: Dict[str, Any]):
                 f"{details['rows_processed']} rows processed"
             )
             print("    Columns: {}".format(", ".join(details["columns"])))
-            print(
-                "    DataFrame available for external use "
-                "(visualization, further analysis, etc.)"
-            )
+            print("    DataFrame available for external analysis and visualization")
 
 
 def setup_argument_parser():
@@ -295,8 +254,8 @@ def setup_argument_parser():
     parser.add_argument(
         "--output-dir",
         type=str,
-        default="outputs",
-        help="Directory to save output files (default: outputs)",
+        default="outputs/results_tables",
+        help="Directory to save output files (default: outputs/results_tables)",
     )
 
     parser.add_argument(
@@ -334,22 +293,15 @@ def setup_argument_parser():
     timestamp_group.add_argument(
         "--add-timestamp",
         action="store_true",
-        default=True,
-        help="Add timestamp to output filenames (default)",
+        default=False,
+        help="Add timestamp to output filenames",
     )
 
     timestamp_group.add_argument(
         "--no-timestamp",
         action="store_false",
         dest="add_timestamp",
-        help="Do not add timestamp to output filenames",
-    )
-
-    # Post-processing options
-    parser.add_argument(
-        "--disable-post-merge",
-        action="store_true",
-        help="Disable post-merge analysis pipeline",
+        help="Do not add timestamp to output filenames (default)",
     )
 
     # Modular processing options
@@ -381,8 +333,8 @@ def main():
     Main entry point for the BioRemPP application.
 
     This function orchestrates the entire data processing workflow,
-    focusing exclusively on data processing. Visualization is expected
-    to be handled externally using the returned DataFrames.
+    focusing exclusively on data processing. Analysis results are
+    returned as DataFrames for external use.
     """
     parser = setup_argument_parser()
     args = parser.parse_args()
@@ -439,10 +391,7 @@ def main():
             )
             print(f"[BioRemPP] Output processed and saved to: {pipeline_output}")
 
-        # Run post-merge analysis if not disabled
-        analysis_output = run_post_merge_analysis(args, pipeline_output)
-
-        return {"pipeline_output": pipeline_output, "analysis_output": analysis_output}
+        return {"pipeline_output": pipeline_output}
 
     except KeyboardInterrupt:
         logger.info("Process interrupted by user")

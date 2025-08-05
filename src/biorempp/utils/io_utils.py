@@ -12,7 +12,7 @@ from biorempp.utils.logging_config import get_logger
 logger = get_logger("utils.io_utils")
 
 
-def generate_timestamped_filename(filename, add_timestamp=True):
+def generate_timestamped_filename(filename, add_timestamp=False):
     """
     Generate a filename with timestamp if requested.
 
@@ -55,7 +55,7 @@ def save_dataframe_output(
     sep=";",
     index=False,
     encoding="utf-8",
-    add_timestamp=True,
+    add_timestamp=False,
 ):
     """
     Save a DataFrame to a txt/csv file in the given directory.
@@ -75,7 +75,7 @@ def save_dataframe_output(
     encoding : str
         File encoding (default: 'utf-8').
     add_timestamp : bool
-        Whether to add timestamp to filename (default: True).
+        Whether to add timestamp to filename (default: False).
 
     Returns
     -------

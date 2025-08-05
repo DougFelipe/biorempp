@@ -356,17 +356,19 @@ class TestSaveDataframeOutput:
 
     def test_save_dataframe_output_with_timestamp(self, tmp_path):
         """
-        Test saving DataFrame with timestamp enabled (default behavior).
+        Test saving DataFrame with timestamp explicitly enabled.
 
-        Verifies that the function adds timestamp to filename when enabled.
+        Verifies that the function adds timestamp to filename when explicitly enabled.
         """
         # Arrange
         df = pd.DataFrame({"test": [1]})
         output_dir = str(tmp_path / "test_output")
         filename = "timestamped_test.csv"
 
-        # Act - use default timestamp behavior (True)
-        result_path = save_dataframe_output(df, output_dir, filename)
+        # Act - explicitly enable timestamp
+        result_path = save_dataframe_output(
+            df, output_dir, filename, add_timestamp=True
+        )
 
         # Assert
         assert os.path.exists(result_path)

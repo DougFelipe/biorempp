@@ -20,11 +20,11 @@ logger = get_logger("pipelines.input_processing")
 def run_biorempp_processing_pipeline(
     input_path,
     database_path=None,
-    output_dir="outputs/results_table",
+    output_dir="outputs/results_tables",
     output_filename="BioRemPP_Results.txt",
     sep=";",
     optimize_types=True,
-    add_timestamp=True,
+    add_timestamp=False,
 ):
     """
     Run the input validation, merging, and save output as .txt.
@@ -109,11 +109,11 @@ def run_biorempp_processing_pipeline(
 def run_kegg_processing_pipeline(
     input_path,
     kegg_database_path=None,
-    output_dir="outputs/results_table",
+    output_dir="outputs/results_tables",
     output_filename="KEGG_Results.txt",
     sep=";",
     optimize_types=True,
-    add_timestamp=True,
+    add_timestamp=False,
 ):
     """
     Run the KEGG degradation pathway processing pipeline.
@@ -206,11 +206,11 @@ def run_kegg_processing_pipeline(
 def run_hadeg_processing_pipeline(
     input_path,
     hadeg_database_path=None,
-    output_dir="outputs/results_table",
+    output_dir="outputs/results_tables",
     output_filename="HADEG_Results.txt",
     sep=";",
     optimize_types=True,
-    add_timestamp=True,
+    add_timestamp=False,
 ):
     """
     Run the HADEG (Hydrocarbon Degradation Database) processing pipeline.
@@ -301,11 +301,11 @@ def run_hadeg_processing_pipeline(
 def run_toxcsm_processing_pipeline(
     input_path,
     toxcsm_database_path=None,
-    output_dir="outputs/results_table",
+    output_dir="outputs/results_tables",
     output_filename="ToxCSM.txt",
     sep=";",
     optimize_types=True,
-    add_timestamp=True,
+    add_timestamp=False,
 ):
     """
     Run the ToxCSM toxicity prediction processing pipeline.
@@ -416,14 +416,14 @@ def run_all_processing_pipelines(
     kegg_database_path=None,
     hadeg_database_path=None,
     toxcsm_database_path=None,
-    output_dir="outputs/results_table",
+    output_dir="outputs/results_tables",
     biorempp_output_filename="BioRemPP_Results.txt",
     kegg_output_filename="KEGG_Results.txt",
     hadeg_output_filename="HADEG_Results.txt",
     toxcsm_output_filename="ToxCSM.txt",
     sep=";",
     optimize_types=True,
-    add_timestamp=True,
+    add_timestamp=False,
 ):
     """
     Run all processing pipelines: BioRemPP, KEGG, HADEG, and ToxCSM.
@@ -447,7 +447,7 @@ def run_all_processing_pipelines(
         Path to the ToxCSM database CSV file. If None, uses default path.
     output_dir : str
         Directory where all merged DataFrames will be saved
-        (default: outputs/results_table).
+        (default: outputs/results_tables).
     biorempp_output_filename : str
         Name of the BioRemPP output file (default: BioRemPP_Results.txt).
     kegg_output_filename : str

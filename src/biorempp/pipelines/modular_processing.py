@@ -15,7 +15,6 @@ import pandas as pd
 from biorempp.analysis.module_registry import registry
 from biorempp.utils.io_utils import save_dataframe_output
 from biorempp.utils.logging_config import get_logger
-from biorempp.utils.post_merge_reader import PostMergeDataReader
 
 logger = get_logger("pipelines.modular_processing")
 
@@ -86,10 +85,11 @@ class ModularProcessingPipeline:
 
         # Load input data if not provided
         if input_data is None:
-            self.logger.info("Loading latest biorempp data...")
-            reader = PostMergeDataReader()
-            input_data = reader.load_latest()
-            self.logger.info(f"Loaded data with shape: {input_data.shape}")
+            raise ValueError(
+                "input_data is required. The traditional pipeline functionality "
+                "for auto-loading timestamped files has been deprecated. "
+                "Please provide input_data explicitly."
+            )
 
         # Ensure output directory exists
         if save_results:
