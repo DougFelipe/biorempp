@@ -23,40 +23,26 @@ class TestGenePathwayAnalyzer:
         assert self.analyzer is not None
         assert hasattr(self.analyzer, "logger")
 
-    def test_validate_dataframe_valid_input(self, mock_merged_biorempp_basic):
-        """Test DataFrame validation with valid input."""
-        required_columns = ["sample", "ko"]
+    def test_validate_input_valid_input(self, mock_merged_biorempp_basic):
+        """Test validate_input with valid input."""
+        # Should not raise any exceptions
+        self.analyzer.validate_input(mock_merged_biorempp_basic)
 
-        # Should not raise any exception
-        self.analyzer._validate_dataframe(mock_merged_biorempp_basic, required_columns)
-
-    def test_validate_dataframe_missing_columns(
-        self, mock_merged_biorempp_missing_columns
-    ):
-        """Test DataFrame validation with missing required columns."""
-        required_columns = ["sample", "ko"]
-
+    def test_validate_input_missing_columns(self, mock_merged_biorempp_missing_columns):
+        """Test validate_input with missing required columns."""
         with pytest.raises(ValueError, match="Missing required columns"):
-            self.analyzer._validate_dataframe(
-                mock_merged_biorempp_missing_columns, required_columns
-            )
+            self.analyzer.validate_input(mock_merged_biorempp_missing_columns)
 
-    def test_validate_dataframe_empty_dataframe(self, mock_merged_biorempp_empty):
-        """Test DataFrame validation with empty DataFrame."""
-        required_columns = ["sample", "ko"]
-
+    def test_validate_input_empty_dataframe(self, mock_merged_biorempp_empty):
+        """Test validate_input with empty DataFrame."""
         with pytest.raises(ValueError, match="DataFrame cannot be empty"):
-            self.analyzer._validate_dataframe(
-                mock_merged_biorempp_empty, required_columns
-            )
+            self.analyzer.validate_input(mock_merged_biorempp_empty)
 
-    def test_validate_dataframe_wrong_type(self):
-        """Test DataFrame validation with wrong input type."""
-        not_a_dataframe = [{"sample": "Sample1", "ko": "K00001"}]
-        required_columns = ["sample", "ko"]
-
+    def test_validate_input_wrong_type(self):
+        """Test validate_input with wrong data type (not DataFrame)."""
+        not_a_dataframe = "this is not a dataframe"
         with pytest.raises(TypeError, match="Input must be a pandas DataFrame"):
-            self.analyzer._validate_dataframe(not_a_dataframe, required_columns)
+            self.analyzer.validate_input(not_a_dataframe)
 
     def test_analyze_ko_counts_valid_data(self, mock_merged_biorempp_basic):
         """Test KO counting analysis with valid data."""

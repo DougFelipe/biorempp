@@ -20,11 +20,11 @@ logger = get_logger("pipelines.input_processing")
 def run_biorempp_processing_pipeline(
     input_path,
     database_path=None,
-    output_dir="outputs/results_table",
+    output_dir="outputs/results_tables",
     output_filename="BioRemPP_Results.txt",
     sep=";",
     optimize_types=True,
-    add_timestamp=True,
+    add_timestamp=False,
 ):
     """
     Run the input validation, merging, and save output as .txt.
@@ -71,7 +71,9 @@ def run_biorempp_processing_pipeline(
 
     if database_path is None:
         this_dir = os.path.dirname(os.path.abspath(__file__))
-        database_path = os.path.join(this_dir, "..", "data", "database_biorempp.csv")
+        database_path = os.path.normpath(
+            os.path.join(this_dir, "..", "data", "database_biorempp.csv")
+        )
         logger.debug(f"Using default database path: {database_path}")
 
     logger.info(f"Reading input file: {input_path}")
@@ -107,11 +109,11 @@ def run_biorempp_processing_pipeline(
 def run_kegg_processing_pipeline(
     input_path,
     kegg_database_path=None,
-    output_dir="outputs/results_table",
+    output_dir="outputs/results_tables",
     output_filename="KEGG_Results.txt",
     sep=";",
     optimize_types=True,
-    add_timestamp=True,
+    add_timestamp=False,
 ):
     """
     Run the KEGG degradation pathway processing pipeline.
@@ -163,9 +165,10 @@ def run_kegg_processing_pipeline(
 
     if kegg_database_path is None:
         this_dir = os.path.dirname(os.path.abspath(__file__))
-        kegg_database_path = os.path.join(
-            this_dir, "..", "data", "kegg_degradation_pathways.csv"
+        kegg_database_path = os.path.normpath(
+            os.path.join(this_dir, "..", "data", "kegg_degradation_pathways.csv")
         )
+        logger.debug(f"Using default KEGG database path: {kegg_database_path}")
         logger.debug(f"Using default KEGG database path: {kegg_database_path}")
 
     logger.info(f"Reading input file: {input_path}")
@@ -203,11 +206,11 @@ def run_kegg_processing_pipeline(
 def run_hadeg_processing_pipeline(
     input_path,
     hadeg_database_path=None,
-    output_dir="outputs/results_table",
+    output_dir="outputs/results_tables",
     output_filename="HADEG_Results.txt",
     sep=";",
     optimize_types=True,
-    add_timestamp=True,
+    add_timestamp=False,
 ):
     """
     Run the HADEG (Hydrocarbon Degradation Database) processing pipeline.
@@ -257,7 +260,9 @@ def run_hadeg_processing_pipeline(
 
     if hadeg_database_path is None:
         this_dir = os.path.dirname(os.path.abspath(__file__))
-        hadeg_database_path = os.path.join(this_dir, "..", "data", "database_hadeg.csv")
+        hadeg_database_path = os.path.normpath(
+            os.path.join(this_dir, "..", "data", "database_hadeg.csv")
+        )
         logger.debug(f"Using default HADEG database path: {hadeg_database_path}")
 
     logger.info(f"Reading input file: {input_path}")
@@ -296,11 +301,11 @@ def run_hadeg_processing_pipeline(
 def run_toxcsm_processing_pipeline(
     input_path,
     toxcsm_database_path=None,
-    output_dir="outputs/results_table",
+    output_dir="outputs/results_tables",
     output_filename="ToxCSM.txt",
     sep=";",
     optimize_types=True,
-    add_timestamp=True,
+    add_timestamp=False,
 ):
     """
     Run the ToxCSM toxicity prediction processing pipeline.
@@ -350,8 +355,8 @@ def run_toxcsm_processing_pipeline(
 
     if toxcsm_database_path is None:
         this_dir = os.path.dirname(os.path.abspath(__file__))
-        toxcsm_database_path = os.path.join(
-            this_dir, "..", "data", "database_toxcsm.csv"
+        toxcsm_database_path = os.path.normpath(
+            os.path.join(this_dir, "..", "data", "database_toxcsm.csv")
         )
         logger.debug(f"Using default ToxCSM database path: {toxcsm_database_path}")
 
@@ -361,10 +366,20 @@ def run_toxcsm_processing_pipeline(
 
     # Step 1: Process input through BioRemPP first to get 'cpd' column
     logger.info("Processing input data through BioRemPP pipeline")
+
+    # Define BioRemPP database path for internal use
+    biorempp_db_path = None
+    if toxcsm_database_path:
+        # Use the same directory structure
+        biorempp_db_path = os.path.normpath(
+            os.path.join(os.path.dirname(toxcsm_database_path), "database_biorempp.csv")
+        )
+
     df_biorempp, error = load_and_merge_input(
         input_content,
         os.path.basename(input_path),
         optimize_types=optimize_types,
+        database_filepath=biorempp_db_path,
     )
 
     if error:
@@ -401,14 +416,14 @@ def run_all_processing_pipelines(
     kegg_database_path=None,
     hadeg_database_path=None,
     toxcsm_database_path=None,
-    output_dir="outputs/results_table",
+    output_dir="outputs/results_tables",
     biorempp_output_filename="BioRemPP_Results.txt",
     kegg_output_filename="KEGG_Results.txt",
     hadeg_output_filename="HADEG_Results.txt",
     toxcsm_output_filename="ToxCSM.txt",
     sep=";",
     optimize_types=True,
-    add_timestamp=True,
+    add_timestamp=False,
 ):
     """
     Run all processing pipelines: BioRemPP, KEGG, HADEG, and ToxCSM.
@@ -432,7 +447,7 @@ def run_all_processing_pipelines(
         Path to the ToxCSM database CSV file. If None, uses default path.
     output_dir : str
         Directory where all merged DataFrames will be saved
-        (default: outputs/results_table).
+        (default: outputs/results_tables).
     biorempp_output_filename : str
         Name of the BioRemPP output file (default: BioRemPP_Results.txt).
     kegg_output_filename : str
