@@ -54,8 +54,8 @@ class GenePathwayAnalyzer(BaseDataProcessor):
 
         This method runs all available analysis methods on the input data,
         providing a complete analysis suite for gene pathway data. It
-        automatically detects data source (BioRemPP vs KEGG) and executes
-        appropriate analyses with proper file naming.
+        automatically detects data source and orchestrates the execution
+        of all analyses.
 
         Parameters
         ----------
@@ -64,13 +64,13 @@ class GenePathwayAnalyzer(BaseDataProcessor):
             for analysis.
         **kwargs
             Additional parameters:
-            - data_source (str): Override automatic detection with 'biorempp'
-              or 'kegg'
+            - data_source (str): Override automatic detection with 'biorempp',
+              'kegg', or 'hadeg'
 
         Returns
         -------
         pd.DataFrame
-            Comprehensive analysis results with KO counts per sample.
+            Primary analysis results with KO counts per sample.
             Additional analysis results are logged and saved to files.
 
         Raises
@@ -85,15 +85,17 @@ class GenePathwayAnalyzer(BaseDataProcessor):
         This method performs the following analyses:
         1. KO counts per sample analysis (returned as primary result)
         2. KO counts per pathway per sample (logged and saved, if pathways)
-        3. Most abundant pathway analysis (logged, if pathways)
+        3. KO pathway statistics (with most abundant pathway identification,
+           logged and saved, if pathways)
 
         Data source is automatically detected by column presence:
         - BioRemPP data: has 'sample', 'ko' columns
         - KEGG data: has 'sample', 'ko', 'pathname' columns
+        - HADEG data: has 'sample', 'ko', 'Pathway', 'compound_pathway' columns
         """
         self.logger.info("Starting comprehensive gene pathway analysis processing")
 
-        # Validate basic requirements for all analyses
+        # Validate basic requirements
         if not isinstance(data, pd.DataFrame):
             raise TypeError("Input must be a pandas DataFrame")
 
@@ -103,78 +105,110 @@ class GenePathwayAnalyzer(BaseDataProcessor):
         # Detect data source automatically or use provided override
         data_source = kwargs.get("data_source")
         if data_source is None:
-            if "pathname" in data.columns:
-                data_source = "kegg"
-            else:
-                data_source = "biorempp"
+            data_source = self._detect_data_source(data)
 
         self.logger.info(f"Processing {data_source} data")
 
         # Analysis 1: KO counts per sample (primary analysis)
-        try:
-            ko_per_sample = self.analyze_ko_counts_per_sample(
-                data, data_source=data_source
-            )
+        ko_per_sample = self.analyze_ko_counts_per_sample(data, data_source=data_source)
+        self.logger.info(
+            f"Analysis 1 completed: KO counts per sample "
+            f"({len(ko_per_sample)} samples) for {data_source} data"
+        )
+
+        # Analysis 2 & 3: Pathway analyses (if applicable)
+        if data_source in ["kegg", "hadeg"]:
+            try:
+                self._execute_pathway_analyses(data, data_source)
+            except Exception as e:
+                self.logger.warning(f"Pathway analysis failed (non-critical): {e}")
+        else:
             self.logger.info(
-                f"Analysis 1 completed: KO counts per sample "
-                f"({len(ko_per_sample)} samples) for {data_source} data"
+                f"Pathway analysis skipped: not applicable for {data_source} data"
             )
-        except Exception as e:
-            self.logger.error(f"KO counts per sample analysis failed: {e}")
-            raise
-
-        # Analysis 2: KO counts per pathway per sample (KEGG data only)
-        try:
-            if data_source == "kegg" and "pathname" in data.columns:
-                ko_per_pathway = self.analyze_ko_per_pathway_per_sample(data)
-                self.logger.info(
-                    f"Analysis 2 completed: KO counts per pathway per sample "
-                    f"({len(ko_per_pathway)} pathway-sample combinations)"
-                )
-
-                # Save pathway analysis to separate output directory
-                from biorempp.utils.io_utils import save_dataframe_output
-
-                pathway_output_path = save_dataframe_output(
-                    ko_per_pathway,
-                    output_dir="outputs/gene_pathways_analysis",
-                    filename="ko_per_pathway_per_sample.txt",
-                    sep=";",
-                )
-                self.logger.info(f"Pathway analysis saved to: {pathway_output_path}")
-
-                # Analysis 3: Find most abundant pathway
-                if len(ko_per_pathway) > 0:
-                    most_abundant_idx = ko_per_pathway["unique_ko_count"].idxmax()
-                    most_abundant_pathway = ko_per_pathway.loc[most_abundant_idx]
-                    self.logger.info(
-                        f"Most abundant pathway: "
-                        f"{most_abundant_pathway['pathname']} "
-                        f"(Sample: {most_abundant_pathway['sample']}, "
-                        f"KO count: {most_abundant_pathway['unique_ko_count']})"
-                    )
-            else:
-                self.logger.info(
-                    f"Analysis 2 skipped: pathway analysis not applicable "
-                    f"for {data_source} data"
-                )
-
-        except Exception as e:
-            self.logger.warning(f"Pathway analysis failed (non-critical): {e}")
 
         self.logger.info(
             f"Comprehensive gene pathway analysis processing completed "
             f"for {data_source} data"
         )
 
-        # Return primary analysis result (KO counts per sample)
         return ko_per_sample
+
+    def _detect_data_source(self, data: pd.DataFrame) -> str:
+        """
+        Automatically detect data source based on column presence.
+
+        Parameters
+        ----------
+        data : pd.DataFrame
+            Input DataFrame to analyze.
+
+        Returns
+        -------
+        str
+            Detected data source: 'kegg', 'hadeg', or 'biorempp'.
+        """
+        if "pathname" in data.columns:
+            return "kegg"
+        elif "Pathway" in data.columns and "compound_pathway" in data.columns:
+            return "hadeg"
+        else:
+            return "biorempp"
+
+    def _execute_pathway_analyses(self, data: pd.DataFrame, data_source: str) -> None:
+        """
+        Execute pathway analyses for KEGG or HADEG data sources.
+
+        Parameters
+        ----------
+        data : pd.DataFrame
+            Input data with pathway information.
+        data_source : str
+            Data source type ('kegg' or 'hadeg').
+        """
+        if data_source == "kegg":
+            self._execute_kegg_pathway_analyses(data)
+        elif data_source == "hadeg":
+            self._execute_hadeg_pathway_analyses(data)
+
+    def _execute_kegg_pathway_analyses(self, data: pd.DataFrame) -> None:
+        """Execute KEGG-specific pathway analyses."""
+        # Analysis 2: KO per pathway per sample
+        ko_per_pathway = self.analyze_ko_per_pathway_per_sample(
+            data, save_file=True, suffix="kegg"
+        )
+        self.logger.info(
+            f"Analysis 2 completed: KO counts per KEGG pathway per sample "
+            f"({len(ko_per_pathway)} pathway-sample combinations)"
+        )
+
+        # Analysis 3: Pathway statistics
+        self.analyze_ko_per_sample_for_pathway(data, save_file=True, suffix="kegg")
+        self.logger.info("Analysis 3 completed: KEGG pathway statistics analysis")
+
+    def _execute_hadeg_pathway_analyses(self, data: pd.DataFrame) -> None:
+        """Execute HADEG-specific pathway analyses."""
+        # Prepare HADEG data (rename columns for compatibility)
+        data_hadeg = data.copy()
+        data_hadeg = data_hadeg.rename(columns={"Pathway": "pathname"})
+
+        # Analysis 2: KO per pathway per sample
+        self.analyze_ko_per_pathway_per_sample(
+            data_hadeg, save_file=True, suffix="hadeg"
+        )
+        self.logger.info("Analysis 2 completed: KO counts per HADEG pathway per sample")
+
+        # Analysis 3: Pathway statistics
+        self.analyze_ko_per_sample_for_pathway(
+            data_hadeg, save_file=True, suffix="hadeg"
+        )
+        self.logger.info("Analysis 3 completed: HADEG pathway statistics analysis")
 
     def analyze_ko_counts_per_sample(
         self, merged_df: pd.DataFrame, data_source: str = "biorempp"
     ) -> pd.DataFrame:
         """
-        Analyze KO counts per sample from post-merge BioRemPP or KEGG data.
+        Analyze KO counts per sample from post-merge BioRemPP, KEGG, or HADEG data.
 
         This function processes the merged DataFrame from BioRemPP pipeline
         to count unique KO (KEGG Orthology) identifiers per sample, providing
@@ -185,10 +219,13 @@ class GenePathwayAnalyzer(BaseDataProcessor):
         ----------
         merged_df : pd.DataFrame
             Post-merge DataFrame from BioRemPP pipeline containing at least
-            'sample' and 'ko' columns.
+            'sample' and 'ko' columns. Additional columns depend on data source:
+            - BioRemPP: basic columns
+            - KEGG: includes 'pathname' column
+            - HADEG: includes 'Pathway' and 'compound_pathway' columns
         data_source : str, optional
-            Source of the data for naming output files. Can be 'biorempp'
-            or 'kegg' (default: 'biorempp').
+            Source of the data for naming output files. Can be 'biorempp',
+            'kegg', or 'hadeg' (default: 'biorempp').
 
         Returns
         -------
@@ -219,7 +256,7 @@ class GenePathwayAnalyzer(BaseDataProcessor):
         1  Sample2         1
         """
         # Validate data_source parameter
-        valid_sources = ["biorempp", "kegg"]
+        valid_sources = ["biorempp", "kegg", "hadeg"]
         if data_source not in valid_sources:
             raise ValueError(
                 f"Invalid data_source '{data_source}'. "
@@ -269,20 +306,23 @@ class GenePathwayAnalyzer(BaseDataProcessor):
         return ko_counts_sorted
 
     def analyze_ko_per_pathway_per_sample(
-        self, merged_df: pd.DataFrame
+        self, merged_df: pd.DataFrame, save_file: bool = False, suffix: str = ""
     ) -> pd.DataFrame:
         """
         Count unique KOs for each pathway in each sample.
 
         This method processes the merged DataFrame from BioRemPP pipeline
-        to count unique KO (KEGG Orthology) identifiers per pathway in each sample,
-        providing insights into pathway diversity across samples.
+        to count unique KO (KEGG Orthology) identifiers per pathway in each
+        sample, providing insights into pathway diversity across samples.
 
         Parameters
         ----------
         merged_df : pd.DataFrame
-            DataFrame resultante da fusão com os dados KEGG, contendo colunas
-            'sample', 'pathname' e 'ko'.
+            DataFrame with columns 'sample', 'pathname' and 'ko'.
+        save_file : bool, optional
+            Whether to save results to file (default: False).
+        suffix : str, optional
+            Suffix for output filename when saving (default: "").
 
         Returns
         -------
@@ -296,16 +336,6 @@ class GenePathwayAnalyzer(BaseDataProcessor):
             If input is not a pandas DataFrame.
         ValueError
             If DataFrame is empty or missing required columns.
-
-        Examples
-        --------
-        >>> analyzer = GenePathwayAnalyzer()
-        >>> df = pd.DataFrame({
-        ...     'sample': ['Sample1', 'Sample1', 'Sample2'],
-        ...     'pathname': ['Pathway1', 'Pathway2', 'Pathway1'],
-        ...     'ko': ['K00001', 'K00002', 'K00001']
-        ... })
-        >>> result = analyzer.analyze_ko_per_pathway_per_sample(df)
         """
         self.logger.info("Starting KO counts analysis per pathway per sample")
 
@@ -328,6 +358,10 @@ class GenePathwayAnalyzer(BaseDataProcessor):
                 .reset_index(name="unique_ko_count")
             )
 
+            # Save to file if requested
+            if save_file and suffix:
+                self._save_pathway_per_sample_results(pathway_count, suffix)
+
             self.logger.info(
                 f"Pathway analysis completed. "
                 f"Processed {len(pathway_count)} sample-pathway combinations"
@@ -341,32 +375,36 @@ class GenePathwayAnalyzer(BaseDataProcessor):
             raise RuntimeError("Error processing KO counts per pathway") from e
 
     def analyze_ko_per_sample_for_pathway(
-        self, merged_df: pd.DataFrame, selected_pathway: str = None
+        self,
+        merged_df: pd.DataFrame,
+        selected_pathway: str = None,
+        save_file: bool = False,
+        suffix: str = "",
     ) -> pd.DataFrame:
         """
-        Count unique KOs for pathways across all samples.
+        Analyze KO counts for pathways across samples.
 
         This method analyzes KO counts per sample for either a specific pathway
-        (if selected_pathway is provided) or for all pathways (if selected_pathway
-        is None). When analyzing all pathways, results are saved to a single file
-        for comprehensive pathway comparison.
+        (if selected_pathway is provided) or generates pathway statistics for
+        all pathways (if selected_pathway is None).
 
         Parameters
         ----------
         merged_df : pd.DataFrame
-            DataFrame contendo dados da fusão com KEGG, com colunas
-            'sample', 'pathname' e 'ko'.
+            DataFrame with columns 'sample', 'pathname' and 'ko'.
         selected_pathway : str, optional
-            Identificador da via metabólica específica para filtragem.
-            Se None (padrão), analisa todas as vias disponíveis.
+            Specific pathway identifier for filtering. If None (default),
+            generates statistics for all pathways.
+        save_file : bool, optional
+            Whether to save results to file (default: False).
+        suffix : str, optional
+            Suffix for output filename when saving (default: "").
 
         Returns
         -------
         pd.DataFrame
-            DataFrame with columns ['sample', 'pathname', 'unique_ko_count']
-            containing KO counts per sample for all pathways, or columns
-            ['sample', 'unique_ko_count'] for a specific pathway.
-            Results are sorted by pathway and then by KO count (descending).
+            For all pathways: DataFrame with pathway statistics (count, mean, max, min).
+            For specific pathway: DataFrame with sample-specific results.
 
         Raises
         ------
@@ -375,19 +413,6 @@ class GenePathwayAnalyzer(BaseDataProcessor):
         ValueError
             If DataFrame is empty, missing required columns, or selected pathway
             is not found (when specified).
-
-        Examples
-        --------
-        >>> analyzer = GenePathwayAnalyzer()
-        >>> df = pd.DataFrame({
-        ...     'sample': ['Sample1', 'Sample1', 'Sample2'],
-        ...     'pathname': ['Pathway1', 'Pathway2', 'Pathway1'],
-        ...     'ko': ['K00001', 'K00002', 'K00001']
-        ... })
-        >>> # Análise de todas as vias
-        >>> result = analyzer.analyze_ko_per_sample_for_pathway(df)
-        >>> # Análise de via específica
-        >>> result = analyzer.analyze_ko_per_sample_for_pathway(df, 'Pathway1')
         """
         # Validate required columns for pathway analysis
         required_columns = ["sample", "pathname", "ko"]
@@ -402,97 +427,11 @@ class GenePathwayAnalyzer(BaseDataProcessor):
 
         try:
             if selected_pathway is None:
-                # Analisar todas as vias disponíveis
-                self.logger.info(
-                    "Starting comprehensive KO counts analysis for all pathways"
+                return self._analyze_all_pathways_statistics(
+                    merged_df, save_file, suffix
                 )
-
-                available_pathways = merged_df["pathname"].unique()
-                self.logger.info(
-                    f"Found {len(available_pathways)} unique pathways to analyze"
-                )
-
-                # Contar KOs únicos por amostra por via
-                all_pathways_result = (
-                    merged_df.groupby(["pathname", "sample"])["ko"]
-                    .nunique()
-                    .reset_index(name="unique_ko_count")
-                )
-
-                # Reorganizar colunas e ordenar
-                all_pathways_result = all_pathways_result[
-                    ["sample", "pathname", "unique_ko_count"]
-                ]
-                result = all_pathways_result.sort_values(
-                    ["pathname", "unique_ko_count"], ascending=[True, False]
-                )
-
-                self.logger.info(
-                    f"All pathways analysis completed. "
-                    f"Processed {len(result)} sample-pathway combinations"
-                )
-
-                # Salvar resultados em arquivo específico
-                from biorempp.utils.io_utils import save_dataframe_output
-
-                output_path = save_dataframe_output(
-                    result,
-                    output_dir="outputs/gene_pathways_analysis",
-                    filename="ko_per_sample_all_pathways.txt",
-                    sep=";",
-                )
-                self.logger.info(f"All pathways analysis saved to: {output_path}")
-
-                # Log estatísticas resumidas
-                pathway_stats = (
-                    result.groupby("pathname")["unique_ko_count"]
-                    .agg(["count", "mean", "max", "min"])
-                    .round(2)
-                )
-                self.logger.info(f"Pathway statistics:\n{pathway_stats}")
-
-                return result
-
             else:
-                # Analisar via específica (comportamento original)
-                self.logger.info(
-                    f"Starting KO counts analysis for specific pathway: "
-                    f"{selected_pathway}"
-                )
-
-                # Check if selected pathway exists
-                if selected_pathway not in merged_df["pathname"].unique():
-                    available_pathways = merged_df["pathname"].unique()
-                    self.logger.warning(
-                        f"Pathway '{selected_pathway}' not found in DataFrame"
-                    )
-                    raise ValueError(
-                        f"Pathway '{selected_pathway}' not found. "
-                        f"Available pathways: {list(available_pathways)}"
-                    )
-
-                self.logger.info(f"Filtering data for pathway: {selected_pathway}")
-                filtered_df = merged_df[merged_df["pathname"] == selected_pathway]
-
-                self.logger.info(
-                    "Counting unique KOs per sample for selected pathway..."
-                )
-                sample_count = (
-                    filtered_df.groupby("sample")["ko"]
-                    .nunique()
-                    .reset_index(name="unique_ko_count")
-                )
-
-                # Sort by KO count in descending order
-                result = sample_count.sort_values("unique_ko_count", ascending=False)
-
-                self.logger.info(
-                    f"Pathway-specific analysis completed. "
-                    f"Processed {len(result)} samples for pathway '{selected_pathway}'"
-                )
-                self.logger.debug(f"Sample counts for pathway:\n{result.head()}")
-
-                return result
+                return self._analyze_specific_pathway(merged_df, selected_pathway)
 
         except Exception as e:
             pathway_info = (
@@ -502,3 +441,174 @@ class GenePathwayAnalyzer(BaseDataProcessor):
             raise RuntimeError(
                 f"Error processing KO counts per sample for {pathway_info}"
             ) from e
+
+    def _analyze_all_pathways_statistics(
+        self, merged_df: pd.DataFrame, save_file: bool, suffix: str
+    ) -> pd.DataFrame:
+        """
+        Generate statistics for all pathways.
+
+        Parameters
+        ----------
+        merged_df : pd.DataFrame
+            Input DataFrame with pathway data.
+        save_file : bool
+            Whether to save results to file.
+        suffix : str
+            Suffix for output filename.
+
+        Returns
+        -------
+        pd.DataFrame
+            DataFrame with pathway statistics.
+        """
+        self.logger.info("Starting comprehensive KO counts analysis for all pathways")
+
+        available_pathways = merged_df["pathname"].unique()
+        self.logger.info(f"Found {len(available_pathways)} unique pathways to analyze")
+
+        # Count unique KOs per sample per pathway
+        all_pathways_result = (
+            merged_df.groupby(["pathname", "sample"])["ko"]
+            .nunique()
+            .reset_index(name="unique_ko_count")
+        )
+
+        # Generate pathway statistics (count, mean, max, min)
+        pathway_stats = (
+            all_pathways_result.groupby("pathname")["unique_ko_count"]
+            .agg(["count", "mean", "max", "min"])
+            .round(2)
+            .reset_index()
+        )
+
+        # Find and log most abundant pathway
+        self._log_most_abundant_pathway(all_pathways_result, suffix)
+
+        # Save to file if requested
+        if save_file and suffix:
+            self._save_pathway_statistics_results(pathway_stats, suffix)
+
+        self.logger.info(f"Pathway statistics:\n{pathway_stats}")
+        self.logger.info(
+            f"All pathways analysis completed. "
+            f"Processed {len(pathway_stats)} unique pathways"
+        )
+
+        return pathway_stats
+
+    def _analyze_specific_pathway(
+        self, merged_df: pd.DataFrame, selected_pathway: str
+    ) -> pd.DataFrame:
+        """
+        Analyze a specific pathway.
+
+        Parameters
+        ----------
+        merged_df : pd.DataFrame
+            Input DataFrame with pathway data.
+        selected_pathway : str
+            Specific pathway to analyze.
+
+        Returns
+        -------
+        pd.DataFrame
+            DataFrame with sample-specific results for the pathway.
+        """
+        self.logger.info(
+            f"Starting KO counts analysis for specific pathway: " f"{selected_pathway}"
+        )
+
+        # Check if selected pathway exists
+        if selected_pathway not in merged_df["pathname"].unique():
+            available_pathways = merged_df["pathname"].unique()
+            self.logger.warning(f"Pathway '{selected_pathway}' not found in DataFrame")
+            raise ValueError(
+                f"Pathway '{selected_pathway}' not found. "
+                f"Available pathways: {list(available_pathways)}"
+            )
+
+        self.logger.info(f"Filtering data for pathway: {selected_pathway}")
+        filtered_df = merged_df[merged_df["pathname"] == selected_pathway]
+
+        self.logger.info("Counting unique KOs per sample for selected pathway...")
+        sample_count = (
+            filtered_df.groupby("sample")["ko"]
+            .nunique()
+            .reset_index(name="unique_ko_count")
+        )
+
+        # Sort by KO count in descending order
+        result = sample_count.sort_values("unique_ko_count", ascending=False)
+
+        self.logger.info(
+            f"Pathway-specific analysis completed. "
+            f"Processed {len(result)} samples for pathway '{selected_pathway}'"
+        )
+        self.logger.debug(f"Sample counts for pathway:\n{result.head()}")
+
+        return result
+
+    def _save_pathway_per_sample_results(
+        self, results: pd.DataFrame, suffix: str
+    ) -> None:
+        """Save pathway per sample results to file."""
+        try:
+            from biorempp.utils.io_utils import save_dataframe_output
+
+            # Handle HADEG column naming
+            if suffix == "hadeg" and "pathname" in results.columns:
+                results = results.rename(columns={"pathname": "Pathway"})
+
+            filename = f"ko_per_pathway_per_sample_{suffix}.txt"
+            output_path = save_dataframe_output(
+                results,
+                output_dir="outputs/gene_pathways_analysis",
+                filename=filename,
+                sep=";",
+            )
+            self.logger.info(f"Pathway analysis saved to: {output_path}")
+
+        except Exception as e:
+            self.logger.warning(f"Failed to save pathway analysis: {e}")
+
+    def _save_pathway_statistics_results(
+        self, results: pd.DataFrame, suffix: str
+    ) -> None:
+        """Save pathway statistics results to file."""
+        try:
+            from biorempp.utils.io_utils import save_dataframe_output
+
+            # Handle HADEG column naming
+            if suffix == "hadeg" and "pathname" in results.columns:
+                results = results.rename(columns={"pathname": "Pathway"})
+
+            filename = f"ko_per_sample_all_pathways_{suffix}.txt"
+            output_path = save_dataframe_output(
+                results,
+                output_dir="outputs/gene_pathways_analysis",
+                filename=filename,
+                sep=";",
+            )
+            self.logger.info(
+                f"All {suffix.upper()} pathways statistics saved to: {output_path}"
+            )
+
+        except Exception as e:
+            self.logger.warning(f"Failed to save pathway statistics: {e}")
+
+    def _log_most_abundant_pathway(
+        self, all_pathways_result: pd.DataFrame, suffix: str
+    ) -> None:
+        """Log information about the most abundant pathway."""
+        if len(all_pathways_result) > 0:
+            most_abundant_idx = all_pathways_result["unique_ko_count"].idxmax()
+            most_abundant_pathway = all_pathways_result.loc[most_abundant_idx]
+
+            pathway_name = most_abundant_pathway["pathname"]
+
+            self.logger.info(
+                f"Most abundant {suffix.upper()} pathway: {pathway_name} "
+                f"(Sample: {most_abundant_pathway['sample']}, "
+                f"KO count: {most_abundant_pathway['unique_ko_count']})"
+            )
