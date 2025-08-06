@@ -6,14 +6,11 @@ execute any combination of registered data processors, focusing exclusively
 on data processing. Results are returned as DataFrames for external use.
 """
 
-from datetime import datetime
-from pathlib import Path
 from typing import Any, Dict, List
 
 import pandas as pd
 
 from biorempp.analysis.module_registry import registry
-from biorempp.utils.io_utils import save_dataframe_output
 from biorempp.utils.logging_config import get_logger
 
 logger = get_logger("pipelines.modular_processing")
@@ -24,8 +21,9 @@ class ModularProcessingPipeline:
     Pipeline for executing modular data processing.
 
     This class provides a single interface that can work with any combination
-    of registered processors, saving results and returning DataFrames for
-    external consumption (e.g., visualization in notebooks).
+    of registered processors. Each processor handles its own file saving logic,
+    and results are returned as DataFrames for external consumption
+    (e.g., visualization in notebooks).
 
     Attributes
     ----------
@@ -46,27 +44,22 @@ class ModularProcessingPipeline:
         processor_names: List[str],
         data_type: str = "biorempp",
         input_data: pd.DataFrame = None,
-        output_dir: str = "outputs/modular_analysis",
-        save_results: bool = True,
     ) -> Dict[str, pd.DataFrame]:
         """
         Run multiple data processors on input data.
 
-        This method processes data using the specified processors,
-        saves results to files, and returns DataFrames for external use.
+        This method processes data using the specified processors and returns
+        DataFrames for external use. Each processor handles its own file saving
+        logic as defined in their individual classes.
 
         Parameters
         ----------
         processor_names : List[str]
             List of processor names to execute
         data_type : str, optional
-            Type of data to load if input_data is None. Default is "biorempp"
+            Type of data being processed. Default is "biorempp"
         input_data : pd.DataFrame, optional
-            Input data to process. If None, loads data based on data_type
-        output_dir : str, optional
-            Directory to save analysis results. Default is "outputs/modular_analysis"
-        save_results : bool, optional
-            Whether to save results to files. Default is True
+            Input data to process. If None, raises ValueError
 
         Returns
         -------
@@ -76,7 +69,7 @@ class ModularProcessingPipeline:
         Raises
         ------
         ValueError
-            If no processors specified or processor not found
+            If no processors specified or input_data is None
         """
         if not processor_names:
             raise ValueError("At least one processor must be specified")
@@ -91,12 +84,7 @@ class ModularProcessingPipeline:
                 "Please provide input_data explicitly."
             )
 
-        # Ensure output directory exists
-        if save_results:
-            Path(output_dir).mkdir(parents=True, exist_ok=True)
-
         results = {}
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
         # Execute each processor
         for processor_name in processor_names:
@@ -106,29 +94,16 @@ class ModularProcessingPipeline:
                 # Create processor instance
                 processor = self.registry.create_processor_instance(processor_name)
 
-                # Process the data
+                # Process the data (each processor handles its own file saving)
                 processed_data = processor.process(input_data)
 
                 # Store results in memory
                 results[processor_name] = processed_data
 
-                # Save results to file if requested
-                if save_results:
-                    output_filename = f"{processor_name}_results_{timestamp}"
-                    output_path = save_dataframe_output(
-                        processed_data, output_dir, output_filename
-                    )
-                    self.logger.info(
-                        "Processor {} completed. Results saved to: {}".format(
-                            processor_name, output_path
-                        )
-                    )
-                else:
-                    self.logger.info(
-                        "Processor {} completed. Results available in memory.".format(
-                            processor_name
-                        )
-                    )
+                self.logger.info(
+                    f"Processor {processor_name} completed. "
+                    f"Results available in memory."
+                )
 
             except Exception as e:
                 self.logger.error(f"Error running processor {processor_name}: {e}")
@@ -142,11 +117,12 @@ class ModularProcessingPipeline:
         self,
         processor_name: str,
         input_data: pd.DataFrame,
-        save_results: bool = False,
-        output_dir: str = "outputs/modular_analysis",
     ) -> pd.DataFrame:
         """
         Run a single processor on input data.
+
+        Each processor handles its own file saving logic as defined in their
+        individual classes.
 
         Parameters
         ----------
@@ -154,10 +130,6 @@ class ModularProcessingPipeline:
             Name of the processor to execute
         input_data : pd.DataFrame
             Input data to process
-        save_results : bool, optional
-            Whether to save results to file. Default is False
-        output_dir : str, optional
-            Directory to save results if save_results is True
 
         Returns
         -------
@@ -167,8 +139,6 @@ class ModularProcessingPipeline:
         result = self.run_processing_pipeline(
             processor_names=[processor_name],
             input_data=input_data,
-            save_results=save_results,
-            output_dir=output_dir,
         )
         return result[processor_name]
 
@@ -229,7 +199,10 @@ class ModularProcessingPipeline:
         summary["pipeline_info"] = {
             "class": self.__class__.__name__,
             "description": "Modular data processing pipeline for BioRemPP",
-            "focus": "Data processing only - visualization handled externally",
-            "output_formats": ["DataFrame (in-memory)", "CSV files (persistent)"],
+            "focus": "Data processing with individual processor file management",
+            "output_formats": [
+                "DataFrame (in-memory)",
+                "Processor-specific output files",
+            ],
         }
         return summary

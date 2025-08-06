@@ -3,6 +3,8 @@ import os
 import sys
 from typing import Any, Dict
 
+import pandas as pd
+
 from biorempp.analysis.module_registry import registry
 from biorempp.pipelines.input_processing import (
     run_all_processing_pipelines,
@@ -125,12 +127,21 @@ def run_modular_pipeline(args) -> Dict[str, Any]:
     # Auto-discover modules
     registry.auto_discover_modules()
 
+    # Load input data from file
+    try:
+        logger.info(f"Loading input data from: {args.input}")
+        input_data = pd.read_csv(args.input, sep=";")
+        logger.info(f"Loaded data shape: {input_data.shape}")
+    except Exception as e:
+        logger.error(f"Failed to load input data: {e}")
+        raise ValueError(f"Failed to load input data: {e}")
+
     # Initialize pipeline
     pipeline = ModularProcessingPipeline()
 
-    # Run processing pipeline
+    # Run processing pipeline with loaded data
     processing_results = pipeline.run_processing_pipeline(
-        processor_names=args.processors, data_type="biorempp"
+        processor_names=args.processors, data_type="biorempp", input_data=input_data
     )
 
     # Prepare results summary
@@ -214,7 +225,7 @@ def setup_argument_parser():
     parser.add_argument(
         "--input",
         type=str,
-        required=True,
+        required=False,  # Will be validated later based on context
         help="Path to the input file containing the data to be processed",
     )
 
@@ -346,6 +357,14 @@ def main():
         if args.list_modules:
             print_available_modules()
             return
+
+        # Validate input file is provided for processing operations
+        if not args.input:
+            logger.error("Input file is required for processing operations")
+            print(
+                "[ERROR] Input file is required. Use --input to specify the file path."
+            )
+            sys.exit(1)
 
         # Validate input file exists
         if not os.path.exists(args.input):
