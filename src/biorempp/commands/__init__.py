@@ -7,12 +7,10 @@ command pattern architecture.
 
 from .base_command import BaseCommand
 from .info_command import InfoCommand
-from .modular_command import ModularPipelineCommand
-from .traditional_command import TraditionalPipelineCommand
+from .merger_command import DatabaseMergerCommand
 
 __all__ = [
     "BaseCommand",
-    "TraditionalPipelineCommand",
-    "ModularPipelineCommand",
+    "DatabaseMergerCommand",
     "InfoCommand",
 ]

@@ -1,8 +1,8 @@
 """
-Traditional Pipeline Command Implementation.
+Database Merger Command Implementation.
 
-This module implements the TraditionalPipelineCommand for executing
-standard BioRemPP processing pipelines (all, biorempp, kegg, hadeg, toxcsm).
+This module implements the DatabaseMergerCommand for executing
+database merging operations (biorempp, kegg, hadeg, toxcsm, all).
 """
 
 from typing import Any, Dict, Union
@@ -17,19 +17,19 @@ from biorempp.pipelines.input_processing import (
 )
 
 
-class TraditionalPipelineCommand(BaseCommand):
+class DatabaseMergerCommand(BaseCommand):
     """
-    Command for executing traditional BioRemPP processing pipelines.
+    Command for executing database merging operations.
 
-    Supports all traditional pipeline types:
-    - all: Run all processing pipelines
-    - biorempp: Run BioRemPP-specific processing
-    - kegg: Run KEGG pathway processing
-    - hadeg: Run HAdeg database processing
-    - toxcsm: Run ToxCSM toxicity processing
+    Supports all database merger types:
+    - all: Merge with ALL databases (biorempp, kegg, hadeg, toxcsm)
+    - biorempp: Merge with BioRemPP database only
+    - kegg: Merge with KEGG pathway database only
+    - hadeg: Merge with HAdeg database only
+    - toxcsm: Merge with ToxCSM toxicity database only
 
-    This command handles argument mapping and pipeline execution while
-    maintaining the exact same functionality as the original implementation.
+    This command handles input validation and database merging execution
+    maintaining the same robust functionality as the original implementation.
     """
 
     # Pipeline mapping for type validation and execution
