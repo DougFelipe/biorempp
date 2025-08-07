@@ -92,40 +92,54 @@ class InfoCommand(BaseCommand):
         """
         databases = {
             "biorempp": {
-                "name": "BioRemPP Database",
-                "description": "Core BioRemPP biological compounds database",
+                "name": "BioRemPP Core Database",
+                "description": (
+                    "Enzyme-compound interactions for biodegradation " "(6,623 records)"
+                ),
                 "file": "database_biorempp.csv",
+                "size": "0.69 MB",
             },
             "hadeg": {
                 "name": "HAdeg Database",
-                "description": "Human Metabolism Database for biodegradation pathways",
-                "file": "database_hadegDB.csv",
+                "description": "Human metabolism degradation pathways (1,168 records)",
+                "file": "database_hadeg.csv",
+                "size": "0.04 MB",
             },
             "kegg": {
                 "name": "KEGG Pathways",
-                "description": "KEGG degradation pathways database",
+                "description": "KEGG degradation pathways database (871 records)",
                 "file": "kegg_degradation_pathways.csv",
+                "size": "0.02 MB",
             },
             "toxcsm": {
                 "name": "ToxCSM Database",
-                "description": "Toxicity prediction and assessment database",
+                "description": (
+                    "Comprehensive toxicity predictions " "(323 records, 66 endpoints)"
+                ),
                 "file": "database_toxcsm.csv",
+                "size": "0.18 MB",
             },
         }
 
         print("\n🗄️  Available Databases:")
-        print("=" * 50)
+        print("=" * 70)
+
         for db_key, db_info in databases.items():
-            print(f"📊 {db_key.upper()}")
+            print(f"\n📊 {db_key.upper()}")
             print(f"   Name: {db_info['name']}")
             print(f"   Description: {db_info['description']}")
-            print(f"   File: {db_info['file']}")
-            print()
+            print(f"   File: {db_info['file']} ({db_info['size']})")
 
-        print("💡 Usage Examples:")
-        print("   biorempp --input data.txt --all-databases")
-        print("   biorempp --input data.txt --database biorempp")
+        print("\n📋 Sample Input Data:")
+        print("   File: sample_data.txt (0.18 MB)")
+        print("   Content: 10 organisms with 23,663 KO identifiers")
+        print("   Format: FASTA-like with organism headers (>) and KO entries")
+
+        print("\n💡 Usage Examples:")
+        print("   biorempp --input sample_data.txt --all-databases")
+        print("   biorempp --input sample_data.txt --database biorempp")
         print("   biorempp --database-info biorempp")
+        print("   biorempp --list-databases")
         print()
 
         return {"databases": databases}
@@ -147,46 +161,106 @@ class InfoCommand(BaseCommand):
         database_details = {
             "biorempp": {
                 "name": "BioRemPP Core Database",
-                "description": "Comprehensive biological compounds database for biodegradation research",
+                "description": (
+                    "Comprehensive enzyme-compound interaction database "
+                    "for biodegradation research"
+                ),
                 "columns": [
-                    "compound_id",
-                    "compound_name",
-                    "class",
-                    "subclass",
-                    "pathway",
+                    "ko",
+                    "genesymbol",
+                    "genename",
+                    "cpd",
+                    "compoundclass",
+                    "referenceAG",
+                    "compoundname",
+                    "enzyme_activity",
                 ],
-                "size": "~5000 compounds",
+                "size": "6,623 records",
+                "file_size": "0.69 MB",
                 "format": "CSV with semicolon separator",
-                "usage": "Primary database for compound identification and classification",
+                "key_features": [
+                    "986 unique KEGG Orthology (KO) identifiers",
+                    "323 unique compounds across 12 chemical classes",
+                    "978 unique enzyme gene symbols",
+                    "150 different enzyme activities",
+                ],
+                "usage": (
+                    "Primary database for enzyme-compound mapping "
+                    "and biodegradation pathway analysis"
+                ),
             },
             "hadeg": {
                 "name": "Human Metabolism Database (HAdeg)",
-                "description": "Specialized database for human metabolism biodegradation pathways",
-                "columns": ["metabolite_id", "pathway", "enzyme", "reaction"],
-                "size": "~2500 metabolites",
+                "description": (
+                    "Specialized database for human metabolism "
+                    "biodegradation pathways"
+                ),
+                "columns": ["Gene", "ko", "Pathway", "compound_pathway"],
+                "size": "1,168 records",
+                "file_size": "0.04 MB",
                 "format": "CSV with semicolon separator",
-                "usage": "Human-specific biodegradation pathway analysis",
+                "key_features": [
+                    "323 unique genes involved in degradation",
+                    "339 unique KO identifiers",
+                    "71 distinct metabolic pathways",
+                    "5 major compound pathway categories (Alkanes, Aromatics, etc.)",
+                ],
+                "usage": (
+                    "Human-specific biodegradation pathway analysis "
+                    "and gene-pathway mapping"
+                ),
             },
             "kegg": {
                 "name": "KEGG Degradation Pathways",
-                "description": "KEGG-derived biodegradation pathway information",
-                "columns": ["pathway_id", "pathway_name", "compounds", "enzymes"],
-                "size": "~800 pathways",
+                "description": (
+                    "KEGG-derived biodegradation pathway information "
+                    "with enzyme associations"
+                ),
+                "columns": ["ko", "pathname", "genesymbol"],
+                "size": "871 records",
+                "file_size": "0.02 MB",
                 "format": "CSV with semicolon separator",
-                "usage": "Pathway enrichment and degradation route analysis",
+                "key_features": [
+                    "517 unique KO identifiers",
+                    "20 degradation pathways (Naphthalene, Aromatic, Toluene, etc.)",
+                    "513 unique gene symbols",
+                    "Focus on xenobiotic and aromatic compound degradation",
+                ],
+                "usage": (
+                    "Pathway enrichment analysis and degradation route "
+                    "identification"
+                ),
             },
             "toxcsm": {
                 "name": "ToxCSM Toxicity Database",
-                "description": "Comprehensive toxicity prediction and assessment database",
+                "description": (
+                    "Comprehensive toxicity prediction database "
+                    "with multiple endpoints"
+                ),
                 "columns": [
-                    "compound_id",
-                    "toxicity_endpoint",
-                    "prediction",
-                    "confidence",
+                    "SMILES",
+                    "cpd",
+                    "ChEBI",
+                    "compoundname",
+                    "66 toxicity endpoints",
+                    "Nuclear receptor (NR_*), Stress response (SR_*), "
+                    "Genotoxicity (Gen_*)",
+                    "Environmental (Env_*), Organ toxicity (Org_*) assessments",
                 ],
-                "size": "~3000 toxicity assessments",
+                "size": "323 records",
+                "file_size": "0.18 MB",
                 "format": "CSV with semicolon separator",
-                "usage": "Toxicity evaluation and safety assessment",
+                "key_features": [
+                    "314 unique SMILES molecular structures",
+                    "66 toxicity endpoints with value/label pairs",
+                    (
+                        "Multiple toxicity categories: Nuclear receptors, "
+                        "Stress response, Genotoxicity, Environmental, "
+                        "Organ-specific"
+                    ),
+                    "ChEBI identifiers for chemical standardization",
+                ],
+                "usage": "Comprehensive toxicity evaluation and safety assessment",
             },
         }
 
@@ -198,16 +272,29 @@ class InfoCommand(BaseCommand):
         db_info = database_details[database_name]
 
         print(f"\n📊 {db_info['name']}")
-        print("=" * 60)
-        print(f"Description: {db_info['description']}")
-        print(f"Size: {db_info['size']}")
-        print(f"Format: {db_info['format']}")
-        print(f"Columns: {', '.join(db_info['columns'])}")
-        print(f"Usage: {db_info['usage']}")
-        print()
-        print("💡 Usage Examples:")
-        print(f"   biorempp --input data.txt --database {database_name}")
-        print("   biorempp --input data.txt --all-databases")
+        print("=" * 70)
+        print(f"📄 Description: {db_info['description']}")
+        print(f"📊 Size: {db_info['size']} ({db_info['file_size']})")
+        print(f"📋 Format: {db_info['format']}")
+
+        print("\n🔍 Database Schema:")
+        for i, col in enumerate(db_info["columns"][:8], 1):  # Show first 8 columns
+            print(f"   {i:2d}. {col}")
+        if len(db_info["columns"]) > 8:
+            print(f"   ... and {len(db_info['columns']) - 8} more columns")
+
+        if "key_features" in db_info:
+            print("\n⭐ Key Features:")
+            for feature in db_info["key_features"]:
+                print(f"   • {feature}")
+
+        print("\n🎯 Primary Usage:")
+        print(f"   {db_info['usage']}")
+
+        print("\n💡 Usage Examples:")
+        print(f"   biorempp --input sample_data.txt --database {database_name}")
+        print("   biorempp --input sample_data.txt --all-databases")
+        print("   biorempp --list-databases")
         print()
 
         return {"database_info": {database_name: db_info}}

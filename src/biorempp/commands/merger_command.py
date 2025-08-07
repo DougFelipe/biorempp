@@ -114,6 +114,43 @@ class DatabaseMergerCommand(BaseCommand):
         )
         return result
 
+    def _get_database_path(self, database_name):
+        """
+        Get the full path to the database file based on the database name.
+
+        Parameters
+        ----------
+        database_name : str
+            Name of the database ('biorempp', 'hadeg', 'kegg', 'toxcsm')
+
+        Returns
+        -------
+        str or None
+            Full path to the database file, or None if not specified
+        """
+        if database_name is None:
+            return None
+
+        # Map database names to file names
+        database_files = {
+            "biorempp": "database_biorempp.csv",
+            "hadeg": "database_hadeg.csv",
+            "kegg": "kegg_degradation_pathways.csv",
+            "toxcsm": "database_toxcsm.csv",
+        }
+
+        if database_name not in database_files:
+            return None
+
+        # Get the current directory and build path to data folder
+        import os
+
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        data_dir = os.path.normpath(os.path.join(current_dir, "..", "data"))
+        database_path = os.path.join(data_dir, database_files[database_name])
+
+        return database_path
+
     def _build_pipeline_kwargs(self, args) -> Dict[str, Any]:
         """
         Build pipeline keyword arguments from parsed command line arguments.
@@ -134,13 +171,25 @@ class DatabaseMergerCommand(BaseCommand):
         # Required arguments for all pipelines
         pipeline_kwargs = {
             "input_path": args.input,
-            "output_dir": args.output_dir,
-            "add_timestamp": args.add_timestamp,
+            "output_dir": getattr(args, "output_dir", "outputs/results_tables"),
+            "add_timestamp": getattr(args, "add_timestamp", True),
         }
+
+        # Map database-specific parameters based on pipeline
+        database_name = getattr(args, "database", None)
+        if database_name:
+            database_path = self._get_database_path(database_name)
+            if database_name == "biorempp":
+                pipeline_kwargs["database_path"] = database_path
+            elif database_name == "kegg":
+                pipeline_kwargs["kegg_database_path"] = database_path
+            elif database_name == "hadeg":
+                pipeline_kwargs["hadeg_database_path"] = database_path
+            elif database_name == "toxcsm":
+                pipeline_kwargs["toxcsm_database_path"] = database_path
 
         # Optional arguments - only add if not None
         optional_args = {
-            "database": getattr(args, "database", None),
             "biorempp_database": getattr(args, "biorempp_database", None),
             "kegg_database": getattr(args, "kegg_database", None),
             "hadeg_database": getattr(args, "hadeg_database", None),

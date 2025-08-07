@@ -60,7 +60,7 @@ class AllDatabasesMergerCommand(BaseCommand):
         self.logger.debug("All databases merger validation passed")
         return True
 
-    def execute_implementation(self, args) -> Dict[str, Any]:
+    def execute(self, args) -> Dict[str, Any]:
         """
         Execute merging with all databases in sequence.
 
@@ -85,11 +85,11 @@ class AllDatabasesMergerCommand(BaseCommand):
             try:
                 self.logger.info(f"Merging with {db_name} database...")
 
-                # Create modified args for individual database
-                individual_args = self._create_individual_args(args, db_name)
+                # Build pipeline kwargs for this database
+                pipeline_kwargs = self._build_pipeline_kwargs(args, db_name)
 
                 # Execute merge function
-                result = merge_func(individual_args)
+                result = merge_func(**pipeline_kwargs)
                 results[db_name] = result
 
                 self.logger.info(f"Successfully merged with {db_name} database")
@@ -116,28 +116,73 @@ class AllDatabasesMergerCommand(BaseCommand):
 
         return results
 
-    def _create_individual_args(self, args, database_name: str):
+    def _build_pipeline_kwargs(self, args, database_name: str) -> Dict[str, Any]:
         """
-        Create modified args for individual database merger.
+        Build pipeline keyword arguments for specific database.
 
         Parameters
         ----------
         args : argparse.Namespace
-            Original parsed arguments
+            Parsed command line arguments
         database_name : str
             Name of the database to merge with
 
         Returns
         -------
-        argparse.Namespace
-            Modified arguments for individual database merger
+        Dict[str, Any]
+            Dictionary of keyword arguments for pipeline execution
         """
-        # Create a copy of args
-        import copy
+        # Required arguments for all pipelines
+        pipeline_kwargs = {
+            "input_path": args.input,
+            "output_dir": getattr(args, "output_dir", "outputs/results_tables"),
+            "add_timestamp": getattr(args, "add_timestamp", True),
+        }
 
-        individual_args = copy.deepcopy(args)
+        # Map database-specific parameters
+        database_path = self._get_database_path(database_name)
+        if database_name == "biorempp":
+            pipeline_kwargs["database_path"] = database_path
+        elif database_name == "kegg":
+            pipeline_kwargs["kegg_database_path"] = database_path
+        elif database_name == "hadeg":
+            pipeline_kwargs["hadeg_database_path"] = database_path
+        elif database_name == "toxcsm":
+            pipeline_kwargs["toxcsm_database_path"] = database_path
 
-        # Set pipeline type for individual merger
-        individual_args.pipeline_type = database_name
+        return pipeline_kwargs
 
-        return individual_args
+    def _get_database_path(self, database_name: str) -> str:
+        """
+        Get the full path to a database file.
+
+        Parameters
+        ----------
+        database_name : str
+            Name of the database (biorempp, hadeg, kegg, toxcsm)
+
+        Returns
+        -------
+        str
+            Full path to the database file
+        """
+        import os
+
+        # Map database names to file names
+        database_files = {
+            "biorempp": "database_biorempp.csv",
+            "hadeg": "database_hadeg.csv",
+            "kegg": "kegg_degradation_pathways.csv",
+            "toxcsm": "database_toxcsm.csv",
+        }
+
+        if database_name not in database_files:
+            raise ValueError(f"Unknown database: {database_name}")
+
+        # Get the current directory and build path to data folder
+        this_dir = os.path.dirname(os.path.abspath(__file__))
+        database_path = os.path.normpath(
+            os.path.join(this_dir, "..", "data", database_files[database_name])
+        )
+
+        return database_path

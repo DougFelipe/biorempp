@@ -62,6 +62,13 @@ class BioRemPPArgumentParser:
             help="Path to the input biological data file (FASTA format)",
         )
 
+        parser.add_argument(
+            "--output-dir",
+            type=str,
+            default="outputs/results_tables",
+            help="Directory for output files (default: outputs/results_tables)",
+        )
+
     def _add_database_arguments(self, parser: argparse.ArgumentParser) -> None:
         """
         Add database selection arguments.
