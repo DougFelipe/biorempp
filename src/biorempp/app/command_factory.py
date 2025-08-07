@@ -22,7 +22,7 @@ class CommandFactory:
     focusing on database merging functionality:
     - Info commands (--list-databases, --database-info)
     - All databases merger (--all-databases)
-    - Single database merger (--database or --pipeline-type)
+    - Single database merger (--database)
 
     This simplified design maintains the robust Factory Pattern while
     removing unnecessary complexity.
@@ -40,7 +40,7 @@ class CommandFactory:
         Routes command creation based on simplified CLI arguments:
         1. Info commands (--list-databases, --database-info) -> InfoCommand
         2. All databases merger (--all-databases) -> AllDatabasesMergerCommand
-        3. Single database merger (--database, --pipeline-type) -> DatabaseMergerCommand
+        3. Single database merger (--database) -> DatabaseMergerCommand
 
         Parameters
         ----------
@@ -81,10 +81,8 @@ class CommandFactory:
             factory.logger.info("Creating AllDatabasesMergerCommand")
             return AllDatabasesMergerCommand()
 
-        # Route 3: Single database merger (--database or legacy --pipeline-type)
-        database_name = getattr(args, "database", None) or getattr(
-            args, "pipeline_type", None
-        )
+        # Route 3: Single database merger (--database only)
+        database_name = getattr(args, "database", None)
 
         if database_name:
             # Validate input file requirement
@@ -93,11 +91,8 @@ class CommandFactory:
                     "Database merger requires --input file to be specified."
                 )
 
-            # Set pipeline_type for backward compatibility if using --database
-            has_database = getattr(args, "database", None)
-            has_pipeline_type = getattr(args, "pipeline_type", None)
-            if has_database and not has_pipeline_type:
-                args.pipeline_type = args.database
+            # Set pipeline_type for the underlying pipeline execution
+            args.pipeline_type = args.database
 
             factory.logger.info(
                 f"Creating DatabaseMergerCommand for database: {database_name}"
@@ -133,7 +128,7 @@ class CommandFactory:
             return "info"
         elif getattr(args, "all_databases", False):
             return "all_databases"
-        elif getattr(args, "database", None) or getattr(args, "pipeline_type", None):
+        elif getattr(args, "database", None):
             return "single_database"
         else:
             return "unknown"

@@ -38,29 +38,9 @@ class InfoCommand(BaseCommand):
         self.info_type = info_type
         self.target = target
 
-    def validate_specific_input(self, args) -> bool:
+    def execute(self, args) -> Dict[str, Any]:
         """
-        Validate info command specific inputs.
-
-        Info commands generally don't require specific validation
-        as they are informational only.
-
-        Parameters
-        ----------
-        args : argparse.Namespace
-            Parsed command line arguments
-
-        Returns
-        -------
-        bool
-            Always True for info commands
-        """
-        self.logger.debug(f"Info command validation for type: {self.info_type}")
-        return True
-
-    def execute_specific_logic(self, args) -> Dict[str, Any]:
-        """
-        Execute info command specific logic.
+        Execute info command logic.
 
         Parameters
         ----------
@@ -80,6 +60,26 @@ class InfoCommand(BaseCommand):
             return self._show_database_info(self.target)
         else:
             raise ValueError(f"Unsupported info type: {self.info_type}")
+
+    def validate_specific_input(self, args) -> bool:
+        """
+        Validate info command specific inputs.
+
+        Info commands generally don't require specific validation
+        as they are informational only.
+
+        Parameters
+        ----------
+        args : argparse.Namespace
+            Parsed command line arguments
+
+        Returns
+        -------
+        bool
+            Always True for info commands
+        """
+        self.logger.debug(f"Info command validation for type: {self.info_type}")
+        return True
 
     def _list_databases(self) -> Dict[str, Any]:
         """
