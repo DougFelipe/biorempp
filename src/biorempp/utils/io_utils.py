@@ -6,10 +6,75 @@ General functions for saving outputs to disk.
 
 import os
 from datetime import datetime
+from pathlib import Path
 
 from biorempp.utils.logging_config import get_logger
 
 logger = get_logger("utils.io_utils")
+
+
+def get_project_root() -> str:
+    """
+    Get the project root directory path.
+
+    This function ensures outputs are always created relative to the project root,
+    not the current working directory. This is crucial for maintaining consistent
+    output paths regardless of where the commands are executed from.
+
+    Returns
+    -------
+    str
+        Absolute path to the project root directory
+    """
+    # Get the directory containing this file (utils)
+    current_file = Path(__file__).resolve()
+
+    # Navigate up to find project root (look for pyproject.toml or setup.py)
+    current_dir = current_file.parent
+
+    while current_dir != current_dir.parent:  # Not root directory
+        pyproject_exists = (current_dir / "pyproject.toml").exists()
+        setup_exists = (current_dir / "setup.py").exists()
+
+        if pyproject_exists or setup_exists:
+            logger.debug(f"Project root found: {current_dir}")
+            return str(current_dir)
+        current_dir = current_dir.parent
+
+    # Fallback: assume project root is 3 levels up from utils
+    # biorempp/src/biorempp/utils -> biorempp/
+    fallback_root = current_file.parent.parent.parent.parent
+    logger.warning(f"Using fallback project root: {fallback_root}")
+    return str(fallback_root)
+
+
+def resolve_output_path(output_dir: str) -> str:
+    """
+    Resolve output directory path relative to project root.
+
+    This ensures that all outputs are created in the correct location
+    (project_root/outputs/) regardless of the current working directory.
+
+    Parameters
+    ----------
+    output_dir : str
+        Output directory path (e.g., "outputs/results_tables")
+
+    Returns
+    -------
+    str
+        Absolute path to the output directory
+    """
+    project_root = get_project_root()
+
+    # If output_dir is already absolute, use it as-is
+    if os.path.isabs(output_dir):
+        return output_dir
+
+    # Resolve relative to project root
+    resolved_path = os.path.join(project_root, output_dir)
+    logger.debug(f"Resolved output path: {output_dir} -> {resolved_path}")
+    return resolved_path
 
 
 def generate_timestamped_filename(filename, add_timestamp=False):
@@ -66,6 +131,7 @@ def save_dataframe_output(
         The DataFrame to save.
     output_dir : str
         Directory to save the file (created if it doesn't exist).
+        Will be resolved relative to project root.
     filename : str
         Name of the output file.
     sep : str
@@ -85,11 +151,14 @@ def save_dataframe_output(
     # Generate timestamped filename if requested
     final_filename = generate_timestamped_filename(filename, add_timestamp)
 
-    logger.debug(f"Saving DataFrame to: {output_dir}/{final_filename}")
+    # Resolve output directory relative to project root
+    resolved_output_dir = resolve_output_path(output_dir)
+
+    logger.debug(f"Saving DataFrame to: {resolved_output_dir}/{final_filename}")
     logger.debug(f"DataFrame shape: {df.shape}")
 
-    os.makedirs(output_dir, exist_ok=True)
-    output_path = os.path.join(output_dir, final_filename)
+    os.makedirs(resolved_output_dir, exist_ok=True)
+    output_path = os.path.join(resolved_output_dir, final_filename)
 
     try:
         df.to_csv(output_path, sep=sep, index=index, encoding=encoding)
