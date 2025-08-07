@@ -1,43 +1,49 @@
 """
 Info Command Implementation.
 
-This module implements the InfoCommand for displaying available modules
-and system information without requiring input files.
+This module implements the InfoCommand for displaying database information
+and system help without requiring input files.
 """
 
-from typing import Any, Dict, List
+from typing import Any, Dict
 
-from biorempp.analysis.module_registry import registry
 from biorempp.commands.base_command import BaseCommand
 
 
 class InfoCommand(BaseCommand):
     """
-    Command for displaying system information and available modules.
+    Command for displaying database information and system help.
 
     This command handles informational requests that don't require
-    input file processing, such as listing available analysis modules.
+    input file processing, such as listing available databases or
+    showing database-specific information.
 
-    Features:
-    - Auto-discovery and listing of available processors
-    - Module descriptions and metadata
-    - No input file validation required
+    Supported info types:
+    - databases: List all available databases
+    - database_info: Show detailed information about a specific database
     """
 
-    def __init__(self):
-        """Initialize info command with module discovery."""
-        super().__init__()
+    def __init__(self, info_type: str, target: str = None):
+        """
+        Initialize info command with type and target.
 
-        # Auto-discover modules for listing
-        self.logger.debug("Initializing module auto-discovery for info command")
-        registry.auto_discover_modules()
+        Parameters
+        ----------
+        info_type : str
+            Type of information to display ('databases', 'database_info')
+        target : str, optional
+            Target database name for database_info type
+        """
+        super().__init__()
+        self.info_type = info_type
+        self.target = target
 
     def validate_specific_input(self, args) -> bool:
         """
         Validate info command specific inputs.
 
         Info commands generally don't require specific validation
-        as they don't process input files.
+        as they are informational only.
 
         Parameters
         ----------
@@ -49,15 +55,12 @@ class InfoCommand(BaseCommand):
         bool
             Always True for info commands
         """
-        self.logger.debug("Info command validation - no specific validation required")
+        self.logger.debug(f"Info command validation for type: {self.info_type}")
         return True
 
-    def execute(self, args) -> Dict[str, Any]:
+    def execute_specific_logic(self, args) -> Dict[str, Any]:
         """
-        Execute the info command logic.
-
-        Currently supports listing available modules. Can be extended
-        for other informational commands in the future.
+        Execute info command specific logic.
 
         Parameters
         ----------
@@ -67,60 +70,144 @@ class InfoCommand(BaseCommand):
         Returns
         -------
         Dict[str, Any]
-            Dictionary containing available modules information
+            Information results based on command type
         """
-        self.logger.info("Executing info command - listing available modules")
+        self.logger.info(f"Executing info command: {self.info_type}")
 
-        # Get all available processors
-        processor_names = registry.list_processors()
+        if self.info_type == "databases":
+            return self._list_databases()
+        elif self.info_type == "database_info":
+            return self._show_database_info(self.target)
+        else:
+            raise ValueError(f"Unsupported info type: {self.info_type}")
 
-        # Build module information
-        modules_info = {
-            "total_modules": len(processor_names),
-            "modules": self._build_modules_info(processor_names),
-        }
-
-        self.logger.info(f"Found {len(processor_names)} available modules")
-        return modules_info
-
-    def _build_modules_info(
-        self, processor_names: List[str]
-    ) -> Dict[str, Dict[str, str]]:
+    def _list_databases(self) -> Dict[str, Any]:
         """
-        Build detailed information about available modules.
-
-        Parameters
-        ----------
-        processor_names : List[str]
-            List of available processor names
+        List all available databases.
 
         Returns
         -------
-        Dict[str, Dict[str, str]]
-            Dictionary mapping processor names to their metadata
+        Dict[str, Any]
+            Database listing information
         """
-        modules_info = {}
+        databases = {
+            "biorempp": {
+                "name": "BioRemPP Database",
+                "description": "Core BioRemPP biological compounds database",
+                "file": "database_biorempp.csv",
+            },
+            "hadeg": {
+                "name": "HAdeg Database",
+                "description": "Human Metabolism Database for biodegradation pathways",
+                "file": "database_hadegDB.csv",
+            },
+            "kegg": {
+                "name": "KEGG Pathways",
+                "description": "KEGG degradation pathways database",
+                "file": "kegg_degradation_pathways.csv",
+            },
+            "toxcsm": {
+                "name": "ToxCSM Database",
+                "description": "Toxicity prediction and assessment database",
+                "file": "database_toxcsm.csv",
+            },
+        }
 
-        for name in processor_names:
-            try:
-                processor_class = registry.processors[name]
-                instance = processor_class()
+        print("\n🗄️  Available Databases:")
+        print("=" * 50)
+        for db_key, db_info in databases.items():
+            print(f"📊 {db_key.upper()}")
+            print(f"   Name: {db_info['name']}")
+            print(f"   Description: {db_info['description']}")
+            print(f"   File: {db_info['file']}")
+            print()
 
-                modules_info[name] = {
-                    "description": getattr(
-                        instance, "description", "No description available"
-                    ),
-                    "class_name": processor_class.__name__,
-                    "module": processor_class.__module__,
-                }
+        print("💡 Usage Examples:")
+        print("   biorempp --input data.txt --all-databases")
+        print("   biorempp --input data.txt --database biorempp")
+        print("   biorempp --database-info biorempp")
+        print()
 
-            except Exception as e:
-                self.logger.warning(f"Failed to get info for processor {name}: {e}")
-                modules_info[name] = {
-                    "description": "Error loading module information",
-                    "class_name": "Unknown",
-                    "module": "Unknown",
-                    "error": str(e),
-                }
+        return {"databases": databases}
 
-        return modules_info
+    def _show_database_info(self, database_name: str) -> Dict[str, Any]:
+        """
+        Show detailed information about a specific database.
+
+        Parameters
+        ----------
+        database_name : str
+            Name of the database to show info for
+
+        Returns
+        -------
+        Dict[str, Any]
+            Detailed database information
+        """
+        database_details = {
+            "biorempp": {
+                "name": "BioRemPP Core Database",
+                "description": "Comprehensive biological compounds database for biodegradation research",
+                "columns": [
+                    "compound_id",
+                    "compound_name",
+                    "class",
+                    "subclass",
+                    "pathway",
+                ],
+                "size": "~5000 compounds",
+                "format": "CSV with semicolon separator",
+                "usage": "Primary database for compound identification and classification",
+            },
+            "hadeg": {
+                "name": "Human Metabolism Database (HAdeg)",
+                "description": "Specialized database for human metabolism biodegradation pathways",
+                "columns": ["metabolite_id", "pathway", "enzyme", "reaction"],
+                "size": "~2500 metabolites",
+                "format": "CSV with semicolon separator",
+                "usage": "Human-specific biodegradation pathway analysis",
+            },
+            "kegg": {
+                "name": "KEGG Degradation Pathways",
+                "description": "KEGG-derived biodegradation pathway information",
+                "columns": ["pathway_id", "pathway_name", "compounds", "enzymes"],
+                "size": "~800 pathways",
+                "format": "CSV with semicolon separator",
+                "usage": "Pathway enrichment and degradation route analysis",
+            },
+            "toxcsm": {
+                "name": "ToxCSM Toxicity Database",
+                "description": "Comprehensive toxicity prediction and assessment database",
+                "columns": [
+                    "compound_id",
+                    "toxicity_endpoint",
+                    "prediction",
+                    "confidence",
+                ],
+                "size": "~3000 toxicity assessments",
+                "format": "CSV with semicolon separator",
+                "usage": "Toxicity evaluation and safety assessment",
+            },
+        }
+
+        if database_name not in database_details:
+            print(f"❌ Database '{database_name}' not found.")
+            print(f"Available databases: {', '.join(database_details.keys())}")
+            return {"error": f"Database '{database_name}' not found"}
+
+        db_info = database_details[database_name]
+
+        print(f"\n📊 {db_info['name']}")
+        print("=" * 60)
+        print(f"Description: {db_info['description']}")
+        print(f"Size: {db_info['size']}")
+        print(f"Format: {db_info['format']}")
+        print(f"Columns: {', '.join(db_info['columns'])}")
+        print(f"Usage: {db_info['usage']}")
+        print()
+        print("💡 Usage Examples:")
+        print(f"   biorempp --input data.txt --database {database_name}")
+        print("   biorempp --input data.txt --all-databases")
+        print()
+
+        return {"database_info": {database_name: db_info}}
