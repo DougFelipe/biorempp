@@ -1,31 +1,31 @@
 """
-Command Factory for BioRemPP Command Pattern Implementation.
+Command Factory for BioRemPP Simplified Command Pattern Implementation.
 
 This module implements the Factory Pattern for creating appropriate
-command instances based on parsed CLI arguments.
+command instances based on parsed CLI arguments for the simplified architecture.
 """
 
 import argparse
 
+from biorempp.commands.all_databases_command import AllDatabasesMergerCommand
 from biorempp.commands.base_command import BaseCommand
 from biorempp.commands.info_command import InfoCommand
-from biorempp.commands.modular_command import ModularPipelineCommand
-from biorempp.commands.traditional_command import TraditionalPipelineCommand
-from biorempp.utils.logging_config import get_logger
+from biorempp.commands.merger_command import DatabaseMergerCommand
+from biorempp.utils.silent_logging import get_logger
 
 
 class CommandFactory:
     """
     Factory class for creating appropriate command instances.
 
-    Implements the Factory Pattern to centralize command creation logic
-    and routing based on CLI arguments. This eliminates conditional
-    logic in the main application and makes it easy to add new commands.
+    Implements the Factory Pattern for the simplified BioRemPP architecture,
+    focusing on database merging functionality:
+    - Info commands (--list-databases, --database-info)
+    - All databases merger (--all-databases)
+    - Single database merger (--database)
 
-    SOLUTION for Risk: Template Method vs Application Responsibility
-    - Commands focus on execution and return data
-    - Application (not commands) handles formatting via OutputFormatter
-    - Clean separation of concerns maintained
+    This simplified design maintains the robust Factory Pattern while
+    removing unnecessary complexity.
     """
 
     def __init__(self):
@@ -37,10 +37,10 @@ class CommandFactory:
         """
         Create appropriate command instance based on arguments.
 
-        Routes command creation based on CLI flags and arguments:
-        1. Info commands (--list-modules) -> InfoCommand
-        2. Modular processing (--enable-modular) -> ModularPipelineCommand
-        3. Traditional processing (default) -> TraditionalPipelineCommand
+        Routes command creation based on simplified CLI arguments:
+        1. Info commands (--list-databases, --database-info) -> InfoCommand
+        2. All databases merger (--all-databases) -> AllDatabasesMergerCommand
+        3. Single database merger (--database) -> DatabaseMergerCommand
 
         Parameters
         ----------
@@ -58,41 +58,52 @@ class CommandFactory:
             If command configuration is invalid or conflicting
         """
         factory = cls()
-        factory.logger.debug("Creating command based on arguments")
+        factory.logger.debug("Creating command based on simplified arguments")
 
         # Route 1: Info commands (highest priority)
-        if getattr(args, "list_modules", False):
-            factory.logger.info("Creating InfoCommand for module listing")
-            return InfoCommand()
+        if getattr(args, "list_databases", False):
+            factory.logger.info("Creating InfoCommand for database listing")
+            return InfoCommand("databases")
 
-        # Route 2: Modular processing
-        if getattr(args, "enable_modular", False):
-            # Validate modular processing requirements
-            if not getattr(args, "processors", None):
-                raise ValueError(
-                    "Modular processing requires --processors to be specified. "
-                    "Use --list-modules to see available processors."
-                )
+        if getattr(args, "database_info", None):
+            db_info = args.database_info
+            factory.logger.info(f"Creating InfoCommand for database info: {db_info}")
+            return InfoCommand("database_info", args.database_info)
 
+        # Route 2: All databases merger
+        if getattr(args, "all_databases", False):
+            # Validate input file requirement
             if not getattr(args, "input", None):
                 raise ValueError(
-                    "Modular processing requires --input file to be specified."
+                    "All databases merger requires --input file to be specified."
                 )
 
-            factory.logger.info("Creating ModularPipelineCommand")
-            return ModularPipelineCommand()
+            factory.logger.info("Creating AllDatabasesMergerCommand")
+            return AllDatabasesMergerCommand()
 
-        # Route 3: Traditional processing (default)
-        # Validate traditional processing requirements
-        if not getattr(args, "input", None):
-            raise ValueError(
-                "Traditional processing requires --input file to be specified."
+        # Route 3: Single database merger (--database only)
+        database_name = getattr(args, "database", None)
+
+        if database_name:
+            # Validate input file requirement
+            if not getattr(args, "input", None):
+                raise ValueError(
+                    "Database merger requires --input file to be specified."
+                )
+
+            # Set pipeline_type for the underlying pipeline execution
+            args.pipeline_type = args.database
+
+            factory.logger.info(
+                f"Creating DatabaseMergerCommand for database: {database_name}"
             )
+            return DatabaseMergerCommand()
 
-        factory.logger.info(
-            f"Creating TraditionalPipelineCommand for pipeline: {args.pipeline_type}"
+        # Default: Show help or error
+        raise ValueError(
+            "No valid command specified. Use --help to see available options, "
+            "or try: --all-databases, --database <name>, --list-databases"
         )
-        return TraditionalPipelineCommand()
 
     @classmethod
     def get_command_type(cls, args: argparse.Namespace) -> str:
@@ -109,11 +120,15 @@ class CommandFactory:
         Returns
         -------
         str
-            Command type name ('info', 'modular', 'traditional')
+            Command type name ('info', 'all_databases', 'single_database')
         """
-        if getattr(args, "list_modules", False):
+        list_dbs = getattr(args, "list_databases", False)
+        db_info = getattr(args, "database_info", None)
+        if list_dbs or db_info:
             return "info"
-        elif getattr(args, "enable_modular", False):
-            return "modular"
+        elif getattr(args, "all_databases", False):
+            return "all_databases"
+        elif getattr(args, "database", None):
+            return "single_database"
         else:
-            return "traditional"
+            return "unknown"

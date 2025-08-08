@@ -9,7 +9,7 @@ import os
 from abc import ABC, abstractmethod
 from typing import Any
 
-from biorempp.utils.logging_config import get_logger
+from biorempp.utils.silent_logging import get_logger
 
 
 class BaseCommand(ABC):

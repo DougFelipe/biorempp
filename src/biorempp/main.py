@@ -8,12 +8,11 @@ This represents a 95% reduction in complexity from the original 427-line
 monolithic implementation to a clean, testable, and extensible architecture.
 """
 
-from biorempp.app import BioRemPPApplication
-from biorempp.utils.logging_config import get_logger, setup_logging
+from biorempp.app.application import BioRemPPApplication
+from biorempp.utils.silent_logging import setup_silent_logging
 
-# Initialize centralized logging (preserved from original)
-setup_logging(level="INFO", console_output=True)
-logger = get_logger("main")
+# Initialize silent logging (no console spam)
+setup_silent_logging()
 
 
 def main():
@@ -29,12 +28,15 @@ def main():
     Any
         Application execution results
     """
+
+    # Technical logging (to file only, no console spam)
+    import logging
+
+    logger = logging.getLogger("biorempp.main")
     logger.info("Starting BioRemPP main entry point")
 
-    # Create application with default dependencies
+    # Create and run the application
     app = BioRemPPApplication()
-
-    # Run application (handles all orchestration, errors, and formatting)
     return app.run()
 
 

@@ -1,0 +1,27 @@
+# Exemplo de arquivo ~/.pypirc para configuração de credenciais PyPI
+# Copie este arquivo para ~/.pypirc (Linux/Mac) ou %USERPROFILE%\.pypirc (Windows)
+# e substitua os tokens pelos seus tokens reais
+
+[distutils]
+index-servers =
+    pypi
+    testpypi
+
+[pypi]
+repository = https://upload.pypi.org/legacy/
+username = __token__
+password = pypi-SEU_TOKEN_PYPI_AQUI
+
+[testpypi]
+repository = https://test.pypi.org/legacy/
+username = __token__
+password = pypi-SEU_TOKEN_TESTPYPI_AQUI
+
+# Como obter os tokens:
+# 1. PyPI oficial: https://pypi.org/manage/account/#api-tokens
+# 2. TestPyPI: https://test.pypi.org/manage/account/#api-tokens
+#
+# IMPORTANTE:
+# - Mantenha este arquivo seguro e nunca o commite no git
+# - Use escopo "Entire account" para o primeiro upload
+# - Depois pode criar tokens específicos por projeto

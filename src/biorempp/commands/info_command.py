@@ -1,43 +1,72 @@
 """
 Info Command Implementation.
 
-This module implements the InfoCommand for displaying available modules
-and system information without requiring input files.
+This module implements the InfoCommand for displaying database information
+and system help without requiring input files.
 """
 
-from typing import Any, Dict, List
+from typing import Any, Dict
 
-from biorempp.analysis.module_registry import registry
 from biorempp.commands.base_command import BaseCommand
 
 
 class InfoCommand(BaseCommand):
     """
-    Command for displaying system information and available modules.
+    Command for displaying database information and system help.
 
     This command handles informational requests that don't require
-    input file processing, such as listing available analysis modules.
+    input file processing, such as listing available databases or
+    showing database-specific information.
 
-    Features:
-    - Auto-discovery and listing of available processors
-    - Module descriptions and metadata
-    - No input file validation required
+    Supported info types:
+    - databases: List all available databases
+    - database_info: Show detailed information about a specific database
     """
 
-    def __init__(self):
-        """Initialize info command with module discovery."""
-        super().__init__()
+    def __init__(self, info_type: str, target: str = None):
+        """
+        Initialize info command with type and target.
 
-        # Auto-discover modules for listing
-        self.logger.debug("Initializing module auto-discovery for info command")
-        registry.auto_discover_modules()
+        Parameters
+        ----------
+        info_type : str
+            Type of information to display ('databases', 'database_info')
+        target : str, optional
+            Target database name for database_info type
+        """
+        super().__init__()
+        self.info_type = info_type
+        self.target = target
+
+    def execute(self, args) -> Dict[str, Any]:
+        """
+        Execute info command logic.
+
+        Parameters
+        ----------
+        args : argparse.Namespace
+            Parsed command line arguments
+
+        Returns
+        -------
+        Dict[str, Any]
+            Information results based on command type
+        """
+        self.logger.info(f"Executing info command: {self.info_type}")
+
+        if self.info_type == "databases":
+            return self._list_databases()
+        elif self.info_type == "database_info":
+            return self._show_database_info(self.target)
+        else:
+            raise ValueError(f"Unsupported info type: {self.info_type}")
 
     def validate_specific_input(self, args) -> bool:
         """
         Validate info command specific inputs.
 
         Info commands generally don't require specific validation
-        as they don't process input files.
+        as they are informational only.
 
         Parameters
         ----------
@@ -49,78 +78,223 @@ class InfoCommand(BaseCommand):
         bool
             Always True for info commands
         """
-        self.logger.debug("Info command validation - no specific validation required")
+        self.logger.debug(f"Info command validation for type: {self.info_type}")
         return True
 
-    def execute(self, args) -> Dict[str, Any]:
+    def _list_databases(self) -> Dict[str, Any]:
         """
-        Execute the info command logic.
-
-        Currently supports listing available modules. Can be extended
-        for other informational commands in the future.
-
-        Parameters
-        ----------
-        args : argparse.Namespace
-            Parsed command line arguments
+        List all available databases.
 
         Returns
         -------
         Dict[str, Any]
-            Dictionary containing available modules information
+            Database listing information
         """
-        self.logger.info("Executing info command - listing available modules")
-
-        # Get all available processors
-        processor_names = registry.list_processors()
-
-        # Build module information
-        modules_info = {
-            "total_modules": len(processor_names),
-            "modules": self._build_modules_info(processor_names),
+        databases = {
+            "biorempp": {
+                "name": "BioRemPP Core Database",
+                "description": (
+                    "Enzyme-compound interactions for biodegradation " "(6,623 records)"
+                ),
+                "file": "database_biorempp.csv",
+                "size": "0.69 MB",
+            },
+            "hadeg": {
+                "name": "HAdeg Database",
+                "description": "Human metabolism degradation pathways (1,168 records)",
+                "file": "database_hadeg.csv",
+                "size": "0.04 MB",
+            },
+            "kegg": {
+                "name": "KEGG Pathways",
+                "description": "KEGG degradation pathways database (871 records)",
+                "file": "kegg_degradation_pathways.csv",
+                "size": "0.02 MB",
+            },
+            "toxcsm": {
+                "name": "ToxCSM Database",
+                "description": (
+                    "Comprehensive toxicity predictions " "(323 records, 66 endpoints)"
+                ),
+                "file": "database_toxcsm.csv",
+                "size": "0.18 MB",
+            },
         }
 
-        self.logger.info(f"Found {len(processor_names)} available modules")
-        return modules_info
+        print("\n🗄️  Available Databases:")
+        print("=" * 70)
 
-    def _build_modules_info(
-        self, processor_names: List[str]
-    ) -> Dict[str, Dict[str, str]]:
+        for db_key, db_info in databases.items():
+            print(f"\n📊 {db_key.upper()}")
+            print(f"   Name: {db_info['name']}")
+            print(f"   Description: {db_info['description']}")
+            print(f"   File: {db_info['file']} ({db_info['size']})")
+
+        print("\n📋 Sample Input Data:")
+        print("   File: sample_data.txt (0.18 MB)")
+        print("   Content: 10 organisms with 23,663 KO identifiers")
+        print("   Format: FASTA-like with organism headers (>) and KO entries")
+
+        print("\n💡 Usage Examples:")
+        print("   biorempp --input sample_data.txt --all-databases")
+        print("   biorempp --input sample_data.txt --database biorempp")
+        print("   biorempp --database-info biorempp")
+        print("   biorempp --list-databases")
+        print()
+
+        return {"databases": databases}
+
+    def _show_database_info(self, database_name: str) -> Dict[str, Any]:
         """
-        Build detailed information about available modules.
+        Show detailed information about a specific database.
 
         Parameters
         ----------
-        processor_names : List[str]
-            List of available processor names
+        database_name : str
+            Name of the database to show info for
 
         Returns
         -------
-        Dict[str, Dict[str, str]]
-            Dictionary mapping processor names to their metadata
+        Dict[str, Any]
+            Detailed database information
         """
-        modules_info = {}
-
-        for name in processor_names:
-            try:
-                processor_class = registry.processors[name]
-                instance = processor_class()
-
-                modules_info[name] = {
-                    "description": getattr(
-                        instance, "description", "No description available"
+        database_details = {
+            "biorempp": {
+                "name": "BioRemPP Core Database",
+                "description": (
+                    "Comprehensive enzyme-compound interaction database "
+                    "for biodegradation research"
+                ),
+                "columns": [
+                    "ko",
+                    "genesymbol",
+                    "genename",
+                    "cpd",
+                    "compoundclass",
+                    "referenceAG",
+                    "compoundname",
+                    "enzyme_activity",
+                ],
+                "size": "6,623 records",
+                "file_size": "0.69 MB",
+                "format": "CSV with semicolon separator",
+                "key_features": [
+                    "986 unique KEGG Orthology (KO) identifiers",
+                    "323 unique compounds across 12 chemical classes",
+                    "978 unique enzyme gene symbols",
+                    "150 different enzyme activities",
+                ],
+                "usage": (
+                    "Primary database for enzyme-compound mapping "
+                    "and biodegradation pathway analysis"
+                ),
+            },
+            "hadeg": {
+                "name": "Human Metabolism Database (HAdeg)",
+                "description": (
+                    "Specialized database for human metabolism "
+                    "biodegradation pathways"
+                ),
+                "columns": ["Gene", "ko", "Pathway", "compound_pathway"],
+                "size": "1,168 records",
+                "file_size": "0.04 MB",
+                "format": "CSV with semicolon separator",
+                "key_features": [
+                    "323 unique genes involved in degradation",
+                    "339 unique KO identifiers",
+                    "71 distinct metabolic pathways",
+                    "5 major compound pathway categories (Alkanes, Aromatics, etc.)",
+                ],
+                "usage": (
+                    "Human-specific biodegradation pathway analysis "
+                    "and gene-pathway mapping"
+                ),
+            },
+            "kegg": {
+                "name": "KEGG Degradation Pathways",
+                "description": (
+                    "KEGG-derived biodegradation pathway information "
+                    "with enzyme associations"
+                ),
+                "columns": ["ko", "pathname", "genesymbol"],
+                "size": "871 records",
+                "file_size": "0.02 MB",
+                "format": "CSV with semicolon separator",
+                "key_features": [
+                    "517 unique KO identifiers",
+                    "20 degradation pathways (Naphthalene, Aromatic, Toluene, etc.)",
+                    "513 unique gene symbols",
+                    "Focus on xenobiotic and aromatic compound degradation",
+                ],
+                "usage": (
+                    "Pathway enrichment analysis and degradation route "
+                    "identification"
+                ),
+            },
+            "toxcsm": {
+                "name": "ToxCSM Toxicity Database",
+                "description": (
+                    "Comprehensive toxicity prediction database "
+                    "with multiple endpoints"
+                ),
+                "columns": [
+                    "SMILES",
+                    "cpd",
+                    "ChEBI",
+                    "compoundname",
+                    "66 toxicity endpoints",
+                    "Nuclear receptor (NR_*), Stress response (SR_*), "
+                    "Genotoxicity (Gen_*)",
+                    "Environmental (Env_*), Organ toxicity (Org_*) assessments",
+                ],
+                "size": "323 records",
+                "file_size": "0.18 MB",
+                "format": "CSV with semicolon separator",
+                "key_features": [
+                    "314 unique SMILES molecular structures",
+                    "66 toxicity endpoints with value/label pairs",
+                    (
+                        "Multiple toxicity categories: Nuclear receptors, "
+                        "Stress response, Genotoxicity, Environmental, "
+                        "Organ-specific"
                     ),
-                    "class_name": processor_class.__name__,
-                    "module": processor_class.__module__,
-                }
+                    "ChEBI identifiers for chemical standardization",
+                ],
+                "usage": "Comprehensive toxicity evaluation and safety assessment",
+            },
+        }
 
-            except Exception as e:
-                self.logger.warning(f"Failed to get info for processor {name}: {e}")
-                modules_info[name] = {
-                    "description": "Error loading module information",
-                    "class_name": "Unknown",
-                    "module": "Unknown",
-                    "error": str(e),
-                }
+        if database_name not in database_details:
+            print(f"❌ Database '{database_name}' not found.")
+            print(f"Available databases: {', '.join(database_details.keys())}")
+            return {"error": f"Database '{database_name}' not found"}
 
-        return modules_info
+        db_info = database_details[database_name]
+
+        print(f"\n📊 {db_info['name']}")
+        print("=" * 70)
+        print(f"📄 Description: {db_info['description']}")
+        print(f"📊 Size: {db_info['size']} ({db_info['file_size']})")
+        print(f"📋 Format: {db_info['format']}")
+
+        print("\n🔍 Database Schema:")
+        for i, col in enumerate(db_info["columns"][:8], 1):  # Show first 8 columns
+            print(f"   {i:2d}. {col}")
+        if len(db_info["columns"]) > 8:
+            print(f"   ... and {len(db_info['columns']) - 8} more columns")
+
+        if "key_features" in db_info:
+            print("\n⭐ Key Features:")
+            for feature in db_info["key_features"]:
+                print(f"   • {feature}")
+
+        print("\n🎯 Primary Usage:")
+        print(f"   {db_info['usage']}")
+
+        print("\n💡 Usage Examples:")
+        print(f"   biorempp --input sample_data.txt --database {database_name}")
+        print("   biorempp --input sample_data.txt --all-databases")
+        print("   biorempp --list-databases")
+        print()
+
+        return {"database_info": {database_name: db_info}}

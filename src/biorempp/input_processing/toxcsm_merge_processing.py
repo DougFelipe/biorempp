@@ -1,10 +1,10 @@
+import logging
 import os
 
 import pandas as pd
 
-from biorempp.utils.logging_config import get_logger
-
-logger = get_logger("input_processing.toxcsm_merge_processing")
+# Technical logging (silent to console, file only)
+logger = logging.getLogger("biorempp.input_processing.toxcsm_merge_processing")
 
 
 def merge_input_with_toxcsm(

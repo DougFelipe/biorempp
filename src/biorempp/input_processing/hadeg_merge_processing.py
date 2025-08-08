@@ -5,13 +5,13 @@ This module provides functionality to merge input data with the HADEG
 (Hydrocarbon Degradation Database) using KEGG Ortholog identifiers.
 """
 
+import logging
 import os
 
 import pandas as pd
 
-from biorempp.utils.logging_config import get_logger
-
-logger = get_logger("input_processing.hadeg_merge_processing")
+# Technical logging (silent to console, file only)
+logger = logging.getLogger("biorempp.input_processing.hadeg_merge_processing")
 
 
 def merge_input_with_hadeg(

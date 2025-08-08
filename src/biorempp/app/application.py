@@ -11,7 +11,6 @@ from typing import Any, Dict, List, Optional
 from biorempp.app.command_factory import CommandFactory
 from biorempp.cli.argument_parser import BioRemPPArgumentParser
 from biorempp.cli.output_formatter import OutputFormatter
-from biorempp.utils.logging_config import get_logger
 
 
 class BioRemPPApplication:
@@ -54,7 +53,42 @@ class BioRemPPApplication:
         self.parser = parser or BioRemPPArgumentParser()
         self.command_factory = command_factory or CommandFactory()
         self.output_formatter = output_formatter or OutputFormatter()
-        self.logger = get_logger(self.__class__.__name__)
+
+        # Technical logging (file only, no console spam)
+        import logging
+
+        self.logger = logging.getLogger("biorempp.application")
+
+        # Setup file-only handler to prevent console spam
+        if not self.logger.handlers:
+            from datetime import datetime
+            from pathlib import Path
+
+            # Create logs directory
+            log_dir = Path("outputs/logs")
+            log_dir.mkdir(parents=True, exist_ok=True)
+
+            # Setup file logging only
+            log_file = log_dir / f"biorempp_{datetime.now().strftime('%Y%m%d')}.log"
+
+            file_handler = logging.FileHandler(log_file, encoding="utf-8")
+            file_formatter = logging.Formatter(
+                "%(asctime)s | %(levelname)-8s | %(name)-25s | "
+                "%(funcName)-15s | %(message)s"
+            )
+            file_handler.setFormatter(file_formatter)
+            file_handler.setLevel(logging.DEBUG)
+
+            self.logger.addHandler(file_handler)
+            self.logger.setLevel(logging.DEBUG)
+            self.logger.propagate = False  # Prevent console output
+
+        # Initialize enhanced components
+        from ..utils.error_handler import EnhancedErrorHandler
+        from ..utils.user_feedback import UserFeedbackManager
+
+        self.error_handler = EnhancedErrorHandler()
+        self.feedback_manager = UserFeedbackManager()
 
     def run(self, args: Optional[List[str]] = None) -> Any:
         """
@@ -89,6 +123,15 @@ class BioRemPPApplication:
             parsed_args = self.parser.parse_args(args)
             self.logger.debug(f"Parsed arguments: {vars(parsed_args)}")
 
+            # Configure verbosity level for feedback manager
+            if hasattr(parsed_args, "verbose") and parsed_args.verbose:
+                self.feedback_manager.set_verbosity("verbose")
+            elif hasattr(parsed_args, "debug") and parsed_args.debug:
+                self.feedback_manager.set_verbosity("debug")
+            else:
+                # Default to quiet mode for clean beautiful output
+                self.feedback_manager.set_verbosity("quiet")
+
             # Step 2: Create appropriate command
             command = self.command_factory.create_command(parsed_args)
             command_type = self.command_factory.get_command_type(parsed_args)
@@ -107,27 +150,43 @@ class BioRemPPApplication:
 
         except KeyboardInterrupt:
             self.logger.info("Process interrupted by user")
-            self.output_formatter.print_interruption_message()
+            self.feedback_manager.error("❌ Processo interrompido pelo usuário")
             sys.exit(130)  # Standard exit code for Ctrl+C
 
         except ValueError as e:
             self.logger.error(f"Validation error: {e}")
-            self.output_formatter.print_error_message(e)
+            args_context = parsed_args if "parsed_args" in locals() else None
+            error_msg, solution_text = self.error_handler.handle_error(e, args_context)
+            self.feedback_manager.error(f"❌ {error_msg}")
+            if solution_text:
+                self.feedback_manager.info(f"💡 {solution_text}")
             sys.exit(1)
 
         except FileNotFoundError as e:
             self.logger.error(f"File not found: {e}")
-            self.output_formatter.print_error_message(e)
+            args_context = parsed_args if "parsed_args" in locals() else None
+            error_msg, solution_text = self.error_handler.handle_error(e, args_context)
+            self.feedback_manager.error(f"❌ {error_msg}")
+            if solution_text:
+                self.feedback_manager.info(f"💡 {solution_text}")
             sys.exit(2)
 
         except PermissionError as e:
             self.logger.error(f"Permission error: {e}")
-            self.output_formatter.print_error_message(e)
+            args_context = parsed_args if "parsed_args" in locals() else None
+            error_msg, solution_text = self.error_handler.handle_error(e, args_context)
+            self.feedback_manager.error(f"❌ {error_msg}")
+            if solution_text:
+                self.feedback_manager.info(f"💡 {solution_text}")
             sys.exit(3)
 
         except Exception as e:
             self.logger.error(f"Unexpected error: {e}", exc_info=True)
-            self.output_formatter.print_error_message(e)
+            args_context = parsed_args if "parsed_args" in locals() else None
+            error_msg, solution_text = self.error_handler.handle_error(e, args_context)
+            self.feedback_manager.error(f"❌ {error_msg}")
+            if solution_text:
+                self.feedback_manager.info(f"💡 {solution_text}")
             sys.exit(1)
 
     def get_version_info(self) -> Dict[str, str]:
