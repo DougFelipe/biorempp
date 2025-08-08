@@ -18,7 +18,7 @@ usage: __main__.py [-h] [--input INPUT] ...
 $ python -m biorempp --help
 usage: __main__.py [-h] [--input INPUT] [--output-dir OUTPUT_DIR] [--all-databases] [--database {biorempp,hadeg,kegg,toxcsm}] [--list-databases] [--database-info {biorempp,hadeg,kegg,toxcsm}]
 
-BioRemPP: Biological Data & Database Merger Engine
+BioRemPP: Bioremediation Potential Profile
 
 options:
   -h, --help            show this help message and exit

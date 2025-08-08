@@ -26,9 +26,8 @@ class BioRemPPApplication:
     This design implements clean separation of concerns and makes
     the entire application easily testable through dependency injection.
 
-    SOLUTION for Risk: Error Handling Distribution
+    Error Handling Distribution
     - All exceptions handled at application level
-    - Commands focus on business logic, not error presentation
     - Consistent error formatting and exit codes
     """
 
@@ -54,12 +53,12 @@ class BioRemPPApplication:
         self.command_factory = command_factory or CommandFactory()
         self.output_formatter = output_formatter or OutputFormatter()
 
-        # Technical logging (file only, no console spam)
+        # Technical logging (file only)
         import logging
 
         self.logger = logging.getLogger("biorempp.application")
 
-        # Setup file-only handler to prevent console spam
+        # Setup file-only handler
         if not self.logger.handlers:
             from datetime import datetime
             from pathlib import Path
@@ -129,7 +128,7 @@ class BioRemPPApplication:
             elif hasattr(parsed_args, "debug") and parsed_args.debug:
                 self.feedback_manager.set_verbosity("debug")
             else:
-                # Default to quiet mode for clean beautiful output
+                # Default to quiet mode
                 self.feedback_manager.set_verbosity("quiet")
 
             # Step 2: Create appropriate command
@@ -205,11 +204,11 @@ class BioRemPPApplication:
             return {
                 "version": __version__,
                 "application": "BioRemPP",
-                "description": "Modular Bioinformatics Data Processing Tool",
+                "description": "Bioremediation Potential Profile",
             }
         except ImportError:
             return {
                 "version": "development",
                 "application": "BioRemPP",
-                "description": "Modular Bioinformatics Data Processing Tool",
+                "description": "Bioremediation Potential Profile",
             }

@@ -1,8 +1,8 @@
 """
-Command Factory for BioRemPP Simplified Command Pattern Implementation.
+Command Factory for BioRemPP Command Pattern Implementation.
 
 This module implements the Factory Pattern for creating appropriate
-command instances based on parsed CLI arguments for the simplified architecture.
+command instances based on parsed CLI arguments.
 """
 
 import argparse
@@ -18,13 +18,13 @@ class CommandFactory:
     """
     Factory class for creating appropriate command instances.
 
-    Implements the Factory Pattern for the simplified BioRemPP architecture,
+    Implements the Factory Pattern for the BioRemPP architecture,
     focusing on database merging functionality:
     - Info commands (--list-databases, --database-info)
     - All databases merger (--all-databases)
     - Single database merger (--database)
 
-    This simplified design maintains the robust Factory Pattern while
+    This design maintains the Factory Pattern while
     removing unnecessary complexity.
     """
 
@@ -37,7 +37,7 @@ class CommandFactory:
         """
         Create appropriate command instance based on arguments.
 
-        Routes command creation based on simplified CLI arguments:
+        Routes command creation based on CLI arguments:
         1. Info commands (--list-databases, --database-info) -> InfoCommand
         2. All databases merger (--all-databases) -> AllDatabasesMergerCommand
         3. Single database merger (--database) -> DatabaseMergerCommand
@@ -58,7 +58,7 @@ class CommandFactory:
             If command configuration is invalid or conflicting
         """
         factory = cls()
-        factory.logger.debug("Creating command based on simplified arguments")
+        factory.logger.debug("Creating command based on arguments")
 
         # Route 1: Info commands (highest priority)
         if getattr(args, "list_databases", False):

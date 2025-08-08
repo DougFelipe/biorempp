@@ -1,7 +1,7 @@
 """
-BioRemPP Simplified Argument Parser for Command Line Interface.
+BioRemPP Argument Parser for Command Line Interface.
 
-This module provides a simplified, focused approach to CLI argument parsing,
+This module provides a focused approach to CLI argument parsing,
 designed for the core database merging functionality.
 """
 
@@ -11,19 +11,19 @@ from typing import List, Optional
 
 class BioRemPPArgumentParser:
     """
-    Simplified argument parser for BioRemPP CLI interface.
+    Argument parser for BioRemPP CLI interface.
 
     Focuses on core database merging functionality:
     - Input arguments: biological data file paths
     - Database arguments: database selection (individual or all)
     - Info arguments: database information and help commands
 
-    This simplified design provides a cleaner user experience while
+    This design provides a cleaner user experience while
     maintaining the robust architecture underneath.
     """
 
     def __init__(self):
-        """Initialize the argument parser with simplified structure."""
+        """Initialize the argument parser with structure."""
         self.parser = self._create_parser()
 
     def _create_parser(self) -> argparse.ArgumentParser:
@@ -36,7 +36,7 @@ class BioRemPPArgumentParser:
             Configured parser with simplified argument groups
         """
         parser = argparse.ArgumentParser(
-            description="BioRemPP: Biological Data & Database Merger Engine"
+            description="BioRemPP: Bioremediation Potential Profile"
         )
 
         # Add simplified argument groups
@@ -60,7 +60,7 @@ class BioRemPPArgumentParser:
             "--input",
             type=str,
             required=False,  # Will be validated later based on context
-            help="Path to the input biological data file (FASTA format)",
+            help="Path to the input biological data file",
         )
 
         parser.add_argument(
@@ -135,7 +135,7 @@ class BioRemPPArgumentParser:
             "--quiet",
             "-q",
             action="store_true",
-            help="Silent mode - no output except errors (this is now default)",
+            help="Silent mode - no output except errors (default)",
         )
 
         verbosity_exclusive.add_argument(

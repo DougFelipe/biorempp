@@ -855,7 +855,7 @@ usage: biorempp [-h] [--input INPUT] [--database {biorempp,hadeg,kegg,toxcsm}] [
                 [--list-databases] [--database-info {biorempp,hadeg,kegg,toxcsm}] [--output-dir OUTPUT_DIR]
                 [--quiet] [--verbose] [--debug]
 
-BioRemPP: Biological Data & Database Merger Engine
+BioRemPP: Bioremediation Potential Profile
 
 options:
   -h, --help            show this help message and exit
