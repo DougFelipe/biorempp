@@ -1,7 +1,7 @@
 """
 Output Formatter for BioRemPP CLI Interface.
 
-This module provides centralized output formatting for all command types,
+This module provides centralized output formatting for traditional pipeline results,
 separating presentation logic from business logic following SRP.
 """
 
@@ -18,18 +18,12 @@ class OutputFormatter:
     """
     Centralized output formatter for BioRemPP CLI interface.
 
-    Handles formatting and display of results from all command types:
-    - Traditional pipeline results (single/multiple outputs)
-    - Modular pipeline results (DataFrame summaries)
-    - Info command results (module listings)
+    Handles formatting and display of results from traditional pipeline commands:
+    - Single database processing results
+    - Multiple database processing results
 
     This design centralizes all presentation logic and makes it easy
     to add new output formats (JSON, XML, etc.) in the future.
-
-    SOLUTION for Risk: Template Method vs Application Responsibility
-    - Commands return raw data without formatting concerns
-    - Application uses OutputFormatter to handle all presentation
-    - Clean separation between data processing and presentation
     """
 
     def __init__(self):
@@ -42,7 +36,7 @@ class OutputFormatter:
         """
         Main output formatting dispatcher.
 
-        Routes output formatting based on argument type and command results.
+        Routes output formatting based on traditional pipeline results.
 
         Parameters
         ----------
@@ -51,15 +45,8 @@ class OutputFormatter:
         args : argparse.Namespace
             Parsed command line arguments for context
         """
-        self.logger.debug("Formatting output based on command type")
-
-        # Route to appropriate formatter based on command type
-        if getattr(args, "list_modules", False):
-            self._format_modules_list(result)
-        elif getattr(args, "enable_modular", False):
-            self._format_modular_output(result)
-        else:
-            self._format_traditional_output(result, args)
+        self.logger.debug("Formatting traditional pipeline output")
+        self._format_traditional_output(result, args)
 
     def _format_traditional_output(
         self, result: Union[str, Dict[str, str]], args: argparse.Namespace
@@ -206,71 +193,6 @@ class OutputFormatter:
                 return f"{size_bytes // (1024 * 1024)}MB"
         except (OSError, FileNotFoundError):
             return "Unknown"
-
-    def _format_modular_output(self, result: Dict[str, Any]) -> None:
-        """
-        Format modular pipeline output.
-
-        Displays summary information and details for each processor
-        executed in the modular pipeline.
-
-        Parameters
-        ----------
-        result : Dict[str, Any]
-            Modular pipeline results summary
-        """
-        self.logger.debug("Formatting modular pipeline output")
-
-        print("[BioRemPP] Modular Pipeline Results:")
-        print(f"  Processors run: {result['processors_run']}")
-        print(f"  Successful: {result['successful_processors']}")
-
-        # Print details for each processor
-        for processor_name, details in result["processor_details"].items():
-            if details["success"]:
-                processor_name_upper = processor_name.upper()
-                print(
-                    f"  [{processor_name_upper}] Processing completed - "
-                    f"{details['rows_processed']} rows processed"
-                )
-                print("    Columns: {}".format(", ".join(details["columns"])))
-                if "data_shape" in details:
-                    print(f"    Data shape: {details['data_shape']}")
-                if "memory_usage_mb" in details:
-                    print(f"    Memory usage: {details['memory_usage_mb']} MB")
-                print("    DataFrame available for external analysis and visualization")
-            else:
-                processor_name_upper = processor_name.upper()
-                print(f"  [{processor_name_upper}] Processing failed")
-                if "error" in details:
-                    print(f"    Error: {details['error']}")
-
-    def _format_modules_list(self, result: Dict[str, Any]) -> None:
-        """
-        Format available modules list output.
-
-        Displays all available analysis modules with descriptions.
-
-        Parameters
-        ----------
-        result : Dict[str, Any]
-            Modules information from InfoCommand
-        """
-        self.logger.debug("Formatting modules list output")
-
-        total_modules = result.get("total_modules", 0)
-        modules = result.get("modules", {})
-
-        print("[BioRemPP] Available Modules:")
-        print(f"Data Processors ({total_modules}):")
-
-        for name, info in modules.items():
-            description = info.get("description", "No description available")
-            print(f"  - {name}: {description}")
-
-            # Show error if module failed to load
-            if "error" in info:
-                print(f"    Warning: {info['error']}")
 
     def print_error_message(self, error: Exception) -> None:
         """

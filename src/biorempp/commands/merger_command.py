@@ -17,7 +17,6 @@ from biorempp.pipelines.input_processing import (
     run_toxcsm_processing_pipeline,
 )
 from biorempp.utils.error_handler import get_error_handler
-from biorempp.utils.user_feedback import get_user_feedback
 
 
 class DatabaseMergerCommand(BaseCommand):
@@ -100,42 +99,24 @@ class DatabaseMergerCommand(BaseCommand):
             Path to output file (single pipeline) or dictionary of
             pipeline names to output paths (all pipelines)
         """
-        # Initialize feedback system based on verbosity
-        verbosity = self._get_verbosity_level(args)
-        feedback = get_user_feedback(verbosity)
+        # Initialize error handler for exception handling
         error_handler = get_error_handler()
 
         try:
             self.logger.info(f"Executing traditional pipeline: {args.pipeline_type}")
 
-            # Start processing feedback
-            database_name = args.pipeline_type if args.pipeline_type != "all" else None
-            feedback.start_processing(args.input, database_name)
+            # Execute pipeline logic without display
+            # (display handled by OutputFormatter)
 
-            # Show loading step with progress
-            feedback.show_loading_step("Loading input data", show_progress=True)
-            time.sleep(0.5)  # Simulate loading time
-
-            # Validate input file and show feedback
+            # Validate input file silently
             import os
 
-            if os.path.exists(args.input):
-                # Count lines for feedback (simplified)
-                with open(args.input, "r", encoding="utf-8") as f:
-                    line_count = sum(1 for line in f if line.strip())
-                feedback.complete_loading_step("", f"{line_count:,} identifiers loaded")
-            else:
+            if not os.path.exists(args.input):
                 raise FileNotFoundError(f"Input file not found: {args.input}")
 
-            # Show database connection step
+            # Execute the appropriate pipeline based on type
             if args.pipeline_type != "all":
-                # Single database processing
-                db_name = args.pipeline_type.upper()
-                # TODO: Get actual database size - using placeholder for now
-                feedback.show_database_connection(db_name, 6623, show_progress=True)
-
-                # Show processing progress
-                feedback.show_processing_progress("Processing data", show_bar=True)
+                # Single database processing - no feedback display here
 
                 # Get the appropriate pipeline function
                 pipeline_function = self.PIPELINE_MAP[args.pipeline_type]
@@ -149,33 +130,21 @@ class DatabaseMergerCommand(BaseCommand):
                 result = pipeline_function(**pipeline_kwargs)
                 processing_time = time.time() - start_time
 
-                # Show saving step
+                # Return result for OutputFormatter to handle display
                 if isinstance(result, dict) and "output_path" in result:
-                    feedback.show_saving_results(result["filename"], show_progress=True)
-
-                    # Show final results with correct values
-                    feedback.show_processing_results(
-                        {
-                            "output_file": result["output_path"],
-                            "matches": result.get("matches", 0),
-                            "processing_time": processing_time,
-                        }
-                    )
+                    # Add processing time to result for display
+                    result["processing_time"] = processing_time
+                    return result
                 elif isinstance(result, str):
                     # Fallback for old format
-                    feedback.show_saving_results(result, show_progress=True)
-
-                    # Show final results
-                    feedback.show_processing_results(
-                        {
-                            "output_file": result,
-                            "matches": 0,  # Unknown for old format
-                            "processing_time": processing_time,
-                        }
-                    )
+                    return {
+                        "output_path": result,
+                        "filename": os.path.basename(result),
+                        "matches": 0,  # Unknown for old format
+                        "processing_time": processing_time,
+                    }
             else:
-                # All databases processing
-                feedback.show_all_databases_processing(4)
+                # All databases processing - no feedback display here
 
                 # Get the appropriate pipeline function
                 pipeline_function = self.PIPELINE_MAP[args.pipeline_type]
@@ -183,22 +152,14 @@ class DatabaseMergerCommand(BaseCommand):
                 # Build pipeline arguments dynamically
                 pipeline_kwargs = self._build_pipeline_kwargs(args)
 
-                # Execute the pipeline with step-by-step feedback
+                # Execute the pipeline
                 start_time = time.time()
                 self.logger.debug(f"Pipeline kwargs: {list(pipeline_kwargs.keys())}")
-
-                # Simulate processing each database
-                databases = ["biorempp", "hadeg", "kegg", "toxcsm"]
-                for i, db_name in enumerate(databases, 1):
-                    db_upper = db_name.upper()
-                    feedback.show_database_processing_step(
-                        i, 4, db_upper, show_progress=True
-                    )
 
                 result = pipeline_function(**pipeline_kwargs)
                 processing_time = time.time() - start_time
 
-                # Show all databases results
+                # Add processing time to results for display
                 if isinstance(result, dict):
                     # Add processing time to results
                     for db_name in result:
@@ -206,7 +167,8 @@ class DatabaseMergerCommand(BaseCommand):
                             avg_time = processing_time / len(result)
                             result[db_name]["processing_time"] = avg_time
 
-                    feedback.show_all_databases_results(result)
+                # Return result for OutputFormatter to handle display
+                return result
 
             self.logger.info(
                 f"Traditional pipeline {args.pipeline_type} completed successfully"
@@ -219,17 +181,6 @@ class DatabaseMergerCommand(BaseCommand):
             context = f"processing_{pipeline_type}"
             error_handler.show_error_to_user(e, context)
             raise
-
-    def _get_verbosity_level(self, args) -> str:
-        """Get verbosity level from arguments."""
-        if hasattr(args, "quiet") and args.quiet:
-            return "SILENT"
-        elif hasattr(args, "verbose") and args.verbose:
-            return "VERBOSE"
-        elif hasattr(args, "debug") and args.debug:
-            return "DEBUG"
-        else:
-            return "NORMAL"
 
     def _get_database_path(self, database_name):
         """
