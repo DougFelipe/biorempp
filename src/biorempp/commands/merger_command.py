@@ -10,7 +10,6 @@ from typing import Any, Dict, Union
 
 from biorempp.commands.base_command import BaseCommand
 from biorempp.pipelines.input_processing import (
-    run_all_processing_pipelines,
     run_biorempp_processing_pipeline,
     run_hadeg_processing_pipeline,
     run_kegg_processing_pipeline,
@@ -23,12 +22,13 @@ class DatabaseMergerCommand(BaseCommand):
     """
     Command for executing database merging operations.
 
-    Supports all database merger types:
-    - all: Merge with ALL databases (biorempp, kegg, hadeg, toxcsm)
+    Supports individual database merger types:
     - biorempp: Merge with BioRemPP database only
     - kegg: Merge with KEGG pathway database only
     - hadeg: Merge with HAdeg database only
     - toxcsm: Merge with ToxCSM toxicity database only
+
+    For merging with ALL databases, use AllDatabasesMergerCommand instead.
 
     This command handles input validation and database merging execution
     maintaining the same robust functionality as the original implementation.
@@ -36,7 +36,6 @@ class DatabaseMergerCommand(BaseCommand):
 
     # Pipeline mapping for type validation and execution
     PIPELINE_MAP = {
-        "all": run_all_processing_pipelines,
         "biorempp": run_biorempp_processing_pipeline,
         "kegg": run_kegg_processing_pipeline,
         "hadeg": run_hadeg_processing_pipeline,
@@ -114,61 +113,33 @@ class DatabaseMergerCommand(BaseCommand):
             if not os.path.exists(args.input):
                 raise FileNotFoundError(f"Input file not found: {args.input}")
 
-            # Execute the appropriate pipeline based on type
-            if args.pipeline_type != "all":
-                # Single database processing - no feedback display here
+            # Execute single database processing - no feedback display here
 
-                # Get the appropriate pipeline function
-                pipeline_function = self.PIPELINE_MAP[args.pipeline_type]
+            # Get the appropriate pipeline function
+            pipeline_function = self.PIPELINE_MAP[args.pipeline_type]
 
-                # Build pipeline arguments dynamically
-                pipeline_kwargs = self._build_pipeline_kwargs(args)
+            # Build pipeline arguments dynamically
+            pipeline_kwargs = self._build_pipeline_kwargs(args)
 
-                # Execute the pipeline
-                start_time = time.time()
-                self.logger.debug(f"Pipeline kwargs: {list(pipeline_kwargs.keys())}")
-                result = pipeline_function(**pipeline_kwargs)
-                processing_time = time.time() - start_time
+            # Execute the pipeline
+            start_time = time.time()
+            self.logger.debug(f"Pipeline kwargs: {list(pipeline_kwargs.keys())}")
+            result = pipeline_function(**pipeline_kwargs)
+            processing_time = time.time() - start_time
 
-                # Return result for OutputFormatter to handle display
-                if isinstance(result, dict) and "output_path" in result:
-                    # Add processing time to result for display
-                    result["processing_time"] = processing_time
-                    return result
-                elif isinstance(result, str):
-                    # Fallback for old format
-                    return {
-                        "output_path": result,
-                        "filename": os.path.basename(result),
-                        "matches": 0,  # Unknown for old format
-                        "processing_time": processing_time,
-                    }
-            else:
-                # All databases processing - no feedback display here
-
-                # Get the appropriate pipeline function
-                pipeline_function = self.PIPELINE_MAP[args.pipeline_type]
-
-                # Build pipeline arguments dynamically
-                pipeline_kwargs = self._build_pipeline_kwargs(args)
-
-                # Execute the pipeline
-                start_time = time.time()
-                self.logger.debug(f"Pipeline kwargs: {list(pipeline_kwargs.keys())}")
-
-                result = pipeline_function(**pipeline_kwargs)
-                processing_time = time.time() - start_time
-
-                # Add processing time to results for display
-                if isinstance(result, dict):
-                    # Add processing time to results
-                    for db_name in result:
-                        if isinstance(result[db_name], dict):
-                            avg_time = processing_time / len(result)
-                            result[db_name]["processing_time"] = avg_time
-
-                # Return result for OutputFormatter to handle display
+            # Return result for OutputFormatter to handle display
+            if isinstance(result, dict) and "output_path" in result:
+                # Add processing time to result for display
+                result["processing_time"] = processing_time
                 return result
+            elif isinstance(result, str):
+                # Fallback for old format
+                return {
+                    "output_path": result,
+                    "filename": os.path.basename(result),
+                    "matches": 0,  # Unknown for old format
+                    "processing_time": processing_time,
+                }
 
             self.logger.info(
                 f"Traditional pipeline {args.pipeline_type} completed successfully"
