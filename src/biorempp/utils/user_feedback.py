@@ -331,3 +331,5 @@ def set_verbosity(verbosity: str):
     global _global_feedback
     if _global_feedback:
         _global_feedback.verbosity = verbosity.upper()
+    else:
+        _global_feedback = UserFeedbackManager(verbosity)

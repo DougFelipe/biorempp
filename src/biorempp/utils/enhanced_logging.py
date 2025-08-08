@@ -191,3 +191,5 @@ def set_console_level(level: str):
     global _global_logger
     if _global_logger:
         _global_logger.console_level = level.upper()
+    else:
+        _global_logger = BioRemPPLogger(level.upper())
