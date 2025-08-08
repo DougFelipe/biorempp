@@ -4,13 +4,13 @@ I/O Utilities for BioRemPP
 General functions for saving outputs to disk.
 """
 
+import logging
 import os
 from datetime import datetime
 from pathlib import Path
 
-from biorempp.utils.logging_config import get_logger
-
-logger = get_logger("utils.io_utils")
+# Technical logging (silent to console, file only)
+logger = logging.getLogger("biorempp.utils.io_utils")
 
 
 def get_project_root() -> str:

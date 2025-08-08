@@ -15,8 +15,8 @@ except PackageNotFoundError:  # pragma: no cover
 finally:
     del version, PackageNotFoundError
 
-# Initialize centralized logging system
-from biorempp.utils.logging_config import setup_logging
+# Initialize silent logging system (no console spam)
+from biorempp.utils.silent_logging import setup_silent_logging
 
-# Set up default logging configuration
-setup_logging(level="INFO", console_output=True, format_style="detailed")
+# Set up silent logging configuration
+setup_silent_logging()

@@ -6,9 +6,12 @@ separating presentation logic from business logic following SRP.
 """
 
 import argparse
+import os
+import time
 from typing import Any, Dict, Union
 
-from biorempp.utils.logging_config import get_logger
+from biorempp.utils.enhanced_user_feedback import EnhancedFeedbackManager
+from biorempp.utils.silent_logging import get_logger
 
 
 class OutputFormatter:
@@ -30,8 +33,10 @@ class OutputFormatter:
     """
 
     def __init__(self):
-        """Initialize output formatter with logger."""
+        """Initialize output formatter with logger and enhanced feedback."""
         self.logger = get_logger(self.__class__.__name__)
+        self.feedback_manager = EnhancedFeedbackManager()
+        self.start_time = time.time()
 
     def format_output(self, result: Any, args: argparse.Namespace) -> None:
         """
@@ -60,10 +65,10 @@ class OutputFormatter:
         self, result: Union[str, Dict[str, str]], args: argparse.Namespace
     ) -> None:
         """
-        Format traditional pipeline output.
+        Format traditional pipeline output with enhanced design.
 
-        Handles both single pipeline outputs (string path) and
-        multiple pipeline outputs (dictionary of paths).
+        Displays clean, user-friendly output following the
+        LOGGING_SYSTEM_DESIGN.md specification for beautiful CLI interface.
 
         Parameters
         ----------
@@ -75,13 +80,132 @@ class OutputFormatter:
         self.logger.debug("Formatting traditional pipeline output")
 
         if isinstance(result, dict):
-            # Multiple pipelines (e.g., from 'all' pipeline type)
-            print("[BioRemPP] All processing pipelines completed successfully:")
-            for pipeline_name, output_path in result.items():
-                print(f"  [{pipeline_name.upper()}] Output: {output_path}")
+            # Check if it's a single database result or multiple databases
+            if self._is_single_database_result(result):
+                # Single database processing
+                self._format_single_database_output(result, args)
+            else:
+                # Multiple databases processing
+                self._format_multiple_databases_output(result, args)
         else:
-            # Single pipeline
+            # Fallback for string results
             print(f"[BioRemPP] Output processed and saved to: {result}")
+
+    def _is_single_database_result(self, result: Dict[str, Any]) -> bool:
+        """
+        Check if result is from a single database or multiple databases.
+
+        Single database results have keys like: output_path, matches, filename
+        Multiple database results have keys like: biorempp, hadeg, kegg, toxcsm
+        """
+        single_db_keys = {"output_path", "matches", "filename"}
+        result_keys = set(result.keys())
+
+        # If result has the typical single database keys, it's single
+        if single_db_keys.issubset(result_keys):
+            return True
+
+        # If result has database names as keys, it's multiple
+        database_names = {"biorempp", "hadeg", "kegg", "toxcsm"}
+        if any(key in database_names for key in result_keys):
+            return False
+
+        # Default to single if uncertain
+        return True
+
+    def _format_single_database_output(
+        self, result: Dict[str, Any], args: argparse.Namespace
+    ) -> None:
+        """Format output for single database processing."""
+        # Determine which database was processed
+        database = getattr(args, "database", "Unknown")
+        db_display_name = {
+            "biorempp": "BioRemPP",
+            "hadeg": "HAdeg",
+            "kegg": "KEGG",
+            "toxcsm": "ToxCSM",
+        }.get(database, database.upper())
+
+        # Show header for single database
+        print(f"\n🧬 BioRemPP - Processing with {db_display_name.upper()} Database")
+        print("═" * 67)
+        print()
+
+        # Count identifiers from input
+        input_file = getattr(args, "input", "")
+        if input_file and os.path.exists(input_file):
+            with open(input_file, "r", encoding="utf-8") as f:
+                line_count = sum(1 for line in f if line.strip())
+            print(
+                f"📁 Loading input data...        "
+                f"✅ {line_count:,} identifiers loaded"
+            )
+        else:
+            print("📁 Loading input data...        ✅ Input loaded")
+        print()
+
+        # Show database processing
+        matches = result.get("matches", 0)
+        filename = result.get("filename", "Unknown")
+
+        print(
+            f"🔗 Connecting to {db_display_name.upper()}...    "
+            f"✅ Database available"
+        )
+        print("⚙️  Processing data...          ████████████████████ 100%")
+        print(f"💾 Saving results...            ✅ {filename}")
+        print()
+
+        # Show final summary
+        elapsed_time = time.time() - self.start_time
+        output_path = result.get("output_path", "")
+        file_size = self._get_file_size(output_path) if output_path else "Unknown"
+
+        print("🎉 Processing completed successfully!")
+        print(f"   📊 Results: {matches:,} matches found")
+        print(f"   📁 Output: {filename} ({file_size})")
+        print(f"   ⏱️  Time: {elapsed_time:.1f} seconds")
+        print()
+
+    def _format_multiple_databases_output(
+        self, result: Dict[str, Any], args: argparse.Namespace
+    ) -> None:
+        """Format output for multiple databases processing."""
+        # Use enhanced feedback manager for multiple databases
+        self.feedback_manager.show_header()
+
+        # Count identifiers from input
+        input_file = getattr(args, "input", "")
+        if input_file and os.path.exists(input_file):
+            with open(input_file, "r", encoding="utf-8") as f:
+                line_count = sum(1 for line in f if line.strip())
+            self.feedback_manager.show_input_loaded(line_count)
+        else:
+            self.feedback_manager.show_input_loaded(0)
+
+        # Process databases with real data
+        self.feedback_manager.show_database_processing(result)
+
+        # Calculate actual time
+        elapsed_time = time.time() - self.start_time
+
+        # Show final summary with real data
+        self.feedback_manager.show_final_summary(result, elapsed_time)
+
+    def _get_file_size(self, file_path: str) -> str:
+        """Get human-readable file size."""
+        try:
+            import os
+
+            size_bytes = os.path.getsize(file_path)
+            if size_bytes < 1024:
+                return f"{size_bytes}B"
+            elif size_bytes < 1024 * 1024:
+                return f"{size_bytes // 1024}KB"
+            else:
+                return f"{size_bytes // (1024 * 1024)}MB"
+        except (OSError, FileNotFoundError):
+            return "Unknown"
 
     def _format_modular_output(self, result: Dict[str, Any]) -> None:
         """

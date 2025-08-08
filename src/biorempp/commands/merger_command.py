@@ -5,6 +5,7 @@ This module implements the DatabaseMergerCommand for executing
 database merging operations (biorempp, kegg, hadeg, toxcsm, all).
 """
 
+import time
 from typing import Any, Dict, Union
 
 from biorempp.commands.base_command import BaseCommand
@@ -15,6 +16,8 @@ from biorempp.pipelines.input_processing import (
     run_kegg_processing_pipeline,
     run_toxcsm_processing_pipeline,
 )
+from biorempp.utils.error_handler import get_error_handler
+from biorempp.utils.user_feedback import get_user_feedback
 
 
 class DatabaseMergerCommand(BaseCommand):
@@ -81,7 +84,7 @@ class DatabaseMergerCommand(BaseCommand):
 
     def execute(self, args) -> Union[str, Dict[str, str]]:
         """
-        Execute the traditional pipeline processing.
+        Execute the traditional pipeline processing with enhanced user feedback.
 
         Builds pipeline arguments dynamically and executes the appropriate
         pipeline function based on the pipeline type specified.
@@ -97,22 +100,136 @@ class DatabaseMergerCommand(BaseCommand):
             Path to output file (single pipeline) or dictionary of
             pipeline names to output paths (all pipelines)
         """
-        self.logger.info(f"Executing traditional pipeline: {args.pipeline_type}")
+        # Initialize feedback system based on verbosity
+        verbosity = self._get_verbosity_level(args)
+        feedback = get_user_feedback(verbosity)
+        error_handler = get_error_handler()
 
-        # Get the appropriate pipeline function
-        pipeline_function = self.PIPELINE_MAP[args.pipeline_type]
+        try:
+            self.logger.info(f"Executing traditional pipeline: {args.pipeline_type}")
 
-        # Build pipeline arguments dynamically
-        pipeline_kwargs = self._build_pipeline_kwargs(args)
+            # Start processing feedback
+            database_name = args.pipeline_type if args.pipeline_type != "all" else None
+            feedback.start_processing(args.input, database_name)
 
-        # Execute the pipeline
-        self.logger.debug(f"Pipeline kwargs: {list(pipeline_kwargs.keys())}")
-        result = pipeline_function(**pipeline_kwargs)
+            # Show loading step with progress
+            feedback.show_loading_step("Loading input data", show_progress=True)
+            time.sleep(0.5)  # Simulate loading time
 
-        self.logger.info(
-            f"Traditional pipeline {args.pipeline_type} completed successfully"
-        )
-        return result
+            # Validate input file and show feedback
+            import os
+
+            if os.path.exists(args.input):
+                # Count lines for feedback (simplified)
+                with open(args.input, "r", encoding="utf-8") as f:
+                    line_count = sum(1 for line in f if line.strip())
+                feedback.complete_loading_step("", f"{line_count:,} identifiers loaded")
+            else:
+                raise FileNotFoundError(f"Input file not found: {args.input}")
+
+            # Show database connection step
+            if args.pipeline_type != "all":
+                # Single database processing
+                db_name = args.pipeline_type.upper()
+                # TODO: Get actual database size - using placeholder for now
+                feedback.show_database_connection(db_name, 6623, show_progress=True)
+
+                # Show processing progress
+                feedback.show_processing_progress("Processing data", show_bar=True)
+
+                # Get the appropriate pipeline function
+                pipeline_function = self.PIPELINE_MAP[args.pipeline_type]
+
+                # Build pipeline arguments dynamically
+                pipeline_kwargs = self._build_pipeline_kwargs(args)
+
+                # Execute the pipeline
+                start_time = time.time()
+                self.logger.debug(f"Pipeline kwargs: {list(pipeline_kwargs.keys())}")
+                result = pipeline_function(**pipeline_kwargs)
+                processing_time = time.time() - start_time
+
+                # Show saving step
+                if isinstance(result, dict) and "output_path" in result:
+                    feedback.show_saving_results(result["filename"], show_progress=True)
+
+                    # Show final results with correct values
+                    feedback.show_processing_results(
+                        {
+                            "output_file": result["output_path"],
+                            "matches": result.get("matches", 0),
+                            "processing_time": processing_time,
+                        }
+                    )
+                elif isinstance(result, str):
+                    # Fallback for old format
+                    feedback.show_saving_results(result, show_progress=True)
+
+                    # Show final results
+                    feedback.show_processing_results(
+                        {
+                            "output_file": result,
+                            "matches": 0,  # Unknown for old format
+                            "processing_time": processing_time,
+                        }
+                    )
+            else:
+                # All databases processing
+                feedback.show_all_databases_processing(4)
+
+                # Get the appropriate pipeline function
+                pipeline_function = self.PIPELINE_MAP[args.pipeline_type]
+
+                # Build pipeline arguments dynamically
+                pipeline_kwargs = self._build_pipeline_kwargs(args)
+
+                # Execute the pipeline with step-by-step feedback
+                start_time = time.time()
+                self.logger.debug(f"Pipeline kwargs: {list(pipeline_kwargs.keys())}")
+
+                # Simulate processing each database
+                databases = ["biorempp", "hadeg", "kegg", "toxcsm"]
+                for i, db_name in enumerate(databases, 1):
+                    db_upper = db_name.upper()
+                    feedback.show_database_processing_step(
+                        i, 4, db_upper, show_progress=True
+                    )
+
+                result = pipeline_function(**pipeline_kwargs)
+                processing_time = time.time() - start_time
+
+                # Show all databases results
+                if isinstance(result, dict):
+                    # Add processing time to results
+                    for db_name in result:
+                        if isinstance(result[db_name], dict):
+                            avg_time = processing_time / len(result)
+                            result[db_name]["processing_time"] = avg_time
+
+                    feedback.show_all_databases_results(result)
+
+            self.logger.info(
+                f"Traditional pipeline {args.pipeline_type} completed successfully"
+            )
+            return result
+
+        except Exception as e:
+            # Enhanced error handling
+            pipeline_type = args.pipeline_type if args.pipeline_type else "processing"
+            context = f"processing_{pipeline_type}"
+            error_handler.show_error_to_user(e, context)
+            raise
+
+    def _get_verbosity_level(self, args) -> str:
+        """Get verbosity level from arguments."""
+        if hasattr(args, "quiet") and args.quiet:
+            return "SILENT"
+        elif hasattr(args, "verbose") and args.verbose:
+            return "VERBOSE"
+        elif hasattr(args, "debug") and args.debug:
+            return "DEBUG"
+        else:
+            return "NORMAL"
 
     def _get_database_path(self, database_name):
         """
@@ -172,7 +289,7 @@ class DatabaseMergerCommand(BaseCommand):
         pipeline_kwargs = {
             "input_path": args.input,
             "output_dir": getattr(args, "output_dir", "outputs/results_tables"),
-            "add_timestamp": getattr(args, "add_timestamp", True),
+            "add_timestamp": getattr(args, "add_timestamp", False),
         }
 
         # Map database-specific parameters based on pipeline

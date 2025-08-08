@@ -11,7 +11,7 @@ from biorempp.commands.all_databases_command import AllDatabasesMergerCommand
 from biorempp.commands.base_command import BaseCommand
 from biorempp.commands.info_command import InfoCommand
 from biorempp.commands.merger_command import DatabaseMergerCommand
-from biorempp.utils.logging_config import get_logger
+from biorempp.utils.silent_logging import get_logger
 
 
 class CommandFactory:

@@ -136,7 +136,7 @@ class AllDatabasesMergerCommand(BaseCommand):
         pipeline_kwargs = {
             "input_path": args.input,
             "output_dir": getattr(args, "output_dir", "outputs/results_tables"),
-            "add_timestamp": getattr(args, "add_timestamp", True),
+            "add_timestamp": getattr(args, "add_timestamp", False),
         }
 
         # Map database-specific parameters

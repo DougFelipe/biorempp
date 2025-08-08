@@ -103,7 +103,13 @@ def run_biorempp_processing_pipeline(
     )
 
     logger.info(f"Pipeline completed successfully. Output saved to: {output_path}")
-    return output_path
+
+    # Return structured data for user feedback
+    return {
+        "output_path": output_path,
+        "matches": len(df) if df is not None else 0,
+        "filename": os.path.basename(output_path),
+    }
 
 
 def run_kegg_processing_pipeline(
@@ -200,7 +206,13 @@ def run_kegg_processing_pipeline(
     )
 
     logger.info(f"KEGG pipeline completed successfully. Output saved to: {output_path}")
-    return output_path
+
+    # Return structured data for user feedback
+    return {
+        "output_path": output_path,
+        "matches": len(kegg_merged_df) if kegg_merged_df is not None else 0,
+        "filename": os.path.basename(output_path),
+    }
 
 
 def run_hadeg_processing_pipeline(
@@ -295,7 +307,13 @@ def run_hadeg_processing_pipeline(
     logger.info(
         f"HADEG Pipeline completed successfully. Output saved to: {output_path}"
     )
-    return output_path
+
+    # Return structured data for user feedback
+    return {
+        "output_path": output_path,
+        "matches": len(df) if df is not None else 0,
+        "filename": os.path.basename(output_path),
+    }
 
 
 def run_toxcsm_processing_pipeline(
@@ -407,7 +425,13 @@ def run_toxcsm_processing_pipeline(
     logger.info(
         f"ToxCSM Pipeline completed successfully. Output saved to: {output_path}"
     )
-    return output_path
+
+    # Return structured data for user feedback
+    return {
+        "output_path": output_path,
+        "matches": len(df) if df is not None else 0,
+        "filename": os.path.basename(output_path),
+    }
 
 
 def run_all_processing_pipelines(
@@ -495,17 +519,20 @@ def run_all_processing_pipelines(
     # Run BioRemPP pipeline
     try:
         logger.info("Running BioRemPP processing pipeline")
-        biorempp_output_path = run_biorempp_processing_pipeline(
+        biorempp_result = run_biorempp_processing_pipeline(
             input_path=input_path,
-            database_path=biorempp_database_path,
+            biorempp_database_path=biorempp_database_path,
             output_dir=output_dir,
             output_filename=biorempp_output_filename,
             sep=sep,
             optimize_types=optimize_types,
             add_timestamp=add_timestamp,
         )
-        output_paths["biorempp"] = biorempp_output_path
-        logger.info(f"BioRemPP pipeline completed: {biorempp_output_path}")
+        output_paths["biorempp"] = biorempp_result
+        logger.info(
+            f"BioRemPP pipeline completed: {biorempp_result['output_path']} "
+            f"({biorempp_result['matches']} matches)"
+        )
     except Exception as e:
         error_msg = f"BioRemPP pipeline failed: {e}"
         logger.error(error_msg)
@@ -514,7 +541,7 @@ def run_all_processing_pipelines(
     # Run KEGG pipeline
     try:
         logger.info("Running KEGG processing pipeline")
-        kegg_output_path = run_kegg_processing_pipeline(
+        kegg_result = run_kegg_processing_pipeline(
             input_path=input_path,
             kegg_database_path=kegg_database_path,
             output_dir=output_dir,
@@ -523,8 +550,11 @@ def run_all_processing_pipelines(
             optimize_types=optimize_types,
             add_timestamp=add_timestamp,
         )
-        output_paths["kegg"] = kegg_output_path
-        logger.info(f"KEGG pipeline completed: {kegg_output_path}")
+        output_paths["kegg"] = kegg_result
+        logger.info(
+            f"KEGG pipeline completed: {kegg_result['output_path']} "
+            f"({kegg_result['matches']} matches)"
+        )
     except Exception as e:
         error_msg = f"KEGG pipeline failed: {e}"
         logger.error(error_msg)
@@ -533,7 +563,7 @@ def run_all_processing_pipelines(
     # Run HADEG pipeline
     try:
         logger.info("Running HADEG processing pipeline")
-        hadeg_output_path = run_hadeg_processing_pipeline(
+        hadeg_result = run_hadeg_processing_pipeline(
             input_path=input_path,
             hadeg_database_path=hadeg_database_path,
             output_dir=output_dir,
@@ -542,8 +572,11 @@ def run_all_processing_pipelines(
             optimize_types=optimize_types,
             add_timestamp=add_timestamp,
         )
-        output_paths["hadeg"] = hadeg_output_path
-        logger.info(f"HADEG pipeline completed: {hadeg_output_path}")
+        output_paths["hadeg"] = hadeg_result
+        logger.info(
+            f"HADEG pipeline completed: {hadeg_result['output_path']} "
+            f"({hadeg_result['matches']} matches)"
+        )
     except Exception as e:
         error_msg = f"HADEG pipeline failed: {e}"
         logger.error(error_msg)
@@ -552,7 +585,7 @@ def run_all_processing_pipelines(
     # Run ToxCSM pipeline
     try:
         logger.info("Running ToxCSM processing pipeline")
-        toxcsm_output_path = run_toxcsm_processing_pipeline(
+        toxcsm_result = run_toxcsm_processing_pipeline(
             input_path=input_path,
             toxcsm_database_path=toxcsm_database_path,
             output_dir=output_dir,
@@ -561,8 +594,11 @@ def run_all_processing_pipelines(
             optimize_types=optimize_types,
             add_timestamp=add_timestamp,
         )
-        output_paths["toxcsm"] = toxcsm_output_path
-        logger.info(f"ToxCSM pipeline completed: {toxcsm_output_path}")
+        output_paths["toxcsm"] = toxcsm_result
+        logger.info(
+            f"ToxCSM pipeline completed: {toxcsm_result['output_path']} "
+            f"({toxcsm_result['matches']} matches)"
+        )
     except Exception as e:
         error_msg = f"ToxCSM pipeline failed: {e}"
         logger.error(error_msg)
@@ -575,9 +611,14 @@ def run_all_processing_pipelines(
         raise RuntimeError(f"Pipeline failures: {combined_error}")
 
     logger.info("All processing pipelines completed successfully")
-    logger.info(f"BioRemPP results: {output_paths.get('biorempp')}")
-    logger.info(f"KEGG results: {output_paths.get('kegg')}")
-    logger.info(f"HADEG results: {output_paths.get('hadeg')}")
-    logger.info(f"ToxCSM results: {output_paths.get('toxcsm')}")
+    biorempp_path = output_paths.get("biorempp", {}).get("output_path", "N/A")
+    kegg_path = output_paths.get("kegg", {}).get("output_path", "N/A")
+    hadeg_path = output_paths.get("hadeg", {}).get("output_path", "N/A")
+    toxcsm_path = output_paths.get("toxcsm", {}).get("output_path", "N/A")
+
+    logger.info(f"BioRemPP results: {biorempp_path}")
+    logger.info(f"KEGG results: {kegg_path}")
+    logger.info(f"HADEG results: {hadeg_path}")
+    logger.info(f"ToxCSM results: {toxcsm_path}")
 
     return output_paths

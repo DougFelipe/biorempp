@@ -115,10 +115,10 @@ class BioRemPPLogger:
         # Prevent propagation to avoid duplicate logs
         root_logger.propagate = False
 
-        # Log configuration success
-        root_logger.info("BioRemPP logging system initialized")
-        root_logger.debug(f"Log level: {level}")
+        # Log configuration success (only to file, not console)
         if log_file:
+            root_logger.info("BioRemPP logging system initialized")
+            root_logger.debug(f"Log level: {level}")
             root_logger.debug(f"Log file: {log_file}")
 
     def _get_formatters(self) -> Dict[str, logging.Formatter]:

@@ -43,6 +43,7 @@ class BioRemPPArgumentParser:
         self._add_input_arguments(parser)
         self._add_database_arguments(parser)
         self._add_info_arguments(parser)
+        self._add_verbosity_arguments(parser)
 
         return parser
 
@@ -114,6 +115,40 @@ class BioRemPPArgumentParser:
             "--database-info",
             choices=["biorempp", "hadeg", "kegg", "toxcsm"],
             help="Show detailed information about a specific database",
+        )
+
+    def _add_verbosity_arguments(self, parser: argparse.ArgumentParser) -> None:
+        """
+        Add verbosity control arguments.
+
+        Parameters
+        ----------
+        parser : argparse.ArgumentParser
+            Parser to add arguments to
+        """
+        verbosity_group = parser.add_argument_group("Verbosity Options")
+
+        # Create mutually exclusive group for verbosity levels
+        verbosity_exclusive = verbosity_group.add_mutually_exclusive_group()
+
+        verbosity_exclusive.add_argument(
+            "--quiet",
+            "-q",
+            action="store_true",
+            help="Silent mode - no output except errors (this is now default)",
+        )
+
+        verbosity_exclusive.add_argument(
+            "--verbose",
+            "-v",
+            action="store_true",
+            help="Verbose mode - detailed progress information",
+        )
+
+        verbosity_exclusive.add_argument(
+            "--debug",
+            action="store_true",
+            help="Debug mode - technical information and file logging",
         )
 
     def parse_args(self, args: Optional[List[str]] = None) -> argparse.Namespace:
