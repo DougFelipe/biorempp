@@ -62,8 +62,13 @@ class SampleCompoundInteraction(BaseDataProcessor):
 
     def _ensure_output_directory(self) -> None:
         """Ensure the output directory exists."""
-        os.makedirs(self.output_dir, exist_ok=True)
-        self.logger.debug(f"Output directory ensured: {self.output_dir}")
+        from biorempp.utils.io_utils import resolve_output_path
+
+        resolved_output_dir = resolve_output_path(self.output_dir)
+        os.makedirs(resolved_output_dir, exist_ok=True)
+        self.logger.debug(f"Output directory ensured: {resolved_output_dir}")
+        # Update the output_dir to use the resolved path
+        self.output_dir = resolved_output_dir
 
     def _validate_input_data(self, data: pd.DataFrame) -> bool:
         """

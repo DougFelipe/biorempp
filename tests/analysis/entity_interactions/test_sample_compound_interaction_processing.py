@@ -12,9 +12,7 @@ from unittest.mock import patch
 import pandas as pd
 import pytest
 
-from biorempp.analysis.sample_compound_interaction_processing import (
-    SampleCompoundInteraction,
-)
+from biorempp.analysis.interaction_sample_compound_ import SampleCompoundInteraction
 
 
 class TestSampleCompoundInteractionProcessor:
@@ -26,7 +24,12 @@ class TestSampleCompoundInteractionProcessor:
 
         assert processor.name == "sample_compound_interaction_processor"
         assert processor.description is not None
-        assert processor.output_dir == "outputs/entities_interactions"
+        # After resolution, output_dir will be an absolute path
+        expected_endings = [
+            "outputs/entities_interactions",
+            "outputs\\entities_interactions",
+        ]
+        assert any(processor.output_dir.endswith(ending) for ending in expected_endings)
         assert processor.output_file == "sample_compound_interaction.txt"
 
         # Check if output directory was created
@@ -44,8 +47,8 @@ class TestSampleCompoundInteractionProcessor:
         expected_columns = ["sample", "compoundname", "compoundclass"]
         assert processor.output_columns == expected_columns
 
-    def test_create_sample_compound_data_fixture(self):
-        """Test creating sample data fixture for validation."""
+    def _create_sample_compound_data_fixture(self):
+        """Create sample data fixture for validation."""
         # Create test data that mimics merged BioRemPP data with compound info
         data = [
             # Sample1 interactions
@@ -68,16 +71,21 @@ class TestSampleCompoundInteractionProcessor:
 
         columns = ["sample", "compoundname", "compoundclass"]
         test_df = pd.DataFrame(data, columns=columns)
+        return test_df
+
+    def test_create_sample_compound_data_fixture(self):
+        """Test creating sample data fixture for validation."""
+        test_df = self._create_sample_compound_data_fixture()
 
         # Verify the fixture has expected structure
         assert not test_df.empty
-        assert list(test_df.columns) == columns
+        assert list(test_df.columns) == ["sample", "compoundname", "compoundclass"]
         assert len(test_df) == 12  # 10 unique + 2 duplicates
 
     def test_validate_input_data_valid(self):
         """Test validation with valid input data."""
         processor = SampleCompoundInteraction()
-        test_data = self.test_create_sample_compound_data_fixture()
+        test_data = self._create_sample_compound_data_fixture()
 
         assert processor._validate_input_data(test_data) is True
 
@@ -109,7 +117,7 @@ class TestSampleCompoundInteractionProcessor:
     def test_extract_sample_compound_interactions(self):
         """Test extraction of sample-compound interactions."""
         processor = SampleCompoundInteraction()
-        test_data = self.test_create_sample_compound_data_fixture()
+        test_data = self._create_sample_compound_data_fixture()
 
         result = processor._extract_sample_compound_interactions(test_data)
 
@@ -154,7 +162,7 @@ class TestSampleCompoundInteractionProcessor:
             processor = SampleCompoundInteraction(
                 output_dir=temp_dir, output_file="test_interactions.txt"
             )
-            test_data = self.test_create_sample_compound_data_fixture()
+            test_data = self._create_sample_compound_data_fixture()
             interactions = processor._extract_sample_compound_interactions(test_data)
 
             processor._save_results_to_file(interactions)
@@ -173,7 +181,7 @@ class TestSampleCompoundInteractionProcessor:
             processor = SampleCompoundInteraction(
                 output_dir=temp_dir, output_file="test_interactions.txt"
             )
-            test_data = self.test_create_sample_compound_data_fixture()
+            test_data = self._create_sample_compound_data_fixture()
 
             result = processor.process(test_data, save_file=True)
 
@@ -194,7 +202,7 @@ class TestSampleCompoundInteractionProcessor:
             processor = SampleCompoundInteraction(
                 output_dir=temp_dir, output_file="test_interactions.txt"
             )
-            test_data = self.test_create_sample_compound_data_fixture()
+            test_data = self._create_sample_compound_data_fixture()
 
             result = processor.process(test_data, save_file=False)
 
@@ -268,15 +276,13 @@ class TestSampleCompoundInteractionProcessor:
                 "No sample-compound interactions found in data"
             )
 
-    @patch(
-        "biorempp.analysis.sample_compound_interaction_processing.save_dataframe_output"
-    )
+    @patch("biorempp.analysis.interaction_sample_compound_.save_dataframe_output")
     def test_save_results_error_handling(self, mock_save):
         """Test error handling in save_results_to_file."""
         mock_save.side_effect = Exception("File save error")
 
         processor = SampleCompoundInteraction()
-        test_data = self.test_create_sample_compound_data_fixture()
+        test_data = self._create_sample_compound_data_fixture()
         interactions = processor._extract_sample_compound_interactions(test_data)
 
         with patch.object(processor.logger, "error") as mock_error:
@@ -290,7 +296,7 @@ class TestSampleCompoundInteractionProcessor:
     def test_legacy_extract_compound_classes_compatibility(self):
         """Test that legacy extract_compound_classes method still works."""
         processor = SampleCompoundInteraction()
-        test_data = self.test_create_sample_compound_data_fixture()
+        test_data = self._create_sample_compound_data_fixture()
 
         # Test with DataFrame
         result = processor.extract_compound_classes(test_data)
