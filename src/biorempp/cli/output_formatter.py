@@ -1,7 +1,7 @@
 """
 Output Formatter for BioRemPP CLI Interface.
 
-This module provides centralized output formatting for traditional pipeline results,
+This module provides centralized output formatting for pipeline results,
 separating presentation logic from business logic following SRP.
 """
 
@@ -18,7 +18,7 @@ class OutputFormatter:
     """
     Centralized output formatter for BioRemPP CLI interface.
 
-    Handles formatting and display of results from traditional pipeline commands:
+    Handles formatting and display of results from pipeline commands:
     - Single database processing results
     - Multiple database processing results
 
@@ -36,7 +36,7 @@ class OutputFormatter:
         """
         Main output formatting dispatcher.
 
-        Routes output formatting based on traditional pipeline results.
+        Routes output formatting based on pipeline results.
 
         Parameters
         ----------
@@ -45,14 +45,14 @@ class OutputFormatter:
         args : argparse.Namespace
             Parsed command line arguments for context
         """
-        self.logger.debug("Formatting traditional pipeline output")
+        self.logger.debug("Formatting pipeline output")
         self._format_traditional_output(result, args)
 
     def _format_traditional_output(
         self, result: Union[str, Dict[str, str]], args: argparse.Namespace
     ) -> None:
         """
-        Format traditional pipeline output with enhanced design.
+        Format pipeline output with enhanced design.
 
         Displays clean, user-friendly output following the
         LOGGING_SYSTEM_DESIGN.md specification for beautiful CLI interface.
@@ -64,7 +64,7 @@ class OutputFormatter:
         args : argparse.Namespace
             Command arguments for context
         """
-        self.logger.debug("Formatting traditional pipeline output")
+        self.logger.debug("Formatting pipeline output")
 
         if isinstance(result, dict):
             # Check if it's a single database result or multiple databases

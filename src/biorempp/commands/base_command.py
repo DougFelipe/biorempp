@@ -122,8 +122,6 @@ class BaseCommand(ABC):
         Validate command-specific input requirements.
 
         Each command type implements its own specific validation logic:
-        - TraditionalPipelineCommand: validates pipeline_type
-        - ModularPipelineCommand: validates processors list
         - InfoCommand: no specific validation needed
 
         Parameters
