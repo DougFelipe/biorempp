@@ -1,4 +1,16 @@
-include README.rst
+include README.md
 include LICENSE.txt
-recursive-include src/biorempp/data *
-recursive-include docs *
+
+# Dados usados em runtime
+recursive-include src/biorempp/data *.csv *.txt
+
+# Notebooks essenciais
+include notebooks/biorempp_demo.ipynb
+include notebooks/biorempp_colab_demo.ipynb
+
+# Exclui conteúdo não necessário
+prune tests
+prune docs
+prune outputs
+prune custom_outputs
+prune .github
