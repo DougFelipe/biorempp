@@ -238,7 +238,7 @@ class BioRemPPLogger:
     def user_error(self, message: str, solution: str = None):
         """Show error to user with optional solution."""
         self._stop_spinner()
-        print(f"❌ Error: {message}")
+        print(f"[ERROR] Error: {message}")
 
         if solution:
             print(f"💡 Solution:\n{solution}")

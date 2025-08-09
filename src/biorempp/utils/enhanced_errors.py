@@ -376,7 +376,7 @@ class EnhancedErrorHandler:
         if self.feedback_manager:
             self.feedback_manager.show_error(user_message, solution)
         else:
-            print(f"❌ Error: {user_message}")
+            print(f"[ERROR] Error: {user_message}")
             if solution:
                 print("\n💡 Solutions:")
                 print(solution)

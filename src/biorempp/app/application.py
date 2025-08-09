@@ -329,51 +329,52 @@ class BioRemPPApplication:
             # Step 3: Execute command
             result = command.run(parsed_args)
 
-            # Step 4: Format output
-            self.output_formatter.format_output(result, parsed_args)
+            # Step 4: Format output (only for processing commands, not info commands)
+            if command_type != "info":
+                self.output_formatter.format_output(result, parsed_args)
 
             self.logger.info("BioRemPP application completed successfully")
             return result
 
         except KeyboardInterrupt:
             self.logger.info("Process interrupted by user")
-            self.feedback_manager.error("❌ Processo interrompido pelo usuário")
+            self.feedback_manager.error("[ERROR] Processo interrompido pelo usuário")
             sys.exit(130)  # Standard exit code for Ctrl+C
 
         except ValueError as e:
             self.logger.error(f"Validation error: {e}")
             args_context = parsed_args if "parsed_args" in locals() else None
             error_msg, solution_text = self.error_handler.handle_error(e, args_context)
-            self.feedback_manager.error(f"❌ {error_msg}")
+            self.feedback_manager.error(f"[ERROR] {error_msg}")
             if solution_text:
-                self.feedback_manager.info(f"💡 {solution_text}")
+                self.feedback_manager.info(f"[INFO] {solution_text}")
             sys.exit(1)
 
         except FileNotFoundError as e:
             self.logger.error(f"File not found: {e}")
             args_context = parsed_args if "parsed_args" in locals() else None
             error_msg, solution_text = self.error_handler.handle_error(e, args_context)
-            self.feedback_manager.error(f"❌ {error_msg}")
+            self.feedback_manager.error(f"[ERROR] {error_msg}")
             if solution_text:
-                self.feedback_manager.info(f"💡 {solution_text}")
+                self.feedback_manager.info(f"[INFO] {solution_text}")
             sys.exit(2)
 
         except PermissionError as e:
             self.logger.error(f"Permission error: {e}")
             args_context = parsed_args if "parsed_args" in locals() else None
             error_msg, solution_text = self.error_handler.handle_error(e, args_context)
-            self.feedback_manager.error(f"❌ {error_msg}")
+            self.feedback_manager.error(f"[ERROR] {error_msg}")
             if solution_text:
-                self.feedback_manager.info(f"💡 {solution_text}")
+                self.feedback_manager.info(f"[INFO] {solution_text}")
             sys.exit(3)
 
         except Exception as e:
             self.logger.error(f"Unexpected error: {e}", exc_info=True)
             args_context = parsed_args if "parsed_args" in locals() else None
             error_msg, solution_text = self.error_handler.handle_error(e, args_context)
-            self.feedback_manager.error(f"❌ {error_msg}")
+            self.feedback_manager.error(f"[ERROR] {error_msg}")
             if solution_text:
-                self.feedback_manager.info(f"💡 {solution_text}")
+                self.feedback_manager.info(f"[INFO] {solution_text}")
             sys.exit(1)
 
     def get_version_info(self) -> Dict[str, str]:

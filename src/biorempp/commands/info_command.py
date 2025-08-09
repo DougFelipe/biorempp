@@ -156,21 +156,21 @@ class InfoCommand(BaseCommand):
             },
         }
 
-        print("\n🗄️  Available Databases:")
+        print("\n[DATABASES] Available Databases:")
         print("=" * 70)
 
         for db_key, db_info in databases.items():
-            print(f"\n📊 {db_key.upper()}")
+            print(f"\n[DB] {db_key.upper()}")
             print(f"   Name: {db_info['name']}")
             print(f"   Description: {db_info['description']}")
             print(f"   File: {db_info['file']} ({db_info['size']})")
 
-        print("\n📋 Sample Input Data:")
+        print("\n[SAMPLE] Sample Input Data:")
         print("   File: sample_data.txt (0.18 MB)")
         print("   Content: 10 organisms with 23,663 KO identifiers")
         print("   Format: Organism headers (>) and KO entries")
 
-        print("\n💡 Usage Examples:")
+        print("\n[USAGE] Usage Examples:")
         print("   biorempp --input sample_data.txt --all-databases")
         print("   biorempp --input sample_data.txt --database biorempp")
         print("   biorempp --database-info biorempp")
@@ -288,17 +288,17 @@ class InfoCommand(BaseCommand):
         }
 
         if database_name not in database_details:
-            print(f"❌ Database '{database_name}' not found.")
+            print(f"[ERROR] Database '{database_name}' not found.")
             print(f"Available databases: {', '.join(database_details.keys())}")
             return {"error": f"Database '{database_name}' not found"}
 
         db_info = database_details[database_name]
 
-        print(f"\n📊 {db_info['name']}")
+        print(f"\n {db_info['name']}")
         print("=" * 70)
-        print(f"📄 Description: {db_info['description']}")
-        print(f"📊 Size: {db_info['size']} ({db_info['file_size']})")
-        print(f"📋 Format: {db_info['format']}")
+        print(f" Description: {db_info['description']}")
+        print(f" Size: {db_info['size']} ({db_info['file_size']})")
+        print(f"[FORMAT] Format: {db_info['format']}")
 
         print("\n🔍 Database Schema:")
         for i, col in enumerate(db_info["columns"][:8], 1):  # Show first 8 columns
@@ -314,7 +314,7 @@ class InfoCommand(BaseCommand):
         print("\n🎯 Primary Usage:")
         print(f"   {db_info['usage']}")
 
-        print("\n💡 Usage Examples:")
+        print("\n[USAGE] Usage Examples:")
         print(f"   biorempp --input sample_data.txt --database {database_name}")
         print("   biorempp --input sample_data.txt --all-databases")
         print("   biorempp --list-databases")

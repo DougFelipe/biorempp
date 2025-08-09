@@ -2,6 +2,7 @@
 examples/
 issues/
 outputs/
+Laboratorio/
 agente.json
 biorempp_setup.sh
 tdd.json

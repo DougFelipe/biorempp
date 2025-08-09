@@ -206,7 +206,7 @@ def show_user_message(message: str, message_type: str = "info"):
         "info": "ℹ️",
         "success": "✅",
         "warning": "⚠️",
-        "error": "❌",
+        "error": "[ERROR]",
         "processing": "⚙️",
     }
 

@@ -373,7 +373,7 @@ class UserFeedbackManager:
 
     def show_error(self, message: str, details: str = None):
         """Show error message to user."""
-        print(f"\n❌ Error: {message}")
+        print(f"\n[ERROR] Error: {message}")
         if details:
             print(details)
         print()
@@ -397,7 +397,7 @@ class UserFeedbackManager:
     def error(self, message: str):
         """Display error message."""
         if self.verbosity != "SILENT":
-            print(f"❌ {message}")
+            print(f"[ERROR] {message}")
 
     def success(self, message: str):
         """Display success message."""

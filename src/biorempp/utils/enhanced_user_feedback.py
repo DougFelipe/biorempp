@@ -129,19 +129,19 @@ class EnhancedFeedbackManager:
 
     def show_header(self) -> None:
         """Display the beautiful header."""
-        print("\n🧬 BioRemPP - Processing with ALL Databases")
-        print("═" * 67)
+        print("\n[BIOREMPP] Processing with ALL Databases")
+        print("=" * 67)
         print()
 
     def show_input_loaded(self, line_count: int) -> None:
         """Display input loading status."""
         if line_count > 0:
             print(
-                f"📁 Loading input data...        "
-                f"✅ {line_count:,} KO identifiers loaded"
+                f"[LOAD] Loading input data...        "
+                f"OK {line_count:,} KO identifiers loaded"
             )
         else:
-            print("📁 Loading input data...        ✅ Input loaded")
+            print("[LOAD] Loading input data...        OK Input loaded")
         print()
 
     def show_database_processing(self, result: Dict[str, Any]) -> None:
@@ -156,10 +156,10 @@ class EnhancedFeedbackManager:
                     filename = pipeline_result.get("filename", "Unknown")
                     matches = pipeline_result.get("matches", 0)
 
-                    print(f"🔄 Processing databases [{i}/4]:")
+                    print(f"[PROCESS] Processing databases [{i}/4]:")
                     print(
-                        f"   🧬 {self.db_names.get(db_key, db_key)} "
-                        f"Database...      ✅ {matches:,} matches → "
+                        f"   [DB] {self.db_names.get(db_key, db_key)} "
+                        f"Database...      OK {matches:,} matches -> "
                         f"{filename}"
                     )
                     print()
@@ -181,11 +181,11 @@ class EnhancedFeedbackManager:
                     total_matches += matches
                     database_count += 1
 
-        print("🎉 All databases processed successfully!")
+        print("[SUCCESS] All databases processed successfully!")
         print(
-            f"   📊 Total results: {total_matches:,} matches across "
+            f"   [RESULTS] Total results: {total_matches:,} matches across "
             f"{database_count} databases"
         )
-        print("   📁 Location: outputs/results_tables/")
-        print(f"   ⏱️  Total time: {elapsed_time:.1f} seconds")
+        print("   [OUTPUT] Location: outputs/results_tables/")
+        print(f"   [TIME] Total time: {elapsed_time:.1f} seconds")
         print()

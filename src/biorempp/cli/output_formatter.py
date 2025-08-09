@@ -239,8 +239,8 @@ class OutputFormatter:
         }.get(database, database.upper())
 
         # Show header for single database
-        print(f"\n🧬 BioRemPP - Processing with {db_display_name.upper()} Database")
-        print("═" * 67)
+        print(f"\n[BIOREMPP] Processing with {db_display_name.upper()} Database")
+        print("=" * 67)
         print()
 
         # Count identifiers from input
@@ -249,11 +249,11 @@ class OutputFormatter:
             with open(input_file, "r", encoding="utf-8") as f:
                 line_count = sum(1 for line in f if line.strip())
             print(
-                f"📁 Loading input data...        "
-                f"✅ {line_count:,} identifiers loaded"
+                f"[LOAD] Loading input data...        "
+                f"OK {line_count:,} identifiers loaded"
             )
         else:
-            print("📁 Loading input data...        ✅ Input loaded")
+            print("[LOAD] Loading input data...        OK Input loaded")
         print()
 
         # Show database processing
@@ -261,11 +261,11 @@ class OutputFormatter:
         filename = result.get("filename", "Unknown")
 
         print(
-            f"🔗 Connecting to {db_display_name.upper()}...    "
-            f"✅ Database available"
+            f"[CONNECT] Connecting to {db_display_name.upper()}...    "
+            f"OK Database available"
         )
-        print("⚙️  Processing data...          ████████████████████ 100%")
-        print(f"💾 Saving results...            ✅ {filename}")
+        print("[PROCESS] Processing data...          #################### 100%")
+        print(f"[SAVE] Saving results...            OK {filename}")
         print()
 
         # Show final summary
@@ -273,10 +273,10 @@ class OutputFormatter:
         output_path = result.get("output_path", "")
         file_size = self._get_file_size(output_path) if output_path else "Unknown"
 
-        print("🎉 Processing completed successfully!")
-        print(f"   📊 Results: {matches:,} matches found")
-        print(f"   📁 Output: {filename} ({file_size})")
-        print(f"   ⏱️  Time: {elapsed_time:.1f} seconds")
+        print("[SUCCESS] Processing completed successfully!")
+        print(f"   [RESULTS] Results: {matches:,} matches found")
+        print(f"   [OUTPUT] Output: {filename} ({file_size})")
+        print(f"   [TIME] Time: {elapsed_time:.1f} seconds")
         print()
 
     def _format_multiple_databases_output(

@@ -284,7 +284,7 @@ class EnhancedErrorHandler:
         """Show error to user in a friendly format."""
         user_message, solution = self.handle_error(error, context)
 
-        print(f"\n❌ Error: {user_message}")
+        print(f"\n[ERROR] Error: {user_message}")
         if solution:
             print("\n💡 Solutions:")
             print(solution)
