@@ -7,10 +7,10 @@ command instances based on parsed CLI arguments.
 
 import argparse
 
-from biorempp.commands.all_databases_command import AllDatabasesMergerCommand
+from biorempp.commands.all_merger_command import AllDatabasesMergerCommand
 from biorempp.commands.base_command import BaseCommand
 from biorempp.commands.info_command import InfoCommand
-from biorempp.commands.merger_command import DatabaseMergerCommand
+from biorempp.commands.single_merger_command import DatabaseMergerCommand
 from biorempp.utils.silent_logging import get_logger
 
 

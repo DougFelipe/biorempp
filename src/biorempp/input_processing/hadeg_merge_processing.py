@@ -1,8 +1,33 @@
 """
+hadeg_merge_processing.py
+-------------------------
 HADEG Database Merge Processing Module
 
-This module provides functionality to merge input data with the HADEG
-(Hydrocarbon Degradation Database) using KEGG Ortholog identifiers.
+This module provides functionality to merge input biological data with the
+HADEG (Hydrocarbon Degradation Database). HADEG specializes in genes and
+pathways involved in hydrocarbon degradation processes, making it essential
+for environmental bioremediation analysis and petroleum contamination studies.
+
+The module handles CSV-format HADEG databases with semicolon delimiters and
+includes memory optimization through categorical data types for gene and
+pathway information commonly found in hydrocarbon degradation research.
+
+Main Functions:
+    - merge_input_with_hadeg: Core merge function for HADEG database
+    - optimize_dtypes_hadeg: Memory optimization for HADEG DataFrames
+
+Database Schema:
+    The HADEG database contains columns including 'ko', 'Gene', 'Pathway',
+    'compound_pathway', and 'sample' for hydrocarbon degradation gene-pathway
+    relationships and compound degradation information.
+
+Use Cases:
+    - Hydrocarbon contamination bioremediation analysis
+    - Petroleum degradation pathway identification
+    - Environmental cleanup gene expression studies
+    - Oil spill remediation potential assessment
+
+Available at: https://github.com/jarojasva/HADEG
 """
 
 import logging
@@ -20,39 +45,63 @@ def merge_input_with_hadeg(
     optimize_types: bool = True,
 ) -> pd.DataFrame:
     """
-    Merge input data with the HADEG database using 'ko' column.
+    Merge input data with HADEG database using 'ko' column.
+
+    This function performs an inner join between input biological data and
+    the HADEG (Hydrocarbon Degradation Database) using 'ko' identifiers.
+    HADEG provides comprehensive information about genes and pathways involved
+    in hydrocarbon degradation, essential for environmental bioremediation.
 
     Parameters
     ----------
     input_data : pd.DataFrame
-        DataFrame containing at least the 'ko' column.
+        Input DataFrame containing at least the 'ko' column with KEGG
+        orthology identifiers.
     database_filepath : str, optional
-        Path to the HADEG database CSV file. If None, uses default path.
+        Path to the HADEG database CSV file. If None, uses default path
+        '../data/database_hadeg.csv' relative to module location.
     optimize_types : bool, optional
-        Whether to optimize DataFrame types using categoricals. Default: True.
+        Whether to optimize DataFrame types using categorical conversions
+        for memory efficiency. Default: True.
 
     Returns
     -------
     pd.DataFrame
-        Merged DataFrame containing rows with matching 'ko' values.
+        Merged DataFrame containing input data enriched with HADEG hydrocarbon
+        degradation information. Only rows with matching 'ko' values are
+        included (inner join).
 
     Raises
     ------
     FileNotFoundError
-        If the database file is not found.
+        If the specified HADEG database file is not found.
     ValueError
-        If the file is not a .csv.
+        If the database file is not in .csv format.
     KeyError
-        If 'ko' column is missing in either DataFrame.
+        If the 'ko' column is missing in either input_data or HADEG database.
     TypeError
         If input_data is not a pandas DataFrame.
+    Exception
+        If there are issues reading the CSV file (encoding, format, etc.).
 
     Examples
     --------
     >>> import pandas as pd
-    >>> df = pd.DataFrame({'ko': ['K00001', 'K00002']})
-    >>> merged_df = merge_input_with_hadeg(df)
-    >>> print(merged_df.shape)
+    >>> input_df = pd.DataFrame({
+    ...     'ko': ['K00001', 'K00002'],
+    ...     'sample': ['Oil_Sample_1', 'Oil_Sample_2']
+    ... })
+    >>> result = merge_input_with_hadeg(input_df)
+    >>> print('Pathway' in result.columns)
+    True
+
+    Notes
+    -----
+    - HADEG database file must use semicolon (;) as delimiter
+    - UTF-8 encoding is expected for proper character handling
+    - Gene information is stored in the 'Gene' column
+    - Pathway data is available in 'Pathway' and 'compound_pathway' columns
+    - Optimized for hydrocarbon degradation pathway analysis
     """
     if not isinstance(input_data, pd.DataFrame):
         logger.error("Input must be a pandas DataFrame.")
@@ -111,22 +160,47 @@ def merge_input_with_hadeg(
 
 def optimize_dtypes_hadeg(df: pd.DataFrame) -> pd.DataFrame:
     """
-    Optimize HADEG DataFrame types by converting repetitive columns to categorical.
+    Optimize HADEG DataFrame types for memory efficiency and performance.
+
+    This function converts repetitive string columns to categorical data types
+    to reduce memory consumption. It targets columns commonly found in HADEG
+    hydrocarbon degradation databases for environmental analysis.
 
     Parameters
     ----------
     df : pd.DataFrame
-        Input DataFrame.
+        Input DataFrame with HADEG hydrocarbon degradation data.
 
     Returns
     -------
     pd.DataFrame
-        DataFrame with optimized types.
+        DataFrame with optimized categorical data types for memory efficiency.
 
     Raises
     ------
     TypeError
-        If input is not a pandas DataFrame.
+        If the input is not a pandas DataFrame.
+
+    Notes
+    -----
+    Optimized columns include:
+    - 'Gene': Gene identifiers involved in hydrocarbon degradation
+    - 'ko': KEGG Orthology identifiers
+    - 'Pathway': Degradation pathway names and classifications
+    - 'compound_pathway': Specific compound degradation pathways
+    - 'sample': Sample identifiers from environmental studies
+
+    Examples
+    --------
+    >>> import pandas as pd
+    >>> df = pd.DataFrame({
+    ...     'ko': ['K00001', 'K00001', 'K00002'],
+    ...     'Gene': ['alkB', 'alkB', 'catA'],
+    ...     'Pathway': ['alkane_degradation', 'alkane_degradation', 'aromatic']
+    ... })
+    >>> optimized_df = optimize_dtypes_hadeg(df)
+    >>> print(optimized_df['Gene'].dtype)
+    category
     """
     if not isinstance(df, pd.DataFrame):
         logger.error("Input must be a pandas DataFrame.")

@@ -22,7 +22,7 @@ class AllDatabasesMergerCommand(BaseCommand):
 
     Executes merging with all 4 databases individually:
     - biorempp: BioRemPP database
-    - hadeg: HAdeg database
+    - hadeg: HADEG database
     - kegg: KEGG pathway database
     - toxcsm: ToxCSM toxicity database
 

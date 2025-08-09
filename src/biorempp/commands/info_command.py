@@ -94,27 +94,32 @@ class InfoCommand(BaseCommand):
             "biorempp": {
                 "name": "BioRemPP Core Database",
                 "description": (
-                    "Enzyme-compound interactions for biodegradation " "(6,623 records)"
+                    "Bioremediation Potential Profile Database " "(6,623 records)"
                 ),
                 "file": "database_biorempp.csv",
                 "size": "0.69 MB",
             },
             "hadeg": {
-                "name": "HAdeg Database",
-                "description": "Human metabolism degradation pathways (1,168 records)",
+                "name": "HADEG Database",
+                "description": (
+                    "Hydrocarbon Aerobic Degradation Enzymes and Genes "
+                    "(1,168 records)"
+                ),
                 "file": "database_hadeg.csv",
                 "size": "0.04 MB",
             },
             "kegg": {
                 "name": "KEGG Pathways",
-                "description": "KEGG degradation pathways database (871 records)",
+                "description": "20 KEGG for xenobiotic biodegradation "
+                "pathways (871 records)",
                 "file": "kegg_degradation_pathways.csv",
                 "size": "0.02 MB",
             },
             "toxcsm": {
                 "name": "ToxCSM Database",
                 "description": (
-                    "Comprehensive toxicity predictions " "(323 records, 66 endpoints)"
+                    "Comprehensive Prediction of Small Molecule Toxicity Profiles "
+                    "(323 records, 66 endpoints)"
                 ),
                 "file": "database_toxcsm.csv",
                 "size": "0.18 MB",
@@ -133,7 +138,7 @@ class InfoCommand(BaseCommand):
         print("\n📋 Sample Input Data:")
         print("   File: sample_data.txt (0.18 MB)")
         print("   Content: 10 organisms with 23,663 KO identifiers")
-        print("   Format: FASTA-like with organism headers (>) and KO entries")
+        print("   Format: Organism headers (>) and KO entries")
 
         print("\n💡 Usage Examples:")
         print("   biorempp --input sample_data.txt --all-databases")
@@ -161,10 +166,7 @@ class InfoCommand(BaseCommand):
         database_details = {
             "biorempp": {
                 "name": "BioRemPP Core Database",
-                "description": (
-                    "Comprehensive enzyme-compound interaction database "
-                    "for biodegradation research"
-                ),
+                "description": ("Bioremediation Potential Profile"),
                 "columns": [
                     "ko",
                     "genesymbol",
@@ -184,16 +186,13 @@ class InfoCommand(BaseCommand):
                     "978 unique enzyme gene symbols",
                     "150 different enzyme activities",
                 ],
-                "usage": (
-                    "Primary database for enzyme-compound mapping "
-                    "and biodegradation pathway analysis"
-                ),
+                "usage": ("Primary database for" " bioremediation analysis"),
             },
             "hadeg": {
-                "name": "Human Metabolism Database (HAdeg)",
+                "name": "Hydrocarbon Aerobic Degradation Enzymes and Genes",
                 "description": (
-                    "Specialized database for human metabolism "
-                    "biodegradation pathways"
+                    "manually curated database containing "
+                    "sequences of experimentally validated"
                 ),
                 "columns": ["Gene", "ko", "Pathway", "compound_pathway"],
                 "size": "1,168 records",
@@ -206,16 +205,13 @@ class InfoCommand(BaseCommand):
                     "5 major compound pathway categories (Alkanes, Aromatics, etc.)",
                 ],
                 "usage": (
-                    "Human-specific biodegradation pathway analysis "
+                    "Specific biodegradation pathway analysis "
                     "and gene-pathway mapping"
                 ),
             },
             "kegg": {
                 "name": "KEGG Degradation Pathways",
-                "description": (
-                    "KEGG-derived biodegradation pathway information "
-                    "with enzyme associations"
-                ),
+                "description": ("KEGG-derived biodegradation pathway information"),
                 "columns": ["ko", "pathname", "genesymbol"],
                 "size": "871 records",
                 "file_size": "0.02 MB",
@@ -224,7 +220,7 @@ class InfoCommand(BaseCommand):
                     "517 unique KO identifiers",
                     "20 degradation pathways (Naphthalene, Aromatic, Toluene, etc.)",
                     "513 unique gene symbols",
-                    "Focus on xenobiotic and aromatic compound degradation",
+                    "Focus on xenobiotic degradation",
                 ],
                 "usage": (
                     "Pathway enrichment analysis and degradation route "
@@ -233,10 +229,7 @@ class InfoCommand(BaseCommand):
             },
             "toxcsm": {
                 "name": "ToxCSM Toxicity Database",
-                "description": (
-                    "Comprehensive toxicity prediction database "
-                    "with multiple endpoints"
-                ),
+                "description": ("Comprehensive toxicity prediction database"),
                 "columns": [
                     "SMILES",
                     "cpd",

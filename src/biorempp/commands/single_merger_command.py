@@ -1,8 +1,8 @@
 """
-Database Merger Command Implementation.
+Single Database Merger Command Implementation.
 
 This module implements the DatabaseMergerCommand for executing
-database merging operations (biorempp, kegg, hadeg, toxcsm, all).
+database merging operations (biorempp, kegg, hadeg, toxcsm).
 """
 
 import time
@@ -29,9 +29,6 @@ class DatabaseMergerCommand(BaseCommand):
     - toxcsm: Merge with ToxCSM toxicity database only
 
     For merging with ALL databases, use AllDatabasesMergerCommand instead.
-
-    This command handles input validation and database merging execution
-    maintaining the same robust functionality as the original implementation.
     """
 
     # Pipeline mapping for type validation and execution
@@ -44,10 +41,10 @@ class DatabaseMergerCommand(BaseCommand):
 
     def validate_specific_input(self, args) -> bool:
         """
-        Validate traditional pipeline specific inputs.
+        Validate pipeline specific inputs.
 
         Checks that the pipeline type is supported and that required
-        arguments are present for traditional pipeline execution.
+        arguments are present for pipeline execution.
 
         Parameters
         ----------
@@ -70,19 +67,15 @@ class DatabaseMergerCommand(BaseCommand):
 
         # Validate input file is provided for processing pipelines
         if not hasattr(args, "input") or not args.input:
-            self.logger.error(
-                "Input file is required for traditional pipeline processing"
-            )
+            self.logger.error("Input file is required for pipeline processing")
             return False
 
-        self.logger.debug(
-            f"Traditional pipeline validation passed for type: {args.pipeline_type}"
-        )
+        self.logger.debug(f"Pipeline validation passed for type: {args.pipeline_type}")
         return True
 
     def execute(self, args) -> Union[str, Dict[str, str]]:
         """
-        Execute the traditional pipeline processing with enhanced user feedback.
+        Execute the pipeline processing with enhanced user feedback.
 
         Builds pipeline arguments dynamically and executes the appropriate
         pipeline function based on the pipeline type specified.
@@ -102,7 +95,7 @@ class DatabaseMergerCommand(BaseCommand):
         error_handler = get_error_handler()
 
         try:
-            self.logger.info(f"Executing traditional pipeline: {args.pipeline_type}")
+            self.logger.info(f"Executing pipeline: {args.pipeline_type}")
 
             # Execute pipeline logic without display
             # (display handled by OutputFormatter)
@@ -141,9 +134,7 @@ class DatabaseMergerCommand(BaseCommand):
                     "processing_time": processing_time,
                 }
 
-            self.logger.info(
-                f"Traditional pipeline {args.pipeline_type} completed successfully"
-            )
+            self.logger.info(f"Pipeline {args.pipeline_type} completed successfully")
             return result
 
         except Exception as e:

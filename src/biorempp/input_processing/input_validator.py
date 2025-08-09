@@ -1,8 +1,35 @@
 """
 input_validator.py
 ------------------
-Valida e processa arquivos FASTA-like, extraindo dados para a próxima etapa do
-pipeline BioRemPP.
+Input File Validation and Processing Module
+
+This module handles validation and processing of input biological data files
+for the BioRemPP pipeline. It supports format with sample
+identifiers and KEGG Orthology (KO) entries, including base64-encoded
+content from web uploads.
+
+The module provides robust validation, format checking, and data extraction
+capabilities with comprehensive error reporting for user feedback and
+debugging purposes.
+
+Main Functions:
+    - validate_and_process_input: Main validation and processing entry point
+    - decode_content_if_base64: Base64 decoding for web upload support
+    - process_content_lines: format parsing and validation
+
+Input Format:
+    Expected format follows structure:
+    >Sample_ID_1
+    K00001
+    K00002
+    >Sample_ID_2
+    K00003
+
+Supported Features:
+    - Plain text and base64-encoded inputs
+    - Multiple samples per file
+    - Comprehensive format validation
+    - Detailed error reporting with line numbers
 """
 
 import base64
@@ -17,20 +44,45 @@ logger = logging.getLogger("biorempp.input_processing.input_validator")
 
 def validate_and_process_input(contents: str, filename: str):
     """
-    Validate and process FASTA-like input files,
-    returning a DataFrame or error message.
+    Validate and process input files, returning DataFrame or error message.
+
+    This function performs comprehensive validation of input biological data
+    files, including format checking, content validation, and data extraction.
+    It handles both plain text and base64-encoded inputs with detailed error
+    reporting.
 
     Parameters
     ----------
     contents : str
-        File content, plain text or base64.
+        File content as string. Can be plain text or base64-encoded data URI
+        in format: data:text/plain;base64,<encoded_content>
     filename : str
-        File name (to validate extension).
+        Name of the input file. Used for extension validation and logging.
+        Must have .txt extension.
 
     Returns
     -------
-    Tuple[pd.DataFrame | None, str | None]
-        DataFrame ('sample', 'ko') or error.
+    tuple[pd.DataFrame | None, str | None]
+        A tuple containing:
+        - DataFrame: Validated data with 'sample' and 'ko' columns, or None
+        if validation failed
+        - str: Error message if validation failed, or None if successful
+
+    Examples
+    --------
+    >>> contents = ">Sample1\\nK00001\\nK00002"
+    >>> df, error = validate_and_process_input(contents, "input.txt")
+    >>> if error is None:
+    ...     print(df.columns.tolist())
+    ['sample', 'ko']
+
+    Notes
+    -----
+    - Only .txt files are supported
+    - Input must follow format with > for sample IDs
+    - KO entries must match pattern K followed by digits (e.g., K00001)
+    - Base64 decoding is automatically handled
+    - All validation errors include line numbers for debugging
     """
     logger.info(f"Processing file: {filename}")
 
@@ -58,7 +110,46 @@ def validate_and_process_input(contents: str, filename: str):
 
 def decode_content_if_base64(contents: str) -> str:
     """
-    Decode if string is in base64 format (with data URI).
+    Decode base64-encoded content if present, otherwise return as-is.
+
+    This function handles base64-encoded data URIs commonly used in web
+    applications for file uploads. It automatically detects and decodes
+    base64 content while preserving plain text inputs unchanged.
+
+    Parameters
+    ----------
+    contents : str
+        Input content string. Can be plain text or base64 data URI in
+        format: data:text/plain;base64,<encoded_content>
+
+    Returns
+    -------
+    str
+        Decoded content as UTF-8 string.
+
+    Raises
+    ------
+    ValueError
+        If base64 decoding fails or results in empty content.
+
+    Examples
+    --------
+    >>> plain_text = "Hello World"
+    >>> result = decode_content_if_base64(plain_text)
+    >>> print(result)
+    Hello World
+
+    >>> base64_uri = "data:text/plain;base64,SGVsbG8gV29ybGQ="
+    >>> result = decode_content_if_base64(base64_uri)
+    >>> print(result)
+    Hello World
+
+    Notes
+    -----
+    - Automatically detects data URI format by "data" prefix
+    - Uses UTF-8 encoding for decoded content
+    - Validates that decoded content is not empty
+    - Preserves original content if not base64-encoded
     """
     if contents.startswith("data"):
         try:
@@ -77,7 +168,50 @@ def decode_content_if_base64(contents: str) -> str:
 
 def process_content_lines(content: str):
     """
-    Parse lines to extract sample IDs and KOs.
+    Parse and validate content lines to extract sample-KO pairs.
+
+    This function processes the content line by line, extracting sample
+    identifiers and their associated KEGG Orthology (KO) entries. It performs
+    comprehensive format validation with detailed error reporting including
+    line numbers.
+
+    Parameters
+    ----------
+    content : str
+        Input content as plain text string with newline-separated entries.
+
+    Returns
+    -------
+    tuple[pd.DataFrame | None, str | None]
+        A tuple containing:
+        - DataFrame: Parsed data with 'sample' and 'ko' columns, or None
+        if parsing failed
+        - str: Error message with line number if parsing failed, or None
+        if successful
+
+    Format Requirements
+    -------------------
+    - Sample IDs: Lines starting with '>' followed by identifier
+    - KO entries: Lines matching pattern 'K' + digits (e.g., K00001)
+    - Each KO entry must be associated with a preceding sample ID
+    - Empty lines are ignored
+
+    Examples
+    --------
+    >>> content = ">Sample1\\nK00001\\nK00002\\n>Sample2\\nK00003"
+    >>> df, error = process_content_lines(content)
+    >>> if error is None:
+    ...     print(df.to_dict('records'))
+    [{'sample': 'Sample1', 'ko': 'K00001'},
+    {'sample': 'Sample1', 'ko': 'K00002'},
+    {'sample': 'Sample2', 'ko': 'K00003'}]
+
+    Notes
+    -----
+    - Regex patterns: '^>([^\\n]+)' for samples, '^(K\\d+)$' for KO entries
+    - Line numbers are 1-indexed in error messages
+    - Sample IDs are stripped of leading/trailing whitespace
+    - KO entries without preceding sample ID generate format errors
     """
     lines = content.strip().split("\n")
     identifier_pattern = re.compile(r"^>([^\n]+)")
