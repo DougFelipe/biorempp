@@ -1,8 +1,43 @@
 """
-Single Database Merger Command Implementation.
+single_merger_command.py
+-----------------------
+Single Database Merger Command Implementation
 
-This module implements the DatabaseMergerCommand for executing
-database merging operations (biorempp, kegg, hadeg, toxcsm).
+This module implements the DatabaseMergerCommand for executing targeted
+database integration operations with individual databases. It provides
+precise control over data processing workflows by focusing on specific
+database types and their unique characteristics.
+
+The command supports selective analysis workflows where users need to
+process data against a single database rather than all available databases,
+optimizing performance and focusing results on specific analytical domains.
+
+Supported Database Types:
+    - biorempp: Core bioremediation potential analysis
+    - kegg: Degradation pathway enrichment analysis
+    - hadeg: Hydrocarbon degradation gene analysis
+    - toxcsm: Toxicity prediction and safety assessment
+
+Processing Features:
+    - Database-specific parameter mapping and validation
+    - Dynamic pipeline argument construction
+    - Performance timing and result metrics
+    - Comprehensive error handling with context
+    - Structured result reporting with metadata
+
+Pipeline Integration:
+    The command integrates with database-specific pipeline functions,
+    handling parameter mapping, execution coordination, and result
+    processing while maintaining separation of concerns between
+    command logic and pipeline implementation.
+
+Performance Considerations:
+    - Single database processing for focused analysis
+    - Memory optimization through targeted data loading
+    - Efficient parameter mapping and validation
+    - Minimal overhead for specific use cases
+
+Author: BioRemPP Development Team
 """
 
 import time
@@ -20,15 +55,39 @@ from biorempp.utils.error_handler import get_error_handler
 
 class DatabaseMergerCommand(BaseCommand):
     """
-    Command for executing database merging operations.
+    Command for executing targeted single database integration operations.
 
-    Supports individual database merger types:
-    - biorempp: Merge with BioRemPP database only
-    - kegg: Merge with KEGG pathway database only
-    - hadeg: Merge with HAdeg database only
-    - toxcsm: Merge with ToxCSM toxicity database only
+    This command handles focused analysis workflows by processing input data
+    against a specific database, providing precise control over analytical
+    scope and optimized performance for targeted use cases.
 
-    For merging with ALL databases, use AllDatabasesMergerCommand instead.
+    Supported Operations:
+        - biorempp: Comprehensive bioremediation potential analysis
+        - kegg: Degradation pathway enrichment and mapping
+        - hadeg: Hydrocarbon degradation gene identification
+        - toxcsm: Toxicity prediction and chemical safety assessment
+
+    Command Features:
+        - Database-specific validation and parameter mapping
+        - Dynamic pipeline argument construction and execution
+        - Performance monitoring with timing metrics
+        - Structured result reporting with metadata
+        - Error handling with contextual information
+
+    Processing Workflow:
+        1. Input validation (file existence, format, permissions)
+        2. Database type validation and parameter mapping
+        3. Pipeline execution with monitoring
+        4. Result collection and metadata generation
+        5. Output formatting and file generation
+
+    Performance Benefits:
+        - Focused processing reduces memory usage
+        - Faster execution for specific analytical needs
+        - Targeted validation reduces overhead
+        - Optimized parameter handling for each database type
+
+    For comprehensive analysis across all databases, use AllDatabasesMergerCommand.
     """
 
     # Pipeline mapping for type validation and execution
@@ -75,21 +134,51 @@ class DatabaseMergerCommand(BaseCommand):
 
     def execute(self, args) -> Union[str, Dict[str, str]]:
         """
-        Execute the pipeline processing with enhanced user feedback.
+        Execute targeted database processing with comprehensive monitoring.
 
-        Builds pipeline arguments dynamically and executes the appropriate
-        pipeline function based on the pipeline type specified.
+        This method orchestrates the complete pipeline execution for a specific
+        database, including validation, parameter mapping, execution monitoring,
+        and result collection with detailed metadata generation.
 
         Parameters
         ----------
         args : argparse.Namespace
-            Parsed command line arguments
+            Parsed command line arguments containing pipeline configuration,
+            input file path, database type, and output specifications.
 
         Returns
         -------
         Union[str, Dict[str, str]]
-            Path to output file (single pipeline) or dictionary of
-            pipeline names to output paths (all pipelines)
+            Processing results in structured format:
+            - Dict format (preferred): Contains 'output_path', 'matches',
+              'filename', and 'processing_time' keys
+            - String format (fallback): Direct path to output file
+
+        Raises
+        ------
+        FileNotFoundError
+            If the specified input file does not exist or is inaccessible.
+        ValueError
+            If the pipeline type is unsupported or parameters are invalid.
+        RuntimeError
+            If pipeline execution encounters processing errors.
+
+        Processing Workflow:
+            1. Input file validation and accessibility check
+            2. Pipeline function selection and parameter mapping
+            3. Pipeline execution with performance monitoring
+            4. Result collection and metadata generation
+            5. Error handling with contextual information
+
+        Examples
+        --------
+        Processing results typically contain:
+        {
+            'output_path': '/path/to/BioRemPP_Results.txt',
+            'matches': 1234,
+            'filename': 'BioRemPP_Results.txt',
+            'processing_time': 0.567
+        }
         """
         # Initialize error handler for exception handling
         error_handler = get_error_handler()

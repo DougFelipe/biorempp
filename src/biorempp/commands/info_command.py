@@ -1,8 +1,38 @@
 """
-Info Command Implementation.
+info_command.py
+--------------
+Information Display Command Implementation
 
-This module implements the InfoCommand for displaying database information
-and system help without requiring input files.
+This module implements the InfoCommand class for displaying comprehensive
+database information and system help without requiring input file processing.
+It provides users with detailed insights into available databases, their
+schemas, capabilities, and usage examples.
+
+The InfoCommand serves as the primary interface for system discovery,
+helping users understand the available resources and make informed decisions
+about database selection and analysis workflows.
+
+Information Types:
+    - Database Listing: Complete overview of all available databases
+    - Database Details: In-depth information about specific databases
+    - Schema Information: Column structures and data types
+    - Usage Examples: Practical command-line examples
+    - Feature Summaries: Key capabilities and record counts
+
+Database Coverage:
+    - BioRemPP: Core bioremediation potential database
+    - HADEG: Hydrocarbon degradation genes and pathways
+    - KEGG: Degradation pathway information
+    - ToxCSM: Toxicity prediction and chemical safety
+
+Display Features:
+    - Formatted console output with icons and sections
+    - Comprehensive database statistics and metadata
+    - Practical usage examples and command syntax
+    - Schema visualization with column information
+    - File size and record count information
+
+Author: BioRemPP Development Team
 """
 
 from typing import Any, Dict

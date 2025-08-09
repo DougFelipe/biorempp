@@ -1,8 +1,48 @@
 """
-All Databases Merger Command Implementation.
+all_merger_command.py
+--------------------
+Comprehensive Multi-Database Merger Command Implementation
 
 This module implements the AllDatabasesMergerCommand for executing
-database merging with ALL available databases in sequence.
+comprehensive data integration across all available BioRemPP databases
+in a coordinated sequence. It provides complete analytical coverage by
+processing input data against every database type.
+
+The command orchestrates multiple database integrations to deliver
+comprehensive bioremediation analysis, combining insights from gene
+function, pathway information, degradation capabilities, and toxicity
+assessments into a complete analytical workflow.
+
+Multi-Database Integration:
+    The command processes data sequentially against all four databases,
+    creating individual output files for each database while maintaining
+    data integrity and providing comprehensive error handling throughout
+    the entire workflow.
+
+Database Sequence:
+    1. BioRemPP: Core bioremediation potential analysis
+    2. HADEG: Hydrocarbon degradation gene identification
+    3. KEGG: Degradation pathway enrichment analysis
+    4. ToxCSM: Toxicity prediction and safety assessment
+
+Processing Strategy:
+    - Sequential execution with individual error handling
+    - Continuation strategy: failures in one database don't stop others
+    - Individual result tracking and reporting
+    - Comprehensive logging and progress monitoring
+
+Output Generation:
+    Creates separate output files for each database, allowing users to
+    analyze results independently or in combination based on their
+    analytical needs and research questions.
+
+Performance Considerations:
+    - Memory management across multiple database operations
+    - Error isolation to prevent cascade failures
+    - Progress tracking for long-running operations
+    - Resource optimization for comprehensive analysis
+
+Author: BioRemPP Development Team
 """
 
 from typing import Any, Dict
@@ -18,16 +58,49 @@ from biorempp.pipelines.input_processing import (
 
 class AllDatabasesMergerCommand(BaseCommand):
     """
-    Command for merging input with ALL databases in sequence.
+    Command for comprehensive multi-database integration operations.
 
-    Executes merging with all 4 databases individually:
-    - biorempp: BioRemPP database
-    - hadeg: HADEG database
-    - kegg: KEGG pathway database
-    - toxcsm: ToxCSM toxicity database
+    This command orchestrates complete bioremediation analysis by processing
+    input data against all four available databases sequentially, providing
+    comprehensive coverage of gene function, pathway information, degradation
+    capabilities, and toxicity assessments.
 
-    Creates individual output files for each database, providing
-    comprehensive coverage of all available data sources.
+    Database Coverage:
+        - biorempp: Core bioremediation potential and gene-compound mapping
+        - hadeg: Hydrocarbon degradation genes and pathway specialization
+        - kegg: Metabolic pathway enrichment and degradation routes
+        - toxcsm: Toxicity prediction and chemical safety evaluation
+
+    Processing Strategy:
+        Sequential execution with fault tolerance - failures in individual
+        databases do not prevent processing of remaining databases, ensuring
+        maximum data recovery and analytical completeness.
+
+    Output Generation:
+        Creates individual output files for each database:
+        - BioRemPP_Results.txt: Core bioremediation analysis
+        - HADEG_Results.txt: Hydrocarbon degradation analysis
+        - KEGG_Results.txt: Pathway enrichment analysis
+        - ToxCSM_Results.txt: Toxicity assessment analysis
+
+    Command Benefits:
+        - Complete analytical coverage in single execution
+        - Fault tolerance prevents partial failures
+        - Individual result files for focused analysis
+        - Comprehensive logging and progress tracking
+        - Optimized parameter handling for each database
+
+    Performance Characteristics:
+        - Memory management across multiple operations
+        - Error isolation and recovery mechanisms
+        - Progress monitoring for long-running workflows
+        - Resource optimization for comprehensive analysis
+
+    Use Cases:
+        - Complete bioremediation potential assessment
+        - Comprehensive environmental analysis workflows
+        - Multi-database comparative studies
+        - Complete organism characterization projects
     """
 
     # Database merge functions mapping
@@ -62,20 +135,52 @@ class AllDatabasesMergerCommand(BaseCommand):
 
     def execute(self, args) -> Dict[str, Any]:
         """
-        Execute merging with all databases in sequence.
+        Execute comprehensive multi-database integration workflow.
 
-        Creates individual output files for each database merger,
-        providing comprehensive data coverage.
+        This method orchestrates sequential processing across all available
+        databases, implementing a fault-tolerant strategy that continues
+        processing even if individual databases encounter errors, ensuring
+        maximum data recovery and analytical completeness.
 
         Parameters
         ----------
         args : argparse.Namespace
-            Parsed command line arguments
+            Parsed command line arguments containing input file path,
+            output directory specifications, and processing parameters.
 
         Returns
         -------
         Dict[str, Any]
-            Results from all database mergers
+            Comprehensive results from all database integration operations:
+            {
+                'biorempp': {result_dict or error_info},
+                'hadeg': {result_dict or error_info},
+                'kegg': {result_dict or error_info},
+                'toxcsm': {result_dict or error_info}
+            }
+
+        Processing Strategy:
+            - Sequential execution through all databases
+            - Individual error handling and isolation
+            - Continuation despite individual failures
+            - Comprehensive logging and progress tracking
+            - Result aggregation with success/failure reporting
+
+        Error Handling:
+            Individual database failures are captured and logged but do not
+            prevent processing of remaining databases. This ensures maximum
+            data recovery even in partial failure scenarios.
+
+        Output Files Generated:
+            - BioRemPP_Results.txt: Core bioremediation analysis
+            - HADEG_Results.txt: Hydrocarbon degradation analysis
+            - KEGG_Results.txt: Pathway enrichment analysis
+            - ToxCSM_Results.txt: Toxicity assessment analysis
+
+        Performance Monitoring:
+            The method tracks processing statistics including successful
+            and failed operations, providing comprehensive execution
+            summaries for workflow assessment and optimization.
         """
         self.logger.info("Starting merge with ALL databases")
         results = {}
