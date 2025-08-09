@@ -1,30 +1,43 @@
-# biorempp
+# BioRemPP Documentation
 
-The Bioremediation Potential Profile (BioRemPP) is designed to explore the biotechnological potential of microbial, fungal, and plant genomes for bioremediation purposes
+**Bioremediation Potential Profile (BioRemPP)** - A comprehensive Python package for analyzing biotechnological potential of microbial, fungal, and plant genomes for bioremediation purposes.
 
+## 🚀 Quick Navigation
 
-## Note
+Welcome to the complete documentation for BioRemPP! This documentation provides comprehensive information about all modules, APIs, and usage examples.
 
-> This is the main page of your project's [Sphinx] documentation. It is
-> formatted in [Markdown]. Add additional pages by creating md-files in
-> `docs` or rst-files (formatted in [reStructuredText]) and adding links to
-> them in the `Contents` section below.
->
-> Please check [Sphinx] and [MyST] for more information
-> about how to document your project and how to configure your preferences.
+### 📚 Documentation Sections
 
+- **Module Reference**: Complete API documentation for all BioRemPP modules
+- **User Guide**: Step-by-step guides and tutorials
+- **Developer Guide**: Information for contributors and developers
 
-## Contents
+## 📖 Contents
+
+```{toctree}
+:maxdepth: 3
+:caption: API Documentation
+
+API Reference <api/modules>
+```
 
 ```{toctree}
 :maxdepth: 2
+:caption: User Guide
 
-Overview <readme>
+Overview <overview>
+Documentation Guide <DOCUMENTATION_GUIDE>
+Project README <readme>
+```
+
+```{toctree}
+:maxdepth: 2
+:caption: Project Information
+
 Contributions & Help <contributing>
 License <license>
 Authors <authors>
 Changelog <changelog>
-Module Reference <api/modules>
 ```
 
 ## Indices and tables
