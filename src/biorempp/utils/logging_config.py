@@ -1,8 +1,105 @@
 """
-Centralized logging configuration for BioRemPP package.
+BioRemPP Centralized Logging Configuration Module.
 
-This module provides a unified logging setup that can be used
-across all modules in the BioRemPP package.
+This module implements a comprehensive logging infrastructure for the BioRemPP
+package, providing unified logging setup, configuration management, and
+consistent log formatting across all components. It supports multiple logging
+levels, output destinations, and environment-based configuration for different
+deployment scenarios.
+
+Key Features
+-----------
+- Singleton logging configuration for package-wide consistency
+- Environment-based configuration for development and production
+- Multiple output destinations (console, files, structured logs)
+- Configurable log levels with granular control
+- Professional log formatting with contextual information
+- Thread-safe logging operations for concurrent processing
+
+Logging Architecture
+-------------------
+The module implements a centralized logging architecture:
+1. Singleton Configuration: Single point of logging setup across the package
+2. Hierarchical Loggers: Organized logger hierarchy for different components
+3. Flexible Formatting: Contextual log formatting with technical details
+4. Environment Awareness: Configuration adaptation based on execution context
+5. Performance Optimization: Efficient logging with minimal overhead
+
+Configuration Strategy
+---------------------
+Supports multiple configuration approaches:
+- Environment Variables: LOG_LEVEL, LOG_FORMAT, LOG_DESTINATION
+- Programmatic Setup: Direct configuration through Python API
+- Default Settings: Sensible defaults for immediate usage
+- Production Modes: Optimized settings for deployment environments
+- Development Modes: Verbose logging for debugging and troubleshooting
+
+Output Management
+----------------
+Flexible output destination management:
+- Console Output: Formatted output for interactive debugging
+- File Logging: Persistent logs with rotation and archival
+- Structured Logging: JSON format for log analysis tools
+- Silent Modes: Minimal output for production environments
+- Technical Logs: Detailed technical information for troubleshooting
+
+Log Formatting Features
+----------------------
+Professional log formatting with comprehensive information:
+- Timestamp: Precise timing information for event correlation
+- Logger Name: Component identification for debugging
+- Level Information: Clear indication of message importance
+- Function Context: Method and line number for precise location
+- Message Content: Detailed description of events and operations
+- Error Details: Exception information with stack traces
+
+Integration Design
+-----------------
+Designed for seamless integration across BioRemPP components:
+- Package-wide Consistency: Unified logging patterns and formats
+- Component Integration: Easy logger acquisition for any module
+- Pipeline Support: Logging integration for data processing workflows
+- Error Correlation: Consistent error logging and troubleshooting
+- Performance Monitoring: Timing and performance logging capabilities
+
+Environment Configuration
+-------------------------
+Supports configuration through environment variables:
+- LOG_LEVEL: Control logging verbosity (DEBUG, INFO, WARNING, ERROR)
+- LOG_FORMAT: Choose between simple, detailed, or JSON formatting
+- LOG_DESTINATION: Configure output to console, file, or both
+- LOG_FILE_PATH: Specify custom log file locations
+- LOG_ROTATION: Enable log file rotation and archival
+
+Example Usage
+------------
+    from biorempp.utils.logging_config import get_logger, setup_logging
+
+    # Setup logging with default configuration
+    setup_logging()
+
+    # Get logger for specific module
+    logger = get_logger("biorempp.pipelines.analysis")
+    logger.info("Starting analysis pipeline")
+
+    # Configure from environment
+    from biorempp.utils.logging_config import configure_from_env
+    configure_from_env()
+
+    # Custom configuration
+    setup_logging(
+        level="DEBUG",
+        format_type="detailed",
+        output_file="analysis.log"
+    )
+
+Technical Implementation
+-----------------------
+- Singleton pattern for configuration consistency
+- Thread-safe logger acquisition and configuration
+- Efficient log formatting with minimal performance impact
+- Proper resource management for file handles and streams
+- Cross-platform compatibility for different operating systems
 """
 
 import logging

@@ -1,4 +1,115 @@
-"""User-friendly feedback system for BioRemPP CLI."""
+"""
+BioRemPP User Feedback System Module.
+
+This module implements a comprehensive user feedback and progress indication
+system designed for command-line bioinformatics applications. It provides
+elegant progress visualization, status updates, and user interaction
+capabilities that enhance the user experience during long-running data
+processing operations.
+
+Key Features
+-----------
+- Progress Indication: Multiple visualization styles for different contexts
+- Status Updates: Real-time feedback for multi-step operations
+- Verbosity Control: Adjustable output levels for different user preferences
+- Professional Appearance: Modern CLI design with visual appeal
+- Thread-Safe Operations: Concurrent progress indication and processing
+
+Progress Visualization Styles
+-----------------------------
+Supports multiple progress indication approaches:
+- Spinner Animation: Rotating indicators for indeterminate progress
+- Dots Animation: Progressive dots for step-by-step operations
+- Progress Bars: Percentage-based bars for quantifiable progress
+- Status Messages: Text-based updates for complex workflows
+- Silent Mode: Minimal output for automated or production environments
+
+User Interaction Design
+----------------------
+Implements modern CLI user experience patterns:
+1. Visual Feedback: Clear indication of system activity and progress
+2. Contextual Information: Relevant details about current operations
+3. Professional Appearance: Consistent styling and visual hierarchy
+4. Responsive Design: Adaptive output based on terminal capabilities
+5. Accessibility: Clear, readable output suitable for various environments
+
+Verbosity Management
+-------------------
+Flexible verbosity control system:
+- Quiet Mode: Essential information only for minimal output
+- Normal Mode: Standard progress and status information
+- Verbose Mode: Detailed progress with comprehensive updates
+- Debug Mode: Technical details and diagnostic information
+- Silent Mode: No output except critical errors and final results
+
+Threading Architecture
+---------------------
+Thread-safe progress indication system:
+- Background Progress: Non-blocking progress indicators
+- Concurrent Operations: Progress display during data processing
+- Clean Termination: Proper cleanup of progress threads
+- Resource Management: Efficient thread lifecycle management
+- Synchronization: Coordinated updates between progress and main threads
+
+Integration Capabilities
+-----------------------
+Designed for seamless integration with BioRemPP workflows:
+- Pipeline Integration: Progress tracking for multi-step processes
+- Command Integration: Feedback during command execution
+- Error Integration: User-friendly error presentation
+- Logging Coordination: Separation of user feedback from technical logs
+- CLI Coordination: Professional command-line interface design
+
+Message Categories
+-----------------
+Supports various message types:
+- Progress Messages: Ongoing operation status and updates
+- Success Messages: Completion confirmations and results
+- Warning Messages: Non-critical issues and important notices
+- Error Messages: Problem notifications with actionable guidance
+- Information Messages: General information and context
+
+Example Usage
+------------
+    from biorempp.utils.user_feedback import (
+        ProgressIndicator,
+        UserFeedbackManager,
+        set_verbosity
+    )
+
+    # Configure verbosity
+    set_verbosity("verbose")
+
+    # Use progress indicator
+    progress = ProgressIndicator()
+    progress.start("Processing data...", style="spinner")
+    # ... perform work ...
+    progress.stop("✅ Complete")
+
+    # Use feedback manager
+    feedback = UserFeedbackManager()
+    feedback.show_progress("Starting analysis...")
+    feedback.show_success("Analysis completed successfully")
+    feedback.show_warning("Large dataset detected")
+    feedback.show_error("File not found", with_solutions=True)
+
+Visual Design Features
+---------------------
+Professional visual design elements:
+- Unicode Icons: Visual elements for quick information recognition
+- Color Coding: Contextual colors for different message types
+- Consistent Spacing: Organized layout with proper alignment
+- Progress Animations: Smooth, non-distracting progress indicators
+- Status Symbols: Clear symbols for success, warning, and error states
+
+Technical Implementation
+-----------------------
+- Thread-safe progress indication with proper synchronization
+- Efficient animation loops with minimal CPU overhead
+- Clean resource management for progress threads
+- Cross-platform compatibility for different terminal environments
+- Memory-efficient operation suitable for long-running processes
+"""
 
 import os
 import sys

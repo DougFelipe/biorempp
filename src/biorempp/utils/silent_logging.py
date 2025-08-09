@@ -1,4 +1,96 @@
-"""Silent logging configuration for CLI usage."""
+"""
+BioRemPP Silent Logging Configuration Module.
+
+This module implements a specialized logging configuration designed for
+command-line interface applications where console output must be clean
+and professional while maintaining comprehensive technical logging for
+debugging and monitoring purposes.
+
+The silent logging system completely eliminates console spam while
+preserving detailed technical logs in files, enabling professional
+CLI user experience with full debugging capabilities for developers
+and system administrators.
+
+Key Features
+-----------
+- Complete Console Silence: Zero technical output to console
+- Comprehensive File Logging: Detailed technical logs with full context
+- Professional CLI Design: Clean user interface without debug spam
+- Daily Log Rotation: Organized log files with date-based naming
+- Technical Detail Preservation: Full logging context for troubleshooting
+
+Silent Logging Architecture
+--------------------------
+The module implements a dual-layer logging approach:
+1. Console Layer: Complete silence for professional CLI experience
+2. File Layer: Comprehensive technical logging with detailed context
+3. User Feedback: Separate system for user-facing messages
+4. Technical Logging: Detailed information for developers and admins
+5. Error Separation: Critical errors through separate feedback channels
+
+CLI Design Philosophy
+--------------------
+Follows modern CLI design principles:
+- Clean Output: User sees only relevant, formatted information
+- Professional Appearance: No technical logging noise in user interface
+- Separate Concerns: Technical logging separated from user feedback
+- Debug Capability: Full technical information available when needed
+- Operational Transparency: Silent operation with complete audit trail
+
+File Logging Features
+--------------------
+Comprehensive file-based logging system:
+- Daily Rotation: New log file for each day of operation
+- Structured Format: Consistent log entry formatting with full context
+- Technical Details: Function names, line numbers, and call context
+- Performance Tracking: Timing information and operation metrics
+- Error Documentation: Complete exception traces and error context
+
+Integration Strategy
+-------------------
+Designed for seamless CLI integration:
+- Early Initialization: Setup before any other logging operations
+- Global Configuration: Package-wide silent logging behavior
+- User Feedback Separation: Clean separation from user-facing messages
+- Debug Mode Support: Easy switching between silent and verbose modes
+- Professional Operation: Production-ready logging for deployed systems
+
+Log Organization
+---------------
+Implements organized log file structure:
+- Location: outputs/logs/ directory for centralized log management
+- Naming: biorempp_YYYYMMDD.log for chronological organization
+- Format: Structured entries with timestamp, level, module, and context
+- Encoding: UTF-8 support for international characters and symbols
+- Rotation: Daily rotation prevents oversized log files
+
+Example Usage
+------------
+    from biorempp.utils.silent_logging import (
+        setup_silent_logging,
+        get_logger,
+        show_user_message
+    )
+
+    # Initialize silent logging (call once at application start)
+    setup_silent_logging()
+
+    # Get logger for technical information
+    logger = get_logger("biorempp.analysis")
+    logger.info("Starting analysis pipeline")  # Goes to file only
+    logger.debug("Processing 1000 sequences")  # Technical detail
+
+    # Show user-facing messages
+    show_user_message("Processing complete!", "success")
+
+Technical Implementation
+-----------------------
+- Root logger reconfiguration for package-wide silence
+- File handler with professional formatting and encoding
+- Daily log file creation with automatic directory management
+- Thread-safe logging operations for concurrent processing
+- Memory-efficient logging with proper resource management
+"""
 
 import logging
 from datetime import datetime

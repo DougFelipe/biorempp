@@ -1,4 +1,107 @@
-"""Enhanced error handling with user-friendly messages and solutions."""
+"""
+BioRemPP Enhanced Error Handling Module.
+
+This module implements a sophisticated error handling system that transforms
+technical exceptions into user-friendly messages with actionable guidance.
+It provides contextual error analysis, solution recommendations, and
+professional error presentation for improved user experience in bioinformatics
+data processing workflows.
+
+Key Features
+-----------
+- Contextual Error Analysis: Intelligent error classification and context detection
+- User-Friendly Messages: Technical errors translated to clear explanations
+- Actionable Solutions: Specific guidance for error resolution
+- Example Commands: Practical examples for correcting common issues
+- Professional Presentation: Consistent error formatting and display
+
+Error Handling Philosophy
+------------------------
+The module follows a user-centric error handling approach:
+1. Error Classification: Categorize errors by type and context
+2. Context Analysis: Understand the operational context when errors occur
+3. Solution Generation: Provide specific, actionable resolution steps
+4. User Guidance: Clear explanations without overwhelming technical details
+5. Recovery Assistance: Help users quickly resolve issues and continue work
+
+Contextual Intelligence
+----------------------
+Implements intelligent context detection:
+- File Operation Errors: Input files, database files, permission issues
+- Processing Errors: Data format problems, memory issues, computation failures
+- Configuration Errors: Invalid parameters, missing dependencies, setup issues
+- System Errors: Platform-specific issues, resource constraints, permissions
+- Network Errors: Database connectivity, download failures, timeout issues
+
+Solution Recommendation System
+-----------------------------
+Provides structured solution recommendations:
+- Immediate Actions: Quick fixes for common problems
+- Diagnostic Steps: Systematic troubleshooting approaches
+- Alternative Methods: Different approaches when primary methods fail
+- Prevention Advice: Guidance to avoid similar issues in the future
+- Expert Resources: References to documentation and support channels
+
+Error Message Architecture
+--------------------------
+Structured error presentation system:
+- Primary Message: Clear, non-technical description of the problem
+- Context Information: Relevant details about the operation that failed
+- Solution Steps: Numbered, actionable steps for resolution
+- Example Commands: Practical command-line examples for correction
+- Additional Resources: Links to documentation and support materials
+
+Integration Design
+-----------------
+Seamlessly integrates with BioRemPP error handling:
+- Exception Translation: Convert Python exceptions to user messages
+- Argument Context: Use command-line arguments for better error context
+- Logging Integration: Coordinate with logging systems for technical details
+- User Feedback: Connect with feedback systems for consistent presentation
+- Recovery Guidance: Help users understand and resolve operational issues
+
+Error Categories
+---------------
+Handles comprehensive error categories:
+- File System Errors: Missing files, permission issues, path problems
+- Data Processing Errors: Format issues, parsing failures, validation errors
+- Resource Errors: Memory constraints, disk space, processing limits
+- Configuration Errors: Invalid settings, missing dependencies, setup issues
+- Runtime Errors: Unexpected failures, system limitations, platform issues
+
+Example Usage
+------------
+    from biorempp.utils.error_handler import EnhancedErrorHandler
+
+    # Initialize error handler
+    error_handler = EnhancedErrorHandler()
+
+    # Handle specific error with context
+    try:
+        process_data(input_file)
+    except FileNotFoundError as e:
+        message, solution = error_handler.handle_error(e, args_context)
+        print(f"Error: {message}")
+        print(f"Solution: {solution}")
+
+    # Get error solutions
+    solutions = error_handler.get_error_solutions("FileNotFoundError")
+
+    # Format error for user display
+    formatted_error = error_handler.format_error_message(
+        error_type="ValidationError",
+        context="input_validation",
+        user_input="invalid_file.txt"
+    )
+
+Technical Implementation
+-----------------------
+- Exception type classification with pattern matching
+- Context-aware error message generation
+- Structured solution database with hierarchical organization
+- Professional error formatting with consistent presentation
+- Integration hooks for logging and user feedback systems
+"""
 
 import logging
 from typing import Dict, List, Optional, Tuple
