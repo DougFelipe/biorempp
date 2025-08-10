@@ -1,11 +1,13 @@
 name: Release
 
 on:
+  # Publish on every push to main (and allow manual runs)
   push:
     branches:
       - main
   workflow_dispatch:
 
+# GitHub App token perms needed by semantic-release to create tags/releases
 permissions:
   contents: write
   issues: write
@@ -13,81 +15,88 @@ permissions:
   id-token: write
 
 jobs:
+  # 1) Run tests and lint on a matrix of Python versions
   test:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: [3.8, 3.9, "3.10", "3.11"]
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout (full history for accurate versioning if needed)
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Install test deps
+      - name: Install test dependencies
         run: |
           python -m pip install --upgrade pip
           pip install tox tox-gh-actions
 
-      - name: Test with tox
+      - name: Run tests with tox
         run: tox
 
+  # 2) Build the distribution once (wheel + sdist) and upload as an artifact
   build:
     needs: test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout (full history to keep version metadata intact)
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - name: Set up Python (build env)
+        uses: actions/setup-python@v5
         with:
           python-version: "3.10"
 
-      - name: Install build deps
+      - name: Install build dependencies
         run: |
           python -m pip install --upgrade pip
           pip install build twine
 
-      - name: Build package
+      - name: Build package (sdist + wheel)
         run: python -m build
 
-      - name: Check distribution
+      - name: Validate built distributions with twine
         run: twine check dist/*
 
-      - name: Upload build artifacts
+      - name: Upload build artifacts (to be used by the release job)
         uses: actions/upload-artifact@v4
         with:
           name: python-distributions
           path: dist/
+          if-no-files-found: error   # fail early if build did not produce files
 
+  # 3) Create the GitHub Release via semantic-release and attach artifacts
   release:
     needs: [test, build]
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
 
     steps:
-      - name: Checkout repository
+      - name: Checkout repository (full history required by semantic-release)
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # required for semantic-release to inspect history
+          fetch-depth: 0
 
-      - name: Set up Git identity for commits
+      - name: Configure Git identity for release commits
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-      - name: Set up Node.js
+      - name: Set up Node.js (for semantic-release)
         uses: actions/setup-node@v4
         with:
           node-version: "lts/*"
 
       - name: Install semantic-release and plugins
+        # Includes the preset required by commit-analyzer/release-notes-generator
         run: |
           npm install -g semantic-release@^22 \
             @semantic-release/commit-analyzer@^11 \
@@ -97,13 +106,25 @@ jobs:
             @semantic-release/github@^9 \
             conventional-changelog-conventionalcommits@^7
 
-      - name: Download build artifacts
+      - name: Download build artifacts into ./dist
+        # These files will be attached by @semantic-release/github based on your release.config.js
         uses: actions/download-artifact@v4
         with:
           name: python-distributions
           path: dist/
 
-      - name: Run semantic-release
+      - name: Verify artifacts exist (defensive check)
+        shell: bash
+        run: |
+          echo "Listing files in ./dist:"
+          ls -l dist || true
+          # Ensure at least one file is present so the GitHub plugin can attach it
+          if [ -z "$(ls -1 dist/* 2>/dev/null)" ]; then
+            echo "::error::No distribution files found in ./dist. Check the build job and artifact names/paths."
+            exit 1
+          fi
+
+      - name: Run semantic-release (creates tag + GitHub Release and attaches assets)
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # default Actions token is enough for GitHub releases
         run: npx semantic-release
