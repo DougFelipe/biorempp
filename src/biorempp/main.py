@@ -23,10 +23,8 @@ def main():
     and centralized orchestration. All complexity has been moved to
     specialized components following SOLID principles.
 
-    Returns
-    -------
-    Any
-        Application execution results
+    This function serves as the CLI entry point and does not return
+    values to prevent unwanted output in command-line usage.
     """
 
     # Technical logging (to file only, no console spam)
@@ -37,7 +35,7 @@ def main():
 
     # Create and run the application
     app = BioRemPPApplication()
-    return app.run()
+    app.run()  # Don't return result to avoid CLI output pollution
 
 
 if __name__ == "__main__":

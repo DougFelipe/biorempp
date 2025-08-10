@@ -1,4 +1,119 @@
-"""Enhanced error handling with user-friendly messages and solutions."""
+"""
+BioRemPP Enhanced Error Handling System Module.
+
+This module implements an advanced error handling and recovery system
+specifically designed for bioinformatics command-line applications.
+It provides intelligent error classification, contextual analysis,
+user-friendly message translation, and actionable solution recommendations
+to improve user experience and reduce troubleshooting time.
+
+The enhanced error handling system represents a sophisticated approach
+to error management in scientific computing environments, focusing on
+user guidance, problem resolution, and operational continuity through
+professional error presentation and recovery assistance.
+
+Key Features
+-----------
+- Intelligent Error Classification: Automatic categorization by context and type
+- Contextual Solution Engine: Specific guidance based on operational context
+- User-Friendly Translation: Technical errors converted to clear explanations
+- Actionable Recommendations: Step-by-step resolution guidance
+- Example-Driven Help: Practical command examples for problem resolution
+
+Error Intelligence System
+-------------------------
+Advanced error analysis and classification:
+1. Context Detection: Understanding operational context when errors occur
+2. Error Categorization: Systematic classification by type and severity
+3. Pattern Recognition: Identification of common error patterns and causes
+4. Solution Mapping: Intelligent mapping of errors to resolution strategies
+5. User Guidance: Professional presentation of error information and solutions
+
+Contextual Analysis Engine
+--------------------------
+Sophisticated context-aware error handling:
+- File Operation Context: Input files, database files, permission scenarios
+- Processing Context: Data format issues, memory constraints, computation errors
+- Configuration Context: Parameter validation, dependency issues, setup problems
+- System Context: Platform limitations, resource constraints, environment issues
+- Network Context: Connectivity problems, download failures, timeout scenarios
+
+Solution Recommendation Framework
+--------------------------------
+Structured approach to error resolution guidance:
+- Immediate Actions: Quick fixes for common, easily resolved problems
+- Diagnostic Procedures: Systematic troubleshooting methodologies
+- Alternative Approaches: Different strategies when primary methods fail
+- Prevention Strategies: Guidance to avoid recurrence of similar issues
+- Expert Resources: References to documentation, support, and community help
+
+Professional Error Presentation
+------------------------------
+Modern error presentation design:
+- Clear Primary Messages: Non-technical, user-friendly problem descriptions
+- Contextual Information: Relevant operational details and circumstances
+- Structured Solutions: Organized, numbered steps for systematic resolution
+- Practical Examples: Command-line examples demonstrating correct usage
+- Additional Resources: Links to documentation and support materials
+
+Integration Architecture
+-----------------------
+Seamless integration with BioRemPP error handling ecosystem:
+- Exception Translation: Conversion of Python exceptions to user messages
+- Argument Context Integration: Use of CLI arguments for enhanced error context
+- Logging Coordination: Integration with technical logging for comprehensive records
+- User Feedback Integration: Coordination with feedback systems for consistent UX
+- Recovery Workflow: Support for graceful error recovery and operation continuation
+
+Error Category Coverage
+----------------------
+Comprehensive error handling across operational domains:
+- File System Errors: Missing files, permissions, path resolution, disk space
+- Data Processing Errors: Format validation, parsing failures, data corruption
+- Resource Management Errors: Memory limitations, CPU constraints, system resources
+- Configuration Errors: Invalid parameters, missing dependencies, setup issues
+- Runtime Errors: Unexpected failures, platform limitations, system interactions
+
+Example Usage
+------------
+    from biorempp.utils.enhanced_errors import EnhancedErrorHandler
+
+    # Initialize enhanced error handler
+    error_handler = EnhancedErrorHandler()
+
+    # Handle errors with context
+    try:
+        process_biological_data(input_file)
+    except FileNotFoundError as e:
+        message, solutions = error_handler.handle_error(e, context_args)
+        print(f"Problem: {message}")
+        for i, solution in enumerate(solutions, 1):
+            print(f"{i}. {solution}")
+
+    # Get error-specific guidance
+    guidance = error_handler.get_error_guidance(
+        error_type="ValidationError",
+        context="data_format",
+        user_context=args
+    )
+
+User Experience Design
+---------------------
+Focus on user-centric error handling:
+- Clear Communication: Technical details translated to understandable language
+- Actionable Guidance: Specific steps users can take to resolve issues
+- Confidence Building: Reassuring users that problems are solvable
+- Learning Support: Educational aspects to prevent future similar issues
+- Professional Support: Pathways to expert help when needed
+
+Technical Implementation
+-----------------------
+- Sophisticated error pattern matching and classification
+- Context-aware message generation with argument integration
+- Structured solution database with hierarchical organization
+- Professional error formatting with consistent visual presentation
+- Integration hooks for logging, feedback, and recovery systems
+"""
 
 from typing import Dict, List, Optional, Tuple
 
@@ -261,7 +376,7 @@ class EnhancedErrorHandler:
         if self.feedback_manager:
             self.feedback_manager.show_error(user_message, solution)
         else:
-            print(f"❌ Error: {user_message}")
+            print(f"[ERROR] Error: {user_message}")
             if solution:
                 print("\n💡 Solutions:")
                 print(solution)

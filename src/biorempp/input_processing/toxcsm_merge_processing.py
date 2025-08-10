@@ -1,3 +1,33 @@
+"""
+toxcsm_merge_processing.py
+-------------------------
+ToxCSM Database Merge Processing Module
+
+This module provides functionality to merge input biological data with the
+ToxCSM (Toxicity Computational Screening and Modeling) database. It
+specializes in connecting compound identifiers (cpd) with toxicity predictions
+and chemical properties for environmental safety assessment.
+
+The module handles CSV-format ToxCSM databases with semicolon delimiters and
+includes advanced memory optimization through categorical data types and
+float32 conversion for numerical toxicity values.
+
+Main Functions:
+    - merge_input_with_toxcsm: Core merge function for ToxCSM database
+    - optimize_dtypes_toxcsm: Memory optimization for ToxCSM DataFrames
+
+Database Schema:
+    The ToxCSM database contains columns including 'cpd', 'SMILES', 'ChEBI',
+    'compoundname', and various 'value_*' and 'label_*' columns for toxicity
+    predictions and chemical properties.
+
+Merge Strategy:
+    Uses 'cpd' column as merge key and handles column conflicts by prioritizing
+    input data while preserving ToxCSM-specific toxicity columns.
+
+Available at: https://biosig.lab.uq.edu.au/toxcsm/
+"""
+
 import logging
 import os
 

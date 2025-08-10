@@ -1,3 +1,25 @@
+"""
+biorempp_merge_processing.py
+---------------------------
+BioRemPP Database Merge Processing Module
+
+This module provides functionality to merge input biological data with the
+BioRemPP reference database. It handles data validation, type optimization,
+and efficient merging operations for bioremediation analysis.
+
+The module supports CSV-format databases with semicolon delimiters and
+includes memory optimization features through categorical data types.
+
+Main Functions:
+    - merge_input_with_biorempp: Core merge function for BioRemPP database
+    - optimize_dtypes_biorempp: Memory optimization for BioRemPP DataFrames
+
+Database Schema:
+    The BioRemPP database contains columns including 'ko', 'genesymbol',
+    'genename', 'cpd', 'compoundclass', 'referenceAG', 'compoundname',
+    and 'enzyme_activity' among others.
+"""
+
 import logging
 import os
 
@@ -8,33 +30,64 @@ logger = logging.getLogger("biorempp.input_processing.biorempp_merge_processing"
 
 
 def merge_input_with_biorempp(
-    input_data: pd.DataFrame, database_filepath: str = None, optimize_types: bool = True
+    input_data: pd.DataFrame,
+    database_filepath: str = None,
+    optimize_types: bool = True,
 ) -> pd.DataFrame:
     """
     Merge input data with BioRemPP reference database in CSV format.
 
+    This function performs an inner join between the input biological data
+    and the BioRemPP reference database using the 'ko' (KEGG Orthology)
+    column as the merge key. The BioRemPP database contains comprehensive
+    information about genes, compounds, and enzymes for bioremediation.
+
     Parameters
     ----------
     input_data : pd.DataFrame
-        Input DataFrame containing at least the 'ko' column.
+        Input DataFrame containing at least the 'ko' column with KEGG
+        orthology identifiers.
     database_filepath : str, optional
-        Path to database file (.csv). Default: 'data/database.csv'
+        Path to BioRemPP database file (.csv). If None, defaults to
+        'data/database.csv' in the current working directory.
     optimize_types : bool, optional
-        Optimize types with optimize_dtypes_biorempp. Default: True
+        If True, applies dtype optimization using optimize_dtypes_biorempp
+        to reduce memory usage through categorical conversions. Default: True.
 
     Returns
     -------
     pd.DataFrame
-        DataFrame with merge by 'ko' field, ready for analysis.
+        Merged DataFrame containing all columns from both input and database
+        DataFrames. Only rows with matching 'ko' values are included
+        (inner join).
 
     Raises
     ------
     FileNotFoundError
-        If database file does not exist.
+        If the specified database file does not exist.
     ValueError
-        If file is not .csv format.
+        If the database file is not in .csv format.
     KeyError
-        If 'ko' column is missing in input or database.
+        If the 'ko' column is missing in either input_data or database.
+    TypeError
+        If input_data is not a pandas DataFrame.
+    Exception
+        If there are issues reading the CSV file (encoding, format, etc.).
+
+    Examples
+    --------
+    >>> import pandas as pd
+    >>> input_df = pd.DataFrame({'ko': ['K00001', 'K00002'], 'sample': ['S1', 'S2']})
+    >>> result = merge_input_with_biorempp(input_df)
+    >>> print(result.shape)
+    (2, 10)  # Example output
+
+    Notes
+    -----
+    - The database file must use semicolon (;) as the delimiter
+    - UTF-8 encoding is expected for proper character handling
+    - Memory optimization converts repetitive columns to categorical types
+    - The merge operation preserves all columns from both DataFrames
     """
     if database_filepath is None:
         database_filepath = os.path.join("data", "database.csv")
@@ -88,17 +141,52 @@ def merge_input_with_biorempp(
 
 def optimize_dtypes_biorempp(df: pd.DataFrame) -> pd.DataFrame:
     """
-    Optimize column types for recurring project columns (convert to categorical).
+    Optimize column types for BioRemPP DataFrames to reduce memory usage.
+
+    This function converts frequently repeated string columns to categorical
+    data types, which significantly reduces memory consumption for large
+    datasets. It targets columns commonly found in BioRemPP biological data.
 
     Parameters
     ----------
     df : pd.DataFrame
-        Input DataFrame.
+        Input DataFrame with BioRemPP data columns.
 
     Returns
     -------
     pd.DataFrame
-        DataFrame with optimized types.
+        DataFrame with optimized categorical data types for memory efficiency.
+
+    Raises
+    ------
+    TypeError
+        If the input is not a pandas DataFrame.
+
+    Notes
+    -----
+    Optimized columns include:
+    - 'ko': KEGG Orthology identifiers
+    - 'genesymbol': Gene symbols
+    - 'genename': Full gene names
+    - 'cpd': Compound identifiers
+    - 'compoundclass': Chemical compound classifications
+    - 'referenceAG': Reference organism information
+    - 'compoundname': Compound names
+    - 'enzyme_activity': Enzyme activity descriptions
+    - 'sample': Sample identifiers
+
+    Examples
+    --------
+    >>> import pandas as pd
+    >>> df = pd.DataFrame({
+    ...     'ko': ['K00001', 'K00001', 'K00002'],
+    ...     'genesymbol': ['geneA', 'geneA', 'geneB']
+    ... })
+    >>> optimized_df = optimize_dtypes_biorempp(df)
+    >>> print(optimized_df.dtypes)
+    ko           category
+    genesymbol   category
+    dtype: object
     """
     if not isinstance(df, pd.DataFrame):
         logger.error("Input must be a pandas DataFrame.")

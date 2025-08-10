@@ -1,7 +1,83 @@
 """
-I/O Utilities for BioRemPP
+BioRemPP I/O Utilities Module.
 
-General functions for saving outputs to disk.
+This module provides comprehensive file input/output operations and path
+management utilities specifically designed for bioinformatics data processing
+workflows. It implements robust file handling patterns with standardized
+output formats, project-relative path resolution, and timestamped file
+generation for organized result management.
+
+Key Features
+-----------
+- Project-relative path resolution for consistent output organization
+- Timestamped file generation for chronological result tracking
+- DataFrame export with standardized formatting and encoding
+- Robust error handling for file system operations
+- Cross-platform path management with proper encoding support
+
+File Management Capabilities
+---------------------------
+The module handles various file operations essential for bioinformatics:
+- Output directory creation with proper permissions
+- Timestamped filename generation for result organization
+- DataFrame serialization with consistent formatting
+- Path resolution relative to project structure
+- Error-resilient file operations with detailed logging
+
+Output Organization
+------------------
+Implements standardized output directory structure:
+- outputs/results_tables/: Main results and analysis outputs
+- Timestamped files: Chronological organization of processing results
+- Project-relative paths: Consistent location regardless of execution context
+- Standardized formats: CSV with UTF-8 encoding and consistent separators
+
+Path Resolution Strategy
+-----------------------
+The module implements intelligent path resolution:
+1. Project root detection: Automatic identification of project base directory
+2. Relative path construction: Consistent paths from project root
+3. Cross-platform compatibility: Proper handling of Windows/Unix path formats
+4. Error handling: Graceful fallbacks for path resolution failures
+
+Integration Design
+-----------------
+Designed for seamless integration with BioRemPP pipelines:
+- Logger integration: Technical logging for troubleshooting
+- DataFrame compatibility: Direct pandas DataFrame export support
+- Pipeline integration: Standardized interfaces for processing workflows
+- Error propagation: Consistent error handling patterns
+
+Technical Implementation
+-----------------------
+- UTF-8 encoding for international character support
+- Thread-safe operations for concurrent processing environments
+- Efficient file I/O with proper resource management
+- Comprehensive error handling with informative messages
+- Cross-platform path operations using pathlib
+
+Example Usage
+------------
+    from biorempp.utils.io_utils import (
+        save_dataframe_output,
+        get_project_root,
+        resolve_output_path,
+        generate_timestamped_filename
+    )
+
+    # Save analysis results
+    output_path = save_dataframe_output(
+        dataframe=results_df,
+        base_filename="analysis_results",
+        subdirectory="pathway_analysis"
+    )
+
+    # Generate timestamped files
+    filename = generate_timestamped_filename("experiment", "csv")
+
+    # Resolve project-relative paths
+    project_root = get_project_root()
+    output_dir = resolve_output_path("custom_results")
 """
 
 import logging

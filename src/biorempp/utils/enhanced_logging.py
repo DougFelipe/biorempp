@@ -1,4 +1,126 @@
-"""Enhanced logging system with dual output: technical logs + user feedback."""
+"""
+BioRemPP Enhanced Logging System Module.
+
+This module implements a sophisticated dual-output logging system that
+provides comprehensive technical logging for debugging and monitoring
+while maintaining clean, professional user interfaces for command-line
+applications. It represents an advanced approach to logging in scientific
+computing environments with seamless integration of technical detail
+preservation and user experience optimization.
+
+The enhanced logging system bridges the gap between comprehensive technical
+documentation and professional user interfaces, enabling full debugging
+capabilities while delivering beautiful, informative command-line experiences
+optimized for bioinformatics workflows.
+
+Key Features
+-----------
+- Dual Output Architecture: Simultaneous technical logging and user feedback
+- Professional User Interface: Clean, beautiful console output without spam
+- Comprehensive Technical Logs: Detailed file-based logging for debugging
+- Threading Support: Non-blocking progress indicators and status updates
+- Flexible Configuration: Adaptable logging levels and output destinations
+
+Dual Logging Architecture
+------------------------
+Innovative dual-output logging design:
+1. Technical Layer: Comprehensive file-based logging with full technical detail
+2. User Layer: Clean, professional console output with visual appeal
+3. Progress Layer: Real-time progress indication with thread-safe operations
+4. Error Layer: Professional error presentation with technical detail preservation
+5. Integration Layer: Seamless coordination between all logging components
+
+Technical Logging Features
+-------------------------
+Comprehensive technical documentation capabilities:
+- File-Based Logging: Detailed logs with rotation and archival support
+- Debug Information: Complete technical context and execution traces
+- Performance Metrics: Timing information and resource utilization tracking
+- Error Documentation: Full exception traces and diagnostic information
+- Audit Trail: Complete operational history for compliance and debugging
+
+User Interface Design
+--------------------
+Professional console interface features:
+- Clean Output: Beautiful, informative displays without technical clutter
+- Progress Indicators: Smooth, non-blocking progress visualization
+- Status Updates: Real-time feedback for multi-step operations
+- Professional Styling: Consistent visual design with modern aesthetics
+- Contextual Information: Relevant details presented at appropriate detail levels
+
+Threading and Concurrency
+-------------------------
+Advanced threading support for responsive interfaces:
+- Background Logging: Non-blocking technical log operations
+- Progress Threading: Smooth progress indicators during processing
+- Resource Management: Efficient thread lifecycle and resource cleanup
+- Synchronization: Thread-safe operations across all logging components
+- Performance Optimization: Minimal overhead for concurrent operations
+
+Configuration Flexibility
+-------------------------
+Comprehensive configuration management:
+- Console Level Control: Adjustable user interface verbosity
+- File Level Control: Independent technical logging detail levels
+- Output Destination: Configurable log file locations and organization
+- Format Customization: Adaptable log formatting for different requirements
+- Environment Integration: Configuration through environment variables
+
+Integration Strategy
+-------------------
+Seamless integration with BioRemPP ecosystem:
+- Pipeline Integration: Logging coordination with processing workflows
+- Command Integration: Professional logging for command execution
+- Error Integration: Coordinated error handling and presentation
+- Feedback Integration: Unified user feedback and progress systems
+- Monitoring Integration: Support for operational monitoring and alerting
+
+Example Usage
+------------
+    from biorempp.utils.enhanced_logging import BioRemPPLogger
+
+    # Initialize enhanced logger
+    logger = BioRemPPLogger(
+        console_level="NORMAL",
+        file_level="DEBUG",
+        log_dir="custom/logs"
+    )
+
+    # Technical logging (to file)
+    logger.info("Starting data processing pipeline")
+    logger.debug("Processing 10000 sequences with parameters X, Y, Z")
+
+    # User feedback (to console)
+    logger.user_message("🧬 Loading biological data...")
+    logger.show_progress("Processing sequences", current=500, total=10000)
+    logger.user_success("✅ Analysis completed successfully")
+
+Logging Levels and Control
+-------------------------
+Sophisticated level management:
+- SILENT: No console output, minimal file logging
+- NORMAL: Standard console feedback, comprehensive file logging
+- VERBOSE: Detailed console output, extensive file logging
+- DEBUG: Full diagnostic output, complete technical documentation
+- TECHNICAL: Maximum detail for development and troubleshooting
+
+Professional Design Elements
+---------------------------
+Modern CLI design implementation:
+- Unicode Indicators: Professional symbols and progress indicators
+- Structured Layout: Organized information presentation with visual hierarchy
+- Color Coordination: Contextual colors for different message types
+- Animation Support: Smooth progress animations and status transitions
+- Cross-Platform: Consistent appearance across different operating systems
+
+Technical Implementation
+-----------------------
+- Efficient dual-output architecture with minimal performance overhead
+- Thread-safe logging operations with proper synchronization
+- Memory-efficient operation suitable for long-running processes
+- Robust error handling with graceful degradation capabilities
+- Cross-platform compatibility for different deployment environments
+"""
 
 import logging
 import logging.handlers
@@ -116,7 +238,7 @@ class BioRemPPLogger:
     def user_error(self, message: str, solution: str = None):
         """Show error to user with optional solution."""
         self._stop_spinner()
-        print(f"❌ Error: {message}")
+        print(f"[ERROR] Error: {message}")
 
         if solution:
             print(f"💡 Solution:\n{solution}")

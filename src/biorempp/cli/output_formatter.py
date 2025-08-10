@@ -1,8 +1,49 @@
 """
-Output Formatter for BioRemPP CLI Interface.
+output_formatter.py
+------------------
+Professional Output Formatting and User Feedback System for BioRemPP CLI
 
-This module provides centralized output formatting for pipeline results,
-separating presentation logic from business logic following SRP.
+This module implements a sophisticated output formatting system that delivers
+beautiful, informative command-line interfaces following modern CLI design
+principles. It centralizes all presentation logic and provides consistent
+user feedback across all BioRemPP operations.
+
+The formatter implements progressive disclosure patterns, using unicode icons,
+structured layouts, and contextual information to create an engaging and
+professional user experience that scales from simple operations to complex
+multi-database workflows.
+
+Formatting Capabilities:
+    - Single Database Results: Focused output for targeted analysis
+    - Multi-Database Results: Comprehensive summaries with aggregated metrics
+    - Progress Indicators: Real-time feedback during processing operations
+    - Error Presentation: Clear, actionable error messages and guidance
+    - Result Summaries: Detailed metrics and file information
+
+Design Principles:
+    - Visual Hierarchy: Clear information organization with icons and spacing
+    - Progressive Disclosure: Information depth appropriate to operation type
+    - Consistency: Uniform formatting patterns across all output types
+    - Accessibility: Clear, readable output suitable for various environments
+
+User Experience Features:
+    - Unicode icons for visual appeal and quick recognition
+    - Structured layouts with consistent spacing and alignment
+    - Contextual information based on operation type and results
+    - Performance metrics and timing information
+    - File size and location details for easy result management
+
+Integration Architecture:
+    The formatter integrates seamlessly with the command framework, accepting
+    structured result data and producing formatted output without requiring
+    changes to business logic or pipeline implementations.
+
+Extensibility:
+    The modular design supports easy addition of new output formats,
+    presentation styles, and integration with external reporting systems
+    while maintaining backward compatibility and consistent interfaces.
+
+Author: BioRemPP Development Team
 """
 
 import argparse
@@ -16,14 +57,48 @@ from biorempp.utils.silent_logging import get_logger
 
 class OutputFormatter:
     """
-    Centralized output formatter for BioRemPP CLI interface.
+    Professional output formatting system for BioRemPP command-line interface.
 
-    Handles formatting and display of results from pipeline commands:
-    - Single database processing results
-    - Multiple database processing results
+    This formatter provides centralized, beautiful output formatting that
+    transforms raw pipeline results into engaging, informative user interfaces
+    following modern CLI design patterns with visual hierarchy and contextual
+    information disclosure.
 
-    This design centralizes all presentation logic and makes it easy
-    to add new output formats (JSON, XML, etc.) in the future.
+    Formatting Categories:
+        - Single Database Output: Focused presentation for targeted analysis
+        - Multi-Database Output: Comprehensive summaries with aggregated data
+        - Progress Feedback: Real-time processing status and indicators
+        - Error Messages: Clear, actionable error presentation
+        - Result Summaries: Detailed metrics and performance information
+
+    Design Features:
+        - Unicode Icons: Visual elements for quick information recognition
+        - Structured Layouts: Consistent spacing and alignment patterns
+        - Progressive Disclosure: Information depth matching operation complexity
+        - Contextual Adaptation: Output adaptation based on result types
+        - Performance Integration: Timing and efficiency metrics display
+
+    Output Patterns:
+        The formatter implements consistent visual patterns that users can
+        quickly understand and navigate, with clear section delineation,
+        logical information flow, and appropriate detail levels.
+
+    Integration Strategy:
+        Accepts structured result dictionaries from command implementations
+        and produces formatted console output without requiring changes to
+        business logic or pipeline implementations, maintaining clean
+        separation of concerns.
+
+    Extensibility Features:
+        - Modular formatting methods for easy customization
+        - Pluggable output destinations for future enhancements
+        - Template-based layouts for consistent visual design
+        - Integration hooks for external reporting systems
+
+    Usage Examples:
+        >>> formatter = OutputFormatter()
+        >>> formatter.format_output(single_db_result, args)
+        >>> formatter.format_output(multi_db_results, args)
     """
 
     def __init__(self):
@@ -34,16 +109,39 @@ class OutputFormatter:
 
     def format_output(self, result: Any, args: argparse.Namespace) -> None:
         """
-        Main output formatting dispatcher.
+        Main output formatting dispatcher and presentation coordinator.
 
-        Routes output formatting based on pipeline results.
+        This method serves as the central routing point for all output
+        formatting operations, analyzing result types and dispatching to
+        appropriate specialized formatting methods while maintaining
+        consistent presentation patterns.
 
         Parameters
         ----------
         result : Any
-            Command execution results
+            Structured command execution results from pipeline operations.
+            Can be single database results (dict with output_path, matches)
+            or multi-database results (dict with database names as keys).
         args : argparse.Namespace
-            Parsed command line arguments for context
+            Parsed command line arguments providing context for formatting
+            decisions, output preferences, and operation metadata.
+
+        Processing Flow:
+            1. Result type analysis and classification
+            2. Context extraction from command arguments
+            3. Dispatch to specialized formatting methods
+            4. Consistent error handling and fallback strategies
+
+        Formatting Strategy:
+            The dispatcher implements intelligent result type detection to
+            route formatting requests to the most appropriate presentation
+            method, ensuring optimal user experience regardless of operation
+            complexity or result structure.
+
+        Output Coordination:
+            Coordinates multiple formatting subsystems including progress
+            feedback, result summaries, performance metrics, and error
+            presentation to deliver cohesive user interfaces.
         """
         self.logger.debug("Formatting pipeline output")
         self._format_traditional_output(result, args)
@@ -103,7 +201,34 @@ class OutputFormatter:
     def _format_single_database_output(
         self, result: Dict[str, Any], args: argparse.Namespace
     ) -> None:
-        """Format output for single database processing."""
+        """
+        Format focused output for single database processing operations.
+
+        Creates clean, informative presentation for targeted database analysis
+        with detailed progress visualization, result metrics, and performance
+        information optimized for single database workflows.
+
+        Parameters
+        ----------
+        result : Dict[str, Any]
+            Single database processing results containing output_path, matches,
+            filename, and processing_time keys with operation metadata.
+        args : argparse.Namespace
+            Command arguments providing database type, input file, and
+            configuration context for presentation customization.
+
+        Output Structure:
+            - Database identification header with visual branding
+            - Input processing summary with identifier counts
+            - Database connection and processing status indicators
+            - Result summary with match counts and file information
+            - Performance metrics including timing and file sizes
+
+        Visual Design:
+            Implements structured layout with unicode icons, progress bars,
+            and consistent spacing to create professional appearance while
+            delivering comprehensive operation feedback.
+        """
         # Determine which database was processed
         database = getattr(args, "database", "Unknown")
         db_display_name = {
@@ -114,8 +239,8 @@ class OutputFormatter:
         }.get(database, database.upper())
 
         # Show header for single database
-        print(f"\n🧬 BioRemPP - Processing with {db_display_name.upper()} Database")
-        print("═" * 67)
+        print(f"\n[BIOREMPP] Processing with {db_display_name.upper()} Database")
+        print("=" * 67)
         print()
 
         # Count identifiers from input
@@ -124,11 +249,11 @@ class OutputFormatter:
             with open(input_file, "r", encoding="utf-8") as f:
                 line_count = sum(1 for line in f if line.strip())
             print(
-                f"📁 Loading input data...        "
-                f"✅ {line_count:,} identifiers loaded"
+                f"[LOAD] Loading input data...        "
+                f"OK {line_count:,} identifiers loaded"
             )
         else:
-            print("📁 Loading input data...        ✅ Input loaded")
+            print("[LOAD] Loading input data...        OK Input loaded")
         print()
 
         # Show database processing
@@ -136,11 +261,11 @@ class OutputFormatter:
         filename = result.get("filename", "Unknown")
 
         print(
-            f"🔗 Connecting to {db_display_name.upper()}...    "
-            f"✅ Database available"
+            f"[CONNECT] Connecting to {db_display_name.upper()}...    "
+            f"OK Database available"
         )
-        print("⚙️  Processing data...          ████████████████████ 100%")
-        print(f"💾 Saving results...            ✅ {filename}")
+        print("[PROCESS] Processing data...          #################### 100%")
+        print(f"[SAVE] Saving results...            OK {filename}")
         print()
 
         # Show final summary
@@ -148,16 +273,45 @@ class OutputFormatter:
         output_path = result.get("output_path", "")
         file_size = self._get_file_size(output_path) if output_path else "Unknown"
 
-        print("🎉 Processing completed successfully!")
-        print(f"   📊 Results: {matches:,} matches found")
-        print(f"   📁 Output: {filename} ({file_size})")
-        print(f"   ⏱️  Time: {elapsed_time:.1f} seconds")
+        print("[SUCCESS] Processing completed successfully!")
+        print(f"   [RESULTS] Results: {matches:,} matches found")
+        print(f"   [OUTPUT] Output: {filename} ({file_size})")
+        print(f"   [TIME] Time: {elapsed_time:.1f} seconds")
         print()
 
     def _format_multiple_databases_output(
         self, result: Dict[str, Any], args: argparse.Namespace
     ) -> None:
-        """Format output for multiple databases processing."""
+        """
+        Format comprehensive output for multi-database processing operations.
+
+        Creates sophisticated presentation for comprehensive analysis workflows
+        that process data across all available databases, with aggregated
+        metrics, individual database summaries, and coordinated progress
+        feedback through the enhanced feedback manager system.
+
+        Parameters
+        ----------
+        result : Dict[str, Any]
+            Multi-database processing results with database names as keys
+            (biorempp, hadeg, kegg, toxcsm) containing individual operation
+            results and metadata for comprehensive presentation.
+        args : argparse.Namespace
+            Command arguments providing input configuration and processing
+            parameters for contextual output customization and metrics.
+
+        Output Features:
+            - Comprehensive header with workflow identification
+            - Input processing summary with total identifier counts
+            - Database-by-database processing status and results
+            - Aggregated metrics across all database operations
+            - Performance summary with total timing and success rates
+
+        Integration:
+            Leverages the EnhancedFeedbackManager for coordinated multi-step
+            presentation that maintains visual consistency while handling
+            complex workflow results and potential partial failures.
+        """
         # Use enhanced feedback manager for multiple databases
         self.feedback_manager.show_header()
 

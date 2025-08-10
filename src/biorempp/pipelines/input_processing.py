@@ -1,8 +1,50 @@
 """
-Input Processing Pipeline for BioRemPP
+input_processing.py
+------------------
+BioRemPP Database-Specific Processing Pipelines
 
-Pipeline to validate, process, and merge FASTA-like input with the BioRemPP
-database. The merged result is saved using a generic output function.
+This module contains the complete processing pipelines for each supported
+database in the BioRemPP ecosystem. Each pipeline handles the full workflow
+from input validation to output generation, tailored to the specific
+requirements and data structures of each database.
+
+These pipelines serve as the primary interface for data processing operations,
+integrating multiple processing components into cohesive, database-specific
+workflows suitable for production use.
+
+Supported Databases:
+    1. BioRemPP: Comprehensive bioremediation gene-compound database
+    2. KEGG: Degradation pathway information from KEGG
+    3. HADEG: Hydrocarbon degradation gene database
+    4. ToxCSM: Toxicity prediction and chemical safety database
+
+Pipeline Features:
+    - Input validation and format checking
+    - Database-specific merging strategies
+    - Memory optimization through categorical types
+    - Comprehensive error handling and logging
+    - Structured output generation with metadata
+    - Configurable output directories and file formats
+
+Common Pipeline Flow:
+    1. Input file existence validation
+    2. Content reading and parsing
+    3. Data validation and format checking
+    4. Database-specific merging operations
+    5. Type optimization for memory efficiency
+    6. Output file generation and saving
+    7. Structured result reporting
+
+Return Format:
+    All pipelines return a dictionary with:
+    - 'output_path': Full path to the generated output file
+    - 'matches': Number of successful database matches
+    - 'filename': Base name of the output file
+
+Error Handling:
+    - FileNotFoundError: For missing input files
+    - RuntimeError: For processing or merging errors
+    - Comprehensive logging throughout the pipeline
 """
 
 import os
@@ -27,36 +69,69 @@ def run_biorempp_processing_pipeline(
     add_timestamp=False,
 ):
     """
-    Run the input validation, merging, and save output as .txt.
+    Run complete BioRemPP database processing pipeline.
+
+    This pipeline performs comprehensive validation, processing, and merging
+    of input with the BioRemPP reference database. It handles the
+    complete workflow from raw input to analysis-ready output files.
 
     Parameters
     ----------
     input_path : str
-        Path to the input .txt file (FASTA-like format).
-    database_path : str or None
-        Path to the BioRemPP database CSV file. If None, uses default path.
-    output_dir : str
-        Directory where the merged DataFrame will be saved.
-    output_filename : str
-        Name of the output file.
-    sep : str
-        Separator for output (default: ';').
-    optimize_types : bool
-        Whether to optimize DataFrame dtypes (default: True).
-    add_timestamp : bool
-        Whether to add timestamp to filename (default: True).
+        Path to the input .txt file containing biological data in
+        format with sample IDs and KO entries.
+    database_path : str, optional
+        Path to the BioRemPP database CSV file. If None, uses default path
+        '../data/database_biorempp.csv' relative to module location.
+    output_dir : str, optional
+        Directory where the merged DataFrame will be saved. Directory will
+        be created if it doesn't exist. Default: 'outputs/results_tables'.
+    output_filename : str, optional
+        Name of the output file. Default: 'BioRemPP_Results.txt'.
+    sep : str, optional
+        Field separator for output file. Default: ';'.
+    optimize_types : bool, optional
+        Whether to optimize DataFrame dtypes using categorical conversions
+        for memory efficiency. Default: True.
+    add_timestamp : bool, optional
+        Whether to add timestamp to output filename. Default: False.
 
     Returns
     -------
-    str
-        Path to the saved output file.
+    dict
+        Processing results containing:
+        - 'output_path' (str): Full path to the generated output file
+        - 'matches' (int): Number of successful database matches
+        - 'filename' (str): Base name of the output file
 
     Raises
     ------
     FileNotFoundError
         If the input file does not exist.
     RuntimeError
-        If there is an error in processing or merging.
+        If there is an error in processing, validation, or merging operations.
+
+    Examples
+    --------
+    >>> result = run_biorempp_processing_pipeline("sample_data.txt")
+    >>> print(f"Processed {result['matches']} matches")
+    >>> print(f"Output saved to: {result['output_path']}")
+
+    >>> # Custom database and output settings
+    >>> result = run_biorempp_processing_pipeline(
+    ...     "input.txt",
+    ...     database_path="custom_biorempp.csv",
+    ...     output_dir="custom_output",
+    ...     add_timestamp=True
+    ... )
+
+    Notes
+    -----
+    - Input file must be in format with > for sample IDs
+    - Database file must use semicolon (;) as delimiter
+    - UTF-8 encoding is expected for all files
+    - Output includes all columns from both input and database
+    - Processing time and memory usage scale with input size
     """
     logger.info(f"Starting input processing pipeline for: {input_path}")
     logger.debug(
@@ -122,39 +197,70 @@ def run_kegg_processing_pipeline(
     add_timestamp=False,
 ):
     """
-    Run the KEGG degradation pathway processing pipeline.
+    Run complete KEGG degradation pathway processing pipeline.
 
-    This pipeline validates, processes, and merges FASTA-like input with the KEGG
-    degradation pathways database. The merged result is saved as a txt file.
+    This pipeline validates, processes, and merges input with the
+    KEGG (Kyoto Encyclopedia of Genes and Genomes) degradation pathways
+    database. It provides pathway context for environmental degradation
+    processes and bioremediation analysis.
 
     Parameters
     ----------
     input_path : str
-        Path to the input .txt file (FASTA-like format).
-    kegg_database_path : str or None
-        Path to the KEGG degradation pathways CSV file. If None, uses default path.
-    output_dir : str
-        Directory where the merged DataFrame will be saved.
-    output_filename : str
-        Name of the output file.
-    sep : str
-        Separator for output (default: ';').
-    optimize_types : bool
-        Whether to optimize DataFrame dtypes (default: True).
-    add_timestamp : bool
-        Whether to add timestamp to filename (default: True).
+        Path to the input .txt file containing biological data in
+        format with sample IDs and KO entries.
+    kegg_database_path : str, optional
+        Path to the KEGG degradation pathways CSV file. If None, uses default
+        path '../data/kegg_degradation_pathways.csv' relative to module.
+    output_dir : str, optional
+        Directory where the merged DataFrame will be saved. Directory will
+        be created if it doesn't exist. Default: 'outputs/results_tables'.
+    output_filename : str, optional
+        Name of the output file. Default: 'KEGG_Results.txt'.
+    sep : str, optional
+        Field separator for output file. Default: ';'.
+    optimize_types : bool, optional
+        Whether to optimize DataFrame dtypes using categorical conversions
+        for memory efficiency. Default: True.
+    add_timestamp : bool, optional
+        Whether to add timestamp to output filename. Default: False.
 
     Returns
     -------
-    str
-        Path to the saved output file.
+    dict
+        Processing results containing:
+        - 'output_path' (str): Full path to the generated output file
+        - 'matches' (int): Number of successful KEGG pathway matches
+        - 'filename' (str): Base name of the output file
 
     Raises
     ------
     FileNotFoundError
         If the input file does not exist.
     RuntimeError
-        If there is an error in processing or merging.
+        If there is an error in processing, validation, or merging operations.
+
+    Examples
+    --------
+    >>> result = run_kegg_processing_pipeline("sample_data.txt")
+    >>> print(f"Found {result['matches']} pathway matches")
+    >>> print(f"KEGG results saved to: {result['output_path']}")
+
+    >>> # Custom output settings
+    >>> result = run_kegg_processing_pipeline(
+    ...     "input.txt",
+    ...     output_dir="kegg_analysis",
+    ...     output_filename="pathways_2024.txt"
+    ... )
+
+    Notes
+    -----
+    - Input file must be in format with > for sample IDs
+    - KEGG database file must use semicolon (;) as delimiter
+    - UTF-8 encoding is expected for all files
+    - Output includes pathway names in 'pathname' column
+    - Gene symbols are available in 'genesymbol' column
+    - Optimized for degradation pathway analysis
     """
     from biorempp.input_processing.input_validator import validate_and_process_input
 
@@ -225,39 +331,71 @@ def run_hadeg_processing_pipeline(
     add_timestamp=False,
 ):
     """
-    Run the HADEG (Hydrocarbon Degradation Database) processing pipeline.
+    Run complete HADEG hydrocarbon degradation processing pipeline.
 
-    This pipeline validates, processes, and merges FASTA-like input with the
-    HADEG database. The merged result is saved as a txt file.
+    This pipeline validates, processes, and merges input with the
+    HADEG (Hydrocarbon Degradation Database). HADEG specializes in genes and
+    pathways involved in hydrocarbon degradation, making it essential for
+    petroleum contamination and oil spill bioremediation analysis.
 
     Parameters
     ----------
     input_path : str
-        Path to the input .txt file (FASTA-like format).
-    hadeg_database_path : str or None
-        Path to the HADEG database CSV file. If None, uses default path.
-    output_dir : str
-        Directory where the merged DataFrame will be saved.
-    output_filename : str
-        Name of the output file.
-    sep : str
-        Separator for output (default: ';').
-    optimize_types : bool
-        Whether to optimize DataFrame dtypes (default: True).
-    add_timestamp : bool
-        Whether to add timestamp to filename (default: True).
+        Path to the input .txt file containing biological data in
+        format with sample IDs and KO entries.
+    hadeg_database_path : str, optional
+        Path to the HADEG database CSV file. If None, uses default path
+        '../data/database_hadeg.csv' relative to module location.
+    output_dir : str, optional
+        Directory where the merged DataFrame will be saved. Directory will
+        be created if it doesn't exist. Default: 'outputs/results_tables'.
+    output_filename : str, optional
+        Name of the output file. Default: 'HADEG_Results.txt'.
+    sep : str, optional
+        Field separator for output file. Default: ';'.
+    optimize_types : bool, optional
+        Whether to optimize DataFrame dtypes using categorical conversions
+        for memory efficiency. Default: True.
+    add_timestamp : bool, optional
+        Whether to add timestamp to output filename. Default: False.
 
     Returns
     -------
-    str
-        Path to the saved output file.
+    dict
+        Processing results containing:
+        - 'output_path' (str): Full path to the generated output file
+        - 'matches' (int): Number of successful HADEG database matches
+        - 'filename' (str): Base name of the output file
 
     Raises
     ------
     FileNotFoundError
         If the input file does not exist.
     RuntimeError
-        If there is an error in processing or merging.
+        If there is an error in processing, validation, or merging operations.
+
+    Examples
+    --------
+    >>> result = run_hadeg_processing_pipeline("oil_sample.txt")
+    >>> print(f"Found {result['matches']} hydrocarbon degradation genes")
+    >>> print(f"HADEG results saved to: {result['output_path']}")
+
+    >>> # Environmental cleanup analysis
+    >>> result = run_hadeg_processing_pipeline(
+    ...     "petroleum_site.txt",
+    ...     output_dir="cleanup_analysis",
+    ...     output_filename="hydrocarbon_degradation.txt"
+    ... )
+
+    Notes
+    -----
+    - Input file must be in format with > for sample IDs
+    - HADEG database file must use semicolon (;) as delimiter
+    - UTF-8 encoding is expected for all files
+    - Output includes gene information in 'Gene' column
+    - Pathway data available in 'Pathway' and 'compound_pathway' columns
+    - Specialized for hydrocarbon contamination analysis
+    - Ideal for petroleum spill and industrial contamination studies
     """
     logger.info(f"Starting HADEG processing pipeline for: {input_path}")
     logger.debug(
@@ -326,39 +464,74 @@ def run_toxcsm_processing_pipeline(
     add_timestamp=False,
 ):
     """
-    Run the ToxCSM toxicity prediction processing pipeline.
+    Run complete ToxCSM toxicity prediction processing pipeline.
 
-    This pipeline validates, processes, and merges FASTA-like input with the
-    ToxCSM database. The merged result is saved as a txt file.
+    This pipeline performs a two-stage process: first processing input through
+    the BioRemPP database to obtain compound identifiers, then merging with
+    the ToxCSM (Toxicity Computational Screening and Modeling) database for
+    comprehensive toxicity predictions and chemical safety assessment.
 
     Parameters
     ----------
     input_path : str
-        Path to the input .txt file (FASTA-like format).
-    toxcsm_database_path : str or None
-        Path to the ToxCSM database CSV file. If None, uses default path.
-    output_dir : str
-        Directory where the merged DataFrame will be saved.
-    output_filename : str
-        Name of the output file.
-    sep : str
-        Separator for output (default: ';').
-    optimize_types : bool
-        Whether to optimize DataFrame dtypes (default: True).
-    add_timestamp : bool
-        Whether to add timestamp to filename (default: True).
+        Path to the input .txt file containing biological data in
+        format with sample IDs and KO entries.
+    toxcsm_database_path : str, optional
+        Path to the ToxCSM database CSV file. If None, uses default path
+        '../data/database_toxcsm.csv' relative to module location.
+    output_dir : str, optional
+        Directory where the merged DataFrame will be saved. Directory will
+        be created if it doesn't exist. Default: 'outputs/results_tables'.
+    output_filename : str, optional
+        Name of the output file. Default: 'ToxCSM.txt'.
+    sep : str, optional
+        Field separator for output file. Default: ';'.
+    optimize_types : bool, optional
+        Whether to optimize DataFrame dtypes using categorical conversions
+        for memory efficiency. Default: True.
+    add_timestamp : bool, optional
+        Whether to add timestamp to output filename. Default: False.
 
     Returns
     -------
-    str
-        Path to the saved output file.
+    dict
+        Processing results containing:
+        - 'output_path' (str): Full path to the generated output file
+        - 'matches' (int): Number of successful ToxCSM database matches
+        - 'filename' (str): Base name of the output file
 
     Raises
     ------
     FileNotFoundError
         If the input file does not exist.
     RuntimeError
-        If there is an error in processing or merging.
+        If there is an error in processing, validation, or merging operations.
+
+    Examples
+    --------
+    >>> result = run_toxcsm_processing_pipeline("sample_data.txt")
+    >>> print(f"Found {result['matches']} toxicity predictions")
+    >>> print(f"ToxCSM results saved to: {result['output_path']}")
+
+    >>> # Safety assessment analysis
+    >>> result = run_toxcsm_processing_pipeline(
+    ...     "compounds.txt",
+    ...     output_dir="safety_assessment",
+    ...     output_filename="toxicity_analysis.txt"
+    ... )
+
+    Notes
+    -----
+    - Input file must be in format with > for sample IDs
+    - Two-stage processing: BioRemPP → ToxCSM integration
+    - Database files must use semicolon (;) as delimiter
+    - UTF-8 encoding is expected for all files
+    - Output includes SMILES representations in 'SMILES' column
+    - ChEBI identifiers available in 'ChEBI' column
+    - Toxicity values in 'value_*' columns (float32 optimized)
+    - Toxicity labels in 'label_*' columns (categorical)
+    - Optimized for environmental safety assessment
+    - Requires 'cpd' column from BioRemPP processing stage
     """
     logger.info(f"Starting ToxCSM processing pipeline for: {input_path}")
     logger.debug(

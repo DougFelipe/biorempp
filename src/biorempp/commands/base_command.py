@@ -1,8 +1,38 @@
 """
-Base Command Abstract Class for BioRemPP Command Pattern Implementation.
+base_command.py
+--------------
+Abstract Base Command Implementation for BioRemPP Command Pattern
 
-This module implements the Template Method pattern for standardizing command execution
-flow while allowing specific implementations for different pipeline types.
+This module implements the Template Method design pattern to provide a
+standardized execution framework for all BioRemPP commands. It ensures
+consistent validation, error handling, and execution flow while allowing
+specific implementations for different command types.
+
+The BaseCommand class serves as the foundation for all command implementations,
+enforcing a structured approach to command execution that promotes reliability,
+maintainability, and extensibility across the BioRemPP command ecosystem.
+
+Template Method Pattern:
+    The run() method defines the algorithmic skeleton that all commands follow:
+    1. Common input validation (files, permissions, paths)
+    2. Command-specific validation (database types, parameters)
+    3. Command execution with comprehensive error handling
+    4. Result processing and user feedback
+
+Design Benefits:
+    - Consistency: All commands follow the same execution pattern
+    - Reliability: Centralized validation and error handling
+    - Extensibility: Easy addition of new command types
+    - Maintainability: Common functionality in one location
+    - Testability: Clear separation between validation and execution
+
+Command Hierarchy:
+    BaseCommand (Abstract)
+    ├── DatabaseMergerCommand (Single database operations)
+    ├── AllDatabasesMergerCommand (Multi-database operations)
+    └── InfoCommand (Information and help display)
+
+Author: BioRemPP Development Team
 """
 
 import os
