@@ -1,50 +1,22 @@
 {
   "preset": "conventionalcommits",
-  "branches": [
-    "main"
-  ],
+  "branches": ["main"],
+  "npmPublish": false,
   "plugins": [
     [
       "@semantic-release/commit-analyzer",
       {
         "preset": "conventionalcommits",
         "releaseRules": [
-          {
-            "type": "docs",
-            "release": false
-          },
-          {
-            "type": "test",
-            "release": false
-          },
-          {
-            "type": "style",
-            "release": false
-          },
-          {
-            "type": "refactor",
-            "release": "patch"
-          },
-          {
-            "type": "perf",
-            "release": "patch"
-          },
-          {
-            "type": "fix",
-            "release": "patch"
-          },
-          {
-            "type": "feat",
-            "release": "minor"
-          },
-          {
-            "type": "revert",
-            "release": "patch"
-          },
-          {
-            "breaking": true,
-            "release": "major"
-          }
+          {"type": "docs", "release": false},
+          {"type": "test", "release": false},
+          {"type": "style", "release": false},
+          {"type": "refactor", "release": "patch"},
+          {"type": "perf", "release": "patch"},
+          {"type": "fix", "release": "patch"},
+          {"type": "feat", "release": "minor"},
+          {"type": "revert", "release": "patch"},
+          {"breaking": true, "release": "major"}
         ]
       }
     ],
@@ -54,51 +26,16 @@
         "preset": "conventionalcommits",
         "presetConfig": {
           "types": [
-            {
-              "type": "feat",
-              "section": "🚀 Features"
-            },
-            {
-              "type": "fix",
-              "section": "🐛 Bug Fixes"
-            },
-            {
-              "type": "perf",
-              "section": "⚡ Performance Improvements"
-            },
-            {
-              "type": "revert",
-              "section": "⏪ Reverts"
-            },
-            {
-              "type": "docs",
-              "section": "📚 Documentation",
-              "hidden": false
-            },
-            {
-              "type": "style",
-              "section": "💎 Styles",
-              "hidden": true
-            },
-            {
-              "type": "refactor",
-              "section": "📦 Code Refactoring"
-            },
-            {
-              "type": "test",
-              "section": "🚨 Tests",
-              "hidden": true
-            },
-            {
-              "type": "build",
-              "section": "🛠 Build System",
-              "hidden": true
-            },
-            {
-              "type": "ci",
-              "section": "⚙️ Continuous Integration",
-              "hidden": true
-            }
+            {"type": "feat", "section": "🚀 Features"},
+            {"type": "fix", "section": "🐛 Bug Fixes"},
+            {"type": "perf", "section": "⚡ Performance Improvements"},
+            {"type": "revert", "section": "⏪ Reverts"},
+            {"type": "docs", "section": "📚 Documentation", "hidden": false},
+            {"type": "style", "section": "💎 Styles", "hidden": true},
+            {"type": "refactor", "section": "📦 Code Refactoring"},
+            {"type": "test", "section": "🚨 Tests", "hidden": true},
+            {"type": "build", "section": "🛠 Build System", "hidden": true},
+            {"type": "ci", "section": "⚙️ Continuous Integration", "hidden": true}
           ]
         }
       }
@@ -114,25 +51,15 @@
       "@semantic-release/github",
       {
         "assets": [
-          {
-            "path": "dist/*.tar.gz",
-            "label": "Python Source Distribution"
-          },
-          {
-            "path": "dist/*.whl",
-            "label": "Python Wheel Distribution"
-          }
-        ],
-        "successComment": "🎉 This ${issue.pull_request ? 'PR is included' : 'issue has been resolved'} in version ${nextRelease.version} 🎉\n\nThe release is available on:\n- [GitHub Releases](${releases.filter(release => !!release.name).map(release => `[${release.name}](${release.url})`).join('\\n- ')})\n\nYour **${issue.pull_request ? 'pull request' : 'issue'}** is in **${nextRelease.gitTag}** 🚀"
+          {"path": "dist/*.tar.gz", "label": "Python Source Distribution"},
+          {"path": "dist/*.whl", "label": "Python Wheel Distribution"}
+        ]
       }
     ],
     [
       "@semantic-release/git",
       {
-        "assets": [
-          "CHANGELOG.md",
-          "package.json"
-        ],
+        "assets": ["CHANGELOG.md"],
         "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
       }
     ]
