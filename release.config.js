@@ -1,33 +1,31 @@
 /**
  * Semantic Release Configuration
- *
- * This file provides advanced configuration options for semantic-release
- * beyond what's available in .releaserc.json
+ * Fonte única de configuração. Não use .releaserc.json nem "release" no package.json.
  */
 
 const releaseConfig = {
+  // Branch strategy: main (stable) + canais opcionais (beta/alpha)
   branches: [
     'main',
     {
       name: 'develop',
       prerelease: 'beta',
-      channel: 'beta'
+      channel: 'beta',
     },
     {
       name: 'alpha',
       prerelease: 'alpha',
-      channel: 'alpha'
-    }
+      channel: 'alpha',
+    },
   ],
 
   plugins: [
-    // Analyze commits to determine release type
+    // Decide o tipo de release com base nos commits
     [
       '@semantic-release/commit-analyzer',
       {
         preset: 'conventionalcommits',
         releaseRules: [
-          // Custom release rules
           { type: 'docs', release: false },
           { type: 'test', release: false },
           { type: 'style', release: false },
@@ -38,20 +36,20 @@ const releaseConfig = {
           { type: 'revert', release: 'patch' },
           { breaking: true, release: 'major' },
 
-          // Custom scopes for specific release types
+          // Escopos opcionais
           { scope: 'deps', type: 'fix', release: 'patch' },
           { scope: 'deps', type: 'feat', release: 'minor' },
 
-          // Security fixes always trigger patch release
+          // Hotfixes de segurança sempre patch
           { type: 'fix', scope: 'security', release: 'patch' },
         ],
         parserOpts: {
-          noteKeywords: ['BREAKING CHANGE', 'BREAKING CHANGES', 'BREAKING']
-        }
-      }
+          noteKeywords: ['BREAKING CHANGE', 'BREAKING CHANGES', 'BREAKING'],
+        },
+      },
     ],
 
-    // Generate release notes
+    // Gera release notes
     [
       '@semantic-release/release-notes-generator',
       {
@@ -68,109 +66,95 @@ const releaseConfig = {
             { type: 'test', section: '🚨 Tests', hidden: true },
             { type: 'build', section: '🛠 Build System', hidden: true },
             { type: 'ci', section: '⚙️ Continuous Integration', hidden: true },
-            { type: 'chore', section: '🔧 Maintenance', hidden: true }
-          ]
+            { type: 'chore', section: '🔧 Maintenance', hidden: true },
+          ],
         },
         writerOpts: {
-          // Custom commit transform for better release notes
+          // Transform opcional para melhorar links em notas
           transform: (commit, context) => {
-            const issues = []
+            const issues = [];
 
-            commit.notes.forEach(note => {
-              note.title = '💥 BREAKING CHANGES'
-            })
+            commit.notes.forEach((note) => {
+              note.title = '💥 BREAKING CHANGES';
+            });
 
-            if (commit.scope === '*') {
-              commit.scope = ''
-            }
+            if (commit.scope === '*') commit.scope = '';
 
             if (typeof commit.hash === 'string') {
-              commit.shortHash = commit.hash.substring(0, 7)
+              commit.shortHash = commit.hash.substring(0, 7);
             }
 
             if (typeof commit.subject === 'string') {
               let url = context.repository
                 ? `${context.host}/${context.owner}/${context.repository}`
-                : context.repoUrl
+                : context.repoUrl;
               if (url) {
-                url = `${url}/issues/`
+                url = `${url}/issues/`;
                 // Issue URLs
                 commit.subject = commit.subject.replace(/#([0-9]+)/g, (_, issue) => {
-                  issues.push(issue)
-                  return `[#${issue}](${url}${issue})`
-                })
+                  issues.push(issue);
+                  return `[#${issue}](${url}${issue})`;
+                });
               }
               if (context.host) {
                 // User URLs
-                commit.subject = commit.subject.replace(/\B@([a-z0-9](?:-?[a-z0-9/])*)/g, (_, username) => {
-                  if (username.includes('/')) {
-                    return `@${username}`
+                commit.subject = commit.subject.replace(
+                  /\B@([a-z0-9](?:-?[a-z0-9/])*)/g,
+                  (_, username) => {
+                    if (username.includes('/')) return `@${username}`;
+                    return `[@${username}](${context.host}/${username})`;
                   }
-                  return `[@${username}](${context.host}/${username})`
-                })
+                );
               }
             }
 
-            // Remove duplicate issues
-            commit.references = commit.references.filter(reference => {
-              if (issues.indexOf(reference.issue) === -1) {
-                return true
-              }
-              return false
-            })
+            // Remove refs duplicadas já linkadas acima
+            commit.references = commit.references.filter((reference) => {
+              return issues.indexOf(reference.issue) === -1;
+            });
 
-            return commit
-          }
-        }
-      }
+            return commit;
+          },
+        },
+      },
     ],
 
-    // Update CHANGELOG.md
+    // Atualiza CHANGELOG.md
     [
       '@semantic-release/changelog',
       {
         changelogFile: 'CHANGELOG.md',
-        changelogTitle: '# Changelog\n\nAll notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.'
-      }
+        changelogTitle:
+          '# Changelog\n\nAll notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.',
+      },
     ],
 
-    // Create GitHub release
+    // Cria GitHub Release e anexa artefatos Python (sem comentários automáticos)
     [
       '@semantic-release/github',
       {
         assets: [
-          {
-            path: 'dist/*.tar.gz',
-            label: 'Python Source Distribution'
-          },
-          {
-            path: 'dist/*.whl',
-            label: 'Python Wheel Distribution'
-          }
+          { path: 'dist/*.tar.gz', label: 'Python Source Distribution' },
+          { path: 'dist/*.whl', label: 'Python Wheel Distribution' },
         ],
-        successComment: `🎉 This \${issue.pull_request ? 'PR is included' : 'issue has been resolved'} in version \${nextRelease.version} 🎉
-
-The release is available on:
-- [GitHub Releases](\${releases.filter(release => !!release.name).map(release => \`[\${release.name}](\${release.url})\`).join('\\n- ')})
-
-Your **\${issue.pull_request ? 'pull request' : 'issue'}** is in **\${nextRelease.gitTag}** 🚀`,
+        successComment: false, // ⬅ desabilita o comentário que causava erro
         failComment: false,
         failTitle: false,
         labels: false,
         releasedLabels: ['released'],
-        addReleases: 'bottom'
-      }
+        addReleases: 'bottom',
+      },
     ],
 
-    // Commit back to repository
+    // Commita CHANGELOG.md de volta
     [
       '@semantic-release/git',
       {
-        assets: ['CHANGELOG.md', 'package.json'],
-        message: 'chore(release): \${nextRelease.version} [skip ci]\\n\\n\${nextRelease.notes}'
-      }
-    ]
-  ]
-}
+        assets: ['CHANGELOG.md'],
+        message: 'chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}',
+      },
+    ],
+  ],
+};
 
-module.exports = releaseConfig
+module.exports = releaseConfig;
