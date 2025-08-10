@@ -55,6 +55,15 @@ pip install -r requirements.txt
 
 ### Building Documentation
 
+#### Direct build
+
+```bash
+# From docs/ directory
+python -m sphinx -M html . _build
+```
+
+python -m sphinx -M html . _build
+
 #### Quick Build (HTML)
 
 ```bash

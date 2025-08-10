@@ -1,27 +1,54 @@
-# Read the Docs configuration file
-# See https://docs.readthedocs.io/en/stable/config-file/v2.html for details
+# =============================================================================
+# Read the Docs (RTD) - Configuration v2
+# Official docs: https://docs.readthedocs.io/en/stable/config-file/v2.html
+# Place this file at the ROOT of your repository as `.readthedocs.yml`
+# =============================================================================
 
-# Required
+# Required: configuration schema version
 version: 2
 
-# Build documentation in the docs/ directory with Sphinx
+# -----------------------------------------------------------------------------
+# Sphinx (documentation generator)
+# -----------------------------------------------------------------------------
 sphinx:
+  # Path to the Sphinx configuration file (conf.py)
   configuration: docs/conf.py
 
-# Build documentation with MkDocs
-#mkdocs:
-#  configuration: mkdocs.yml
+  # Optional: Treat warnings as errors (fails the build if there are warnings)
+  # Recommended when docs are stable, to keep quality high.
+  # fail_on_warning: true
 
-# Optionally build your docs in additional formats such as PDF
+# -----------------------------------------------------------------------------
+# Extra output formats in addition to the default HTML
+# -----------------------------------------------------------------------------
 formats:
-  - pdf
+  - pdf          # Generates a PDF (via LaTeX) of your documentation
+  # - epub       # Uncomment to generate an EPUB file
 
+# -----------------------------------------------------------------------------
+# Build environment configuration
+# -----------------------------------------------------------------------------
 build:
-  os: ubuntu-22.04
+  os: ubuntu-22.04       # OS used for building
   tools:
-    python: "3.11"
+    python: "3.11"       # Python version for the build
 
+# -----------------------------------------------------------------------------
+# How to install dependencies for building the docs
+# -----------------------------------------------------------------------------
 python:
   install:
+    # 1) Documentation-specific dependencies
+    #    This should contain what Sphinx and its extensions require
     - requirements: docs/requirements.txt
-    - {path: ., method: pip}
+
+    # 2) Install the package itself (also installs runtime dependencies)
+    #    This allows autodoc and imports from the package in the docs.
+    - { path: ., method: pip }
+
+    # TIP:
+    # - If your docs import heavy dependencies (e.g., numpy, pandas) and
+    #   builds are slow, you can mock them in `docs/conf.py`:
+    #       autodoc_mock_imports = ["numpy", "pandas"]
+    # - If you need extras for docs (e.g., biorempp[docs]), replace with:
+    #   - { path: ".[docs]", method: pip }
