@@ -73,23 +73,27 @@ jobs:
     if: github.ref == 'refs/heads/main'
 
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
-          token: ${{ secrets.GH_TOKEN }}
+          fetch-depth: 0 # Needed for semantic-release to analyze commit history
 
-      - name: Setup Node.js
+      - name: Set up Git identity for commits
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "lts/*"
 
-      - name: Install semantic-release
+      - name: Install semantic-release and plugins
         run: |
-          npm install -g semantic-release@^22.0.0
-          npm install -g @semantic-release/changelog@^6.0.0
-          npm install -g @semantic-release/git@^10.0.0
-          npm install -g @semantic-release/github@^9.0.0
+          npm install -g semantic-release@^22 \
+            @semantic-release/changelog@^6 \
+            @semantic-release/git@^10 \
+            @semantic-release/github@^9
 
       - name: Download build artifacts
         uses: actions/download-artifact@v4
@@ -97,8 +101,7 @@ jobs:
           name: python-distributions
           path: dist/
 
-      - name: Release
+      - name: Run semantic-release
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npx semantic-release
