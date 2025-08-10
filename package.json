@@ -7,21 +7,13 @@
     "type": "git",
     "url": "https://github.com/DougFelipe/biorempp.git"
   },
-  "keywords": [
-    "bioinformatics",
-    "bioremediation",
-    "genomics",
-    "microbiology",
-    "biotechnology"
-  ],
+  "keywords": ["bioinformatics", "bioremediation", "genomics", "microbiology", "biotechnology"],
   "author": "Douglas Felipe",
   "license": "Copyright (c) 2025 Douglas Felipe",
-  "bugs": {
-    "url": "https://github.com/DougFelipe/biorempp/issues"
-  },
+  "bugs": { "url": "https://github.com/DougFelipe/biorempp/issues" },
   "homepage": "https://github.com/DougFelipe/biorempp#readme",
   "scripts": {
-    "semantic-release": "semantic-release",
-    "semantic-release:dry": "semantic-release --dry-run"
+    "release": "semantic-release",
+    "release:dry": "semantic-release --dry-run"
   }
 }
