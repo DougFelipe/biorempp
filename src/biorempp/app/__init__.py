@@ -7,7 +7,7 @@ the complete bioremediation analysis system.
 
 The application module implements clean architecture principles
 with dependency injection, command pattern implementation,
-and comprehensive error handling for professional bioinformatics
+and comprehensive error handling for bioinformatics
 data processing workflows.
 
 Key Components
@@ -20,8 +20,8 @@ BioRemPPApplication : class
 
 CommandFactory : class
     Factory pattern implementation for creating appropriate command
-    instances based on parsed CLI arguments. Provides intelligent
-    command routing and validation for info, merger, and processing
+    instances based on parsed CLI arguments. Provides command
+    routing and validation for info, merger, and processing
     operations.
 
 Architecture Overview
@@ -40,23 +40,6 @@ Integration Features
 - Logging system with file-based technical logs
 - Command pattern implementation for operation management
 - Clean separation of concerns across all components
-
-Example Usage
-------------
-    from biorempp.app import BioRemPPApplication, CommandFactory
-
-    # Create and run application
-    app = BioRemPPApplication()
-    result = app.run([
-        '--all-databases',
-        '--input', 'samples.txt',
-        '--output-dir', 'results'
-    ])
-
-    # Custom factory usage
-    factory = CommandFactory()
-    command = factory.create_command(parsed_args)
-    command_type = factory.get_command_type(parsed_args)
 
 Technical Features
 -----------------
