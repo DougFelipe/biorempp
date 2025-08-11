@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.0](https://github.com/DougFelipe/biorempp/compare/v0.2.0...v0.3.0) (2025-08-11)
+
+
+* Merge pull request #33 from DougFelipe/v0.5.0/simplified-architecture ([17f7130](https://github.com/DougFelipe/biorempp/commit/17f71303c96b3154a0acc4cc840a3bd21bedd29f)), closes [#33](https://github.com/DougFelipe/biorempp/issues/33)
+* Merge pull request #32 from DougFelipe/v0.5.0/simplified-architecture ([f0011c5](https://github.com/DougFelipe/biorempp/commit/f0011c5ac0526ec7beeaf428385eb7e02ad604b7)), closes [#32](https://github.com/DougFelipe/biorempp/issues/32)
+* Merge pull request #31 from DougFelipe/v0.5.0/simplified-architecture ([65a215b](https://github.com/DougFelipe/biorempp/commit/65a215b9cbeb974049902458eaae9dfb52294b3a)), closes [#31](https://github.com/DougFelipe/biorempp/issues/31)
+* Merge pull request #30 from DougFelipe/v0.5.0/simplified-architecture ([bbd66e5](https://github.com/DougFelipe/biorempp/commit/bbd66e58205ddc778a8899162453ebf1356f2677)), closes [#30](https://github.com/DougFelipe/biorempp/issues/30)
+
+
+### test
+
+* add comprehensive test suite for BioRemPP processing pipelines ([82764e5](https://github.com/DougFelipe/biorempp/commit/82764e58a6e686688722b6c34b5558b137d438d4))
+* add comprehensive test suites for application and command factory modules ([b7dc9e3](https://github.com/DougFelipe/biorempp/commit/b7dc9e3ab35681f91f8f102d5c401944cfe42636))
+* add comprehensive test suites for command classes ([53ce667](https://github.com/DougFelipe/biorempp/commit/53ce667c7f0c8d2b6f97176a00e9d887337ca203))
+
+
+### feat
+
+* enhance argument parsing and logging path resolution ([d652aa0](https://github.com/DougFelipe/biorempp/commit/d652aa00d39ae88b4b49ec9d8b67963902fcb7a7))
+
+
+### chore
+
+* enhance GitHub Actions workflow with improved steps and clarity for release process ([b92d98b](https://github.com/DougFelipe/biorempp/commit/b92d98bb72d1338eb438c7801b915dc221a5ab40))
+* update changelog with new features and bug fixes for development version ([aba8ca0](https://github.com/DougFelipe/biorempp/commit/aba8ca08d8286b1ed348b2ac0fff56786887f3eb))
+* update semantic release configuration for improved clarity and functionality ([1c4eacf](https://github.com/DougFelipe/biorempp/commit/1c4eacf6dcdf3c80df61726e57773f3016641634))
+
 ## [0.2.0](https://github.com/DougFelipe/biorempp/compare/v0.1.0...v0.2.0) (2025-08-10)
 
 
