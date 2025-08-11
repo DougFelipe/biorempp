@@ -36,8 +36,6 @@ Performance Considerations:
     - Memory optimization through targeted data loading
     - Efficient parameter mapping and validation
     - Minimal overhead for specific use cases
-
-Author: BioRemPP Development Team
 """
 
 import time

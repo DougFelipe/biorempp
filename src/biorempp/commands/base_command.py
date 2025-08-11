@@ -31,8 +31,6 @@ Command Hierarchy:
     ├── DatabaseMergerCommand (Single database operations)
     ├── AllDatabasesMergerCommand (Multi-database operations)
     └── InfoCommand (Information and help display)
-
-Author: BioRemPP Development Team
 """
 
 import os

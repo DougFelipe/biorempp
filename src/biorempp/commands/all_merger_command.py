@@ -41,8 +41,6 @@ Performance Considerations:
     - Error isolation to prevent cascade failures
     - Progress tracking for long-running operations
     - Resource optimization for comprehensive analysis
-
-Author: BioRemPP Development Team
 """
 
 from typing import Any, Dict
