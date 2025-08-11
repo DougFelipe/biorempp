@@ -16,6 +16,7 @@ The tests cover:
 """
 
 import argparse
+import os
 import pytest
 
 from biorempp.cli.argument_parser import BioRemPPArgumentParser
@@ -63,28 +64,32 @@ class TestBioRemPPArgumentParser:
     def test_output_dir_argument_parsing(self, tmp_path):
         """
         Test parsing of the --output-dir argument.
-        
+
         Verifies that the output directory argument is
-        parsed correctly.
+        parsed correctly and paths are resolved to absolute paths.
         """
         # Arrange
         parser = BioRemPPArgumentParser()
-        
+
         # Act - test with default value
         args_default = parser.parse_args([
             "--input", "test.txt",
             "--database", "biorempp"
         ])
-        
-        # Act - test with custom value
+
+        # Act - test with custom value (absolute path)
         args_custom = parser.parse_args([
             "--input", "test.txt",
             "--database", "biorempp",
             "--output-dir", "/custom/output"
         ])
+
+        # Assert - default path should be resolved to absolute path
+        assert "outputs" in args_default.output_dir
+        assert "results_tables" in args_default.output_dir
+        assert os.path.isabs(args_default.output_dir)
         
-        # Assert
-        assert args_default.output_dir == "outputs/results_tables"
+        # Assert - custom absolute path should remain unchanged
         assert args_custom.output_dir == "/custom/output"
 
     def test_all_databases_argument(self):

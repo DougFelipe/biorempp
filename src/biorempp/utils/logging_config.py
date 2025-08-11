@@ -196,11 +196,15 @@ class BioRemPPLogger:
 
         # File handler
         if log_file:
+            # Resolve log file path relative to project root
+            from biorempp.utils.io_utils import resolve_log_path
+            resolved_log_file = resolve_log_path(log_file)
+            
             # Create log directory if it doesn't exist
-            log_path = Path(log_file)
+            log_path = Path(resolved_log_file)
             log_path.parent.mkdir(parents=True, exist_ok=True)
 
-            file_handler = logging.FileHandler(log_file, encoding="utf-8")
+            file_handler = logging.FileHandler(resolved_log_file, encoding="utf-8")
             file_handler.setFormatter(formatter)
             file_handler.setLevel(numeric_level)
             handlers.append(file_handler)
@@ -332,7 +336,7 @@ class BioRemPPLogger:
                     "class": "logging.FileHandler",
                     "level": "DEBUG",
                     "formatter": "detailed",
-                    "filename": "logs/biorempp.log",
+                    "filename": "outputs/logs/biorempp.log",
                     "encoding": "utf-8",
                     "mode": "a",
                 },
