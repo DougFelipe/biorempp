@@ -47,8 +47,6 @@ Usage:
 
     Run specific command tests:
     >>> pytest tests/commands/test_info_command.py -v
-
-Author: BioRemPP Development Team
 """
 
 __all__ = [

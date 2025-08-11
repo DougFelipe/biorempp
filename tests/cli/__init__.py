@@ -41,6 +41,4 @@ Dependencies:
     - unittest.mock: Mocking external components
     - argparse: For argument parsing tests
     - io.StringIO: For console output capture
-
-Author: BioRemPP Development Team
 """

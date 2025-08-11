@@ -39,8 +39,6 @@ Usage Examples:
     >>> from biorempp.commands import DatabaseMergerCommand
     >>> command = DatabaseMergerCommand()
     >>> result = command.run(parsed_args)
-
-Author: BioRemPP Development Team
 """
 
 from .all_merger_command import AllDatabasesMergerCommand
