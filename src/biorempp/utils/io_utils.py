@@ -153,6 +153,35 @@ def resolve_output_path(output_dir: str) -> str:
     return resolved_path
 
 
+def resolve_log_path(log_path: str) -> str:
+    """
+    Resolve log file path relative to project root.
+
+    This ensures that log files are created in the correct location
+    (project_root/outputs/logs/) regardless of the current working directory.
+
+    Parameters
+    ----------
+    log_path : str
+        Log file path (e.g., "outputs/logs/biorempp.log")
+
+    Returns
+    -------
+    str
+        Absolute path to the log file
+    """
+    project_root = get_project_root()
+
+    # If log_path is already absolute, use it as-is
+    if os.path.isabs(log_path):
+        return log_path
+
+    # Resolve relative to project root
+    resolved_path = os.path.join(project_root, log_path)
+    logger.debug(f"Resolved log path: {log_path} -> {resolved_path}")
+    return resolved_path
+
+
 def generate_timestamped_filename(filename, add_timestamp=False):
     """
     Generate a filename with timestamp if requested.

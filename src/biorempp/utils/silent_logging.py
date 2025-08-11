@@ -96,12 +96,14 @@ import logging
 from datetime import datetime
 from pathlib import Path
 
+from .io_utils import resolve_log_path
+
 
 def setup_silent_logging():
     """Setup logging that completely silences console output."""
 
-    # Create logs directory
-    log_dir = Path("outputs/logs")
+    # Create logs directory with resolved path
+    log_dir = Path(resolve_log_path("outputs/logs"))
     log_dir.mkdir(parents=True, exist_ok=True)
 
     # Setup file logging only
