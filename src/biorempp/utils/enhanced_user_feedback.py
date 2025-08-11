@@ -4,7 +4,7 @@ BioRemPP Enhanced User Feedback Manager Module.
 This module implements an advanced user feedback system specifically designed
 for professional command-line interfaces in bioinformatics applications.
 It provides sophisticated visual feedback, progress tracking, and status
-presentation following modern CLI design principles with beautiful,
+presentation following modern CLI design principles with,
 informative user interfaces.
 
 The enhanced feedback manager represents the next generation of user
@@ -14,7 +14,7 @@ optimized for complex multi-database processing workflows.
 
 Key Features
 -----------
-- Beautiful CLI Interface: Modern design with visual hierarchy and appeal
+- CLI Interface: Modern design with visual hierarchy and appeal
 - Multi-Database Support: Specialized feedback for complex workflow coordination
 - Progressive Disclosure: Information depth appropriate to operation complexity
 - Visual Consistency: Unified design patterns across all interface components
@@ -92,7 +92,7 @@ Design Philosophy
 ----------------
 The enhanced feedback system follows modern CLI design principles:
 - User-Centric: Focus on user needs and workflow efficiency
-- Visual Appeal: Beautiful, professional interface design
+- Visual Appeal: Professional interface design
 - Information Architecture: Clear organization and progressive disclosure
 - Contextual Adaptation: Interface adaptation based on operation context
 - Professional Quality: Production-ready interface suitable for all environments
@@ -111,7 +111,7 @@ from typing import Any, Dict
 
 class EnhancedFeedbackManager:
     """
-    Enhanced feedback manager for beautiful CLI interface.
+    Enhanced feedback manager for CLI interface.
 
     Provides structured, elegant output components following the design
     specification from LOGGING_SYSTEM_DESIGN.md.
@@ -128,7 +128,7 @@ class EnhancedFeedbackManager:
         }
 
     def show_header(self) -> None:
-        """Display the beautiful header."""
+        """Display the header."""
         print("\n[BIOREMPP] Processing with ALL Databases")
         print("=" * 67)
         print()

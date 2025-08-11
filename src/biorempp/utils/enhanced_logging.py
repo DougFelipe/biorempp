@@ -10,13 +10,13 @@ preservation and user experience optimization.
 
 The enhanced logging system bridges the gap between comprehensive technical
 documentation and professional user interfaces, enabling full debugging
-capabilities while delivering beautiful, informative command-line experiences
+capabilities while delivering, informative command-line experiences
 optimized for bioinformatics workflows.
 
 Key Features
 -----------
 - Dual Output Architecture: Simultaneous technical logging and user feedback
-- Professional User Interface: Clean, beautiful console output without spam
+- Professional User Interface: Clean, console output without spam
 - Comprehensive Technical Logs: Detailed file-based logging for debugging
 - Threading Support: Non-blocking progress indicators and status updates
 - Flexible Configuration: Adaptable logging levels and output destinations
@@ -42,7 +42,7 @@ Comprehensive technical documentation capabilities:
 User Interface Design
 --------------------
 Professional console interface features:
-- Clean Output: Beautiful, informative displays without technical clutter
+- Clean Output: Informative displays without technical clutter
 - Progress Indicators: Smooth, non-blocking progress visualization
 - Status Updates: Real-time feedback for multi-step operations
 - Professional Styling: Consistent visual design with modern aesthetics
