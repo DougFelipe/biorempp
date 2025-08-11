@@ -1,9 +1,9 @@
 """
 argument_parser.py
 -----------------
-Advanced Command Line Argument Parser for BioRemPP Interface
+Command Line Argument Parser for BioRemPP Interface
 
-This module implements a sophisticated argument parsing system designed
+This module implements a argument parsing system designed
 specifically for BioRemPP's bioremediation analysis workflows. It provides
 a clean, intuitive interface for users while maintaining flexibility and
 extensibility for complex analytical operations.
@@ -39,8 +39,6 @@ Integration:
     Seamlessly integrates with the BioRemPP command framework, providing
     parsed arguments that are directly consumable by command classes
     without additional transformation or validation overhead.
-
-Author: BioRemPP Development Team
 """
 
 import argparse
@@ -49,7 +47,7 @@ from typing import List, Optional
 
 class BioRemPPArgumentParser:
     """
-    Advanced command-line argument parser for BioRemPP bioremediation analysis.
+    Command-line argument parser for BioRemPP bioremediation analysis.
 
     This parser provides a comprehensive and user-friendly interface for all
     BioRemPP operations, from single database analysis to comprehensive
