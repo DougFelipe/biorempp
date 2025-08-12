@@ -6,7 +6,7 @@ HADEG Database Merge Processing Module
 This module provides functionality to merge input biological data with the
 HADEG (Hydrocarbon Degradation Database). HADEG specializes in genes and
 pathways involved in hydrocarbon degradation processes, making it essential
-for environmental bioremediation analysis and petroleum contamination studies.
+for environmental bioremediation analysis and contamination studies.
 
 The module handles CSV-format HADEG databases with semicolon delimiters and
 includes memory optimization through categorical data types for gene and

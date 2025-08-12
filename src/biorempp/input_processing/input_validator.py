@@ -131,19 +131,7 @@ def decode_content_if_base64(contents: str) -> str:
     ------
     ValueError
         If base64 decoding fails or results in empty content.
-
-    Examples
-    --------
-    >>> plain_text = "Hello World"
-    >>> result = decode_content_if_base64(plain_text)
-    >>> print(result)
-    Hello World
-
-    >>> base64_uri = "data:text/plain;base64,SGVsbG8gV29ybGQ="
-    >>> result = decode_content_if_base64(base64_uri)
-    >>> print(result)
-    Hello World
-
+        
     Notes
     -----
     - Automatically detects data URI format by "data" prefix
