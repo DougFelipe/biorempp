@@ -2,7 +2,7 @@
 BioRemPP Enhanced Error Handling System Module.
 
 This module implements an advanced error handling and recovery system
-specifically designed for bioinformatics command-line applications.
+specifically designed for BioRemPP command-line applications.
 It provides intelligent error classification, contextual analysis,
 user-friendly message translation, and actionable solution recommendations
 to improve user experience and reduce troubleshooting time.
@@ -49,7 +49,7 @@ Structured approach to error resolution guidance:
 
 Professional Error Presentation
 ------------------------------
-Modern error presentation design:
+Error presentation design:
 - Clear Primary Messages: Non-technical, user-friendly problem descriptions
 - Contextual Information: Relevant operational details and circumstances
 - Structured Solutions: Organized, numbered steps for systematic resolution
@@ -58,7 +58,7 @@ Modern error presentation design:
 
 Integration Architecture
 -----------------------
-Seamless integration with BioRemPP error handling ecosystem:
+Integration with BioRemPP error handling ecosystem:
 - Exception Translation: Conversion of Python exceptions to user messages
 - Argument Context Integration: Use of CLI arguments for enhanced error context
 - Logging Coordination: Integration with technical logging for comprehensive records
@@ -96,23 +96,6 @@ Example Usage
         context="data_format",
         user_context=args
     )
-
-User Experience Design
----------------------
-Focus on user-centric error handling:
-- Clear Communication: Technical details translated to understandable language
-- Actionable Guidance: Specific steps users can take to resolve issues
-- Confidence Building: Reassuring users that problems are solvable
-- Learning Support: Educational aspects to prevent future similar issues
-- Professional Support: Pathways to expert help when needed
-
-Technical Implementation
------------------------
-- Sophisticated error pattern matching and classification
-- Context-aware message generation with argument integration
-- Structured solution database with hierarchical organization
-- Professional error formatting with consistent visual presentation
-- Integration hooks for logging, feedback, and recovery systems
 """
 
 from typing import Dict, List, Optional, Tuple
