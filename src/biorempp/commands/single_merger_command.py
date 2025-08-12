@@ -60,7 +60,7 @@ class DatabaseMergerCommand(BaseCommand):
     scope and optimized performance for targeted use cases.
 
     Supported Operations:
-        - biorempp: Comprehensive bioremediation potential analysis
+        - biorempp: Core bioremediation potential analysis
         - kegg: Degradation pathway enrichment and mapping
         - hadeg: Hydrocarbon degradation gene identification
         - toxcsm: Toxicity prediction and chemical safety assessment

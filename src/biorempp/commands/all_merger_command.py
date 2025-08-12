@@ -72,7 +72,7 @@ class AllDatabasesMergerCommand(BaseCommand):
     Processing Strategy:
         Sequential execution with fault tolerance - failures in individual
         databases do not prevent processing of remaining databases, ensuring
-        maximum data recovery and analytical completeness.
+        maximum data recovery.
 
     Output Generation:
         Creates individual output files for each database:

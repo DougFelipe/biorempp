@@ -1,6 +1,5 @@
 """
 BioRemPP Commands Package
-========================
 
 This package implements the Command Pattern architecture for BioRemPP,
 providing a structured and extensible approach to handling different types
