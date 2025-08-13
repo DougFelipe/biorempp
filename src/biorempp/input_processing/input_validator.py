@@ -130,8 +130,7 @@ def decode_content_if_base64(contents: str) -> str:
     Raises
     ------
     ValueError
-        If base64 decoding fails or results in empty content.
-        
+        If base64 decoding fails or results in empty content.biorempp_merge_processing
     Notes
     -----
     - Automatically detects data URI format by "data" prefix

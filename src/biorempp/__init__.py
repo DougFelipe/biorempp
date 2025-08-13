@@ -2,8 +2,8 @@ import sys
 """
 biorempp package initializer.
 
-This module handles the initialization of the biorempp package, including version detection
-and silent logging configuration.
+This module handles the initialization of the biorempp package, including
+version detection and silent logging configuration.
 
 Version Handling
 ----------------
