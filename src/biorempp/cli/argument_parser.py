@@ -322,12 +322,13 @@ class BioRemPPArgumentParser:
             Parsed arguments with resolved paths
         """
         parsed_args = self.parser.parse_args(args)
-        
-        # Resolve output directory path relative to project root
-        if hasattr(parsed_args, 'output_dir') and parsed_args.output_dir:
+
+        # Resolve output directory path relative to current working directory
+        if hasattr(parsed_args, "output_dir") and parsed_args.output_dir:
             from biorempp.utils.io_utils import resolve_output_path
+
             parsed_args.output_dir = resolve_output_path(parsed_args.output_dir)
-        
+
         return parsed_args
 
     def get_parser(self) -> argparse.ArgumentParser:

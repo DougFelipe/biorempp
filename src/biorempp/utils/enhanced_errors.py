@@ -278,14 +278,20 @@ class EnhancedErrorHandler:
         """Determine error context from error message and type."""
         error_lower = error_message.lower()
 
-        # File-related contexts
-        if "input" in error_lower or "sample_data" in error_lower:
-            return "input_file"
+        # Database-related contexts (check first before generic "invalid")
+        if "database" in error_lower and (
+            "invalid" in error_lower or "wrong" in error_lower
+        ):
+            return "invalid_database"
         elif any(db in error_lower for db in ["biorempp", "hadeg", "kegg", "toxcsm"]):
             if "database" in error_lower or ".csv" in error_lower:
                 return "database_file"
             else:
                 return "invalid_database"
+
+        # File-related contexts
+        elif "input" in error_lower or "sample_data" in error_lower:
+            return "input_file"
         elif "output" in error_lower or "results" in error_lower:
             return "output_dir"
         elif "log" in error_lower:
@@ -304,7 +310,7 @@ class EnhancedErrorHandler:
         elif "import" in error_lower or "module" in error_lower:
             return "missing_dependency"
 
-        # Format-related contexts
+        # Format-related contexts (check after database contexts)
         elif "format" in error_lower or "invalid" in error_lower:
             return "invalid_format"
 
