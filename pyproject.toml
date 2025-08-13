@@ -1,9 +1,13 @@
 [build-system]
-requires = ["setuptools>=46.1.0", "setuptools_scm[toml]>=5"]
+requires = ["setuptools>=61", "wheel", "setuptools_scm[toml]>=7"]
 build-backend = "setuptools.build_meta"
+
+[project]
+dynamic = ["version"]
 
 [tool.setuptools_scm]
 version_scheme = "no-guess-dev"
+local_scheme = "no-local-version"
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
