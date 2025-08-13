@@ -108,10 +108,17 @@ def get_project_root() -> str:
             return str(current_dir)
         current_dir = current_dir.parent
 
-    # Fallback: assume project root is 3 levels up from utils
+    # Check if this is a pip-installed package (site-packages)
+    current_file_str = str(current_file)
+    if "site-packages" in current_file_str or "dist-packages" in current_file_str:
+        # Use current working directory for pip-installed packages
+        logger.debug("Package installed via pip - using current working directory")
+        return os.getcwd()
+    
+    # Development fallback: assume project root is 3 levels up from utils
     # biorempp/src/biorempp/utils -> biorempp/
     fallback_root = current_file.parent.parent.parent.parent
-    logger.warning(f"Using fallback project root: {fallback_root}")
+    logger.debug(f"Development environment - using project root: {fallback_root}")
     return str(fallback_root)
 
 
@@ -147,8 +154,9 @@ def resolve_log_path(log_path: str) -> str:
     """
     Resolve log file path relative to project root.
 
-    This ensures that log files are created in the correct location
-    (project_root/outputs/logs/) regardless of the current working directory.
+    This ensures that log files are created in the correct location:
+    - Development: project_root/outputs/logs/
+    - Production: current_directory/outputs/logs/
 
     Parameters
     ----------
@@ -160,15 +168,24 @@ def resolve_log_path(log_path: str) -> str:
     str
         Absolute path to the log file
     """
-    project_root = get_project_root()
-
     # If log_path is already absolute, use it as-is
     if os.path.isabs(log_path):
         return log_path
 
-    # Resolve relative to project root
-    resolved_path = os.path.join(project_root, log_path)
-    logger.debug(f"Resolved log path: {log_path} -> {resolved_path}")
+    # Check if this is a pip-installed package
+    current_file = Path(__file__).resolve()
+    current_file_str = str(current_file)
+    
+    if "site-packages" in current_file_str or "dist-packages" in current_file_str:
+        # For pip-installed packages, use current working directory
+        resolved_path = os.path.join(os.getcwd(), log_path)
+        logger.debug(f"Resolved log path (pip install): {log_path} -> {resolved_path}")
+    else:
+        # For development, use project root
+        project_root = get_project_root()
+        resolved_path = os.path.join(project_root, log_path)
+        logger.debug(f"Resolved log path (development): {log_path} -> {resolved_path}")
+    
     return resolved_path
 
 
