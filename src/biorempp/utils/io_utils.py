@@ -2,10 +2,9 @@
 BioRemPP I/O Utilities Module.
 
 This module provides comprehensive file input/output operations and path
-management utilities specifically designed for bioinformatics data processing
-workflows. It implements robust file handling patterns with standardized
-output formats, project-relative path resolution, and timestamped file
-generation for organized result management.
+management utilities. It implements file handling patterns with
+standardized output formats, project-relative path resolution, and
+timestamped file generation for organized result management.
 
 Key Features
 -----------
@@ -15,9 +14,17 @@ Key Features
 - Robust error handling for file system operations
 - Cross-platform path management with proper encoding support
 
+Technical Implementation
+-----------------------
+- UTF-8 encoding for international character support
+- Thread-safe operations for concurrent processing environments
+- Efficient file I/O with proper resource management
+- Comprehensive error handling with informative messages
+- Cross-platform path operations using pathlib
+
 File Management Capabilities
 ---------------------------
-The module handles various file operations essential for bioinformatics:
+The module handles various file operations:
 - Output directory creation with proper permissions
 - Timestamped filename generation for result organization
 - DataFrame serialization with consistent formatting
@@ -38,23 +45,6 @@ The module implements intelligent path resolution:
 1. Project root detection: Automatic identification of project base directory
 2. Relative path construction: Consistent paths from project root
 3. Cross-platform compatibility: Proper handling of Windows/Unix path formats
-4. Error handling: Graceful fallbacks for path resolution failures
-
-Integration Design
------------------
-Designed for seamless integration with BioRemPP pipelines:
-- Logger integration: Technical logging for troubleshooting
-- DataFrame compatibility: Direct pandas DataFrame export support
-- Pipeline integration: Standardized interfaces for processing workflows
-- Error propagation: Consistent error handling patterns
-
-Technical Implementation
------------------------
-- UTF-8 encoding for international character support
-- Thread-safe operations for concurrent processing environments
-- Efficient file I/O with proper resource management
-- Comprehensive error handling with informative messages
-- Cross-platform path operations using pathlib
 
 Example Usage
 ------------

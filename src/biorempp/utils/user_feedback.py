@@ -2,8 +2,8 @@
 BioRemPP User Feedback System Module.
 
 This module implements a comprehensive user feedback and progress indication
-system designed for command-line bioinformatics applications. It provides
-elegant progress visualization, status updates, and user interaction
+system designed for command-line BioRemPP. It provides
+progress visualization, status updates, and user interaction
 capabilities that enhance the user experience during long-running data
 processing operations.
 
@@ -12,35 +12,24 @@ Key Features
 - Progress Indication: Multiple visualization styles for different contexts
 - Status Updates: Real-time feedback for multi-step operations
 - Verbosity Control: Adjustable output levels for different user preferences
-- Professional Appearance: Modern CLI design with visual appeal
+- Appearance: Modern CLI design with visual appeal
 - Thread-Safe Operations: Concurrent progress indication and processing
-
-Progress Visualization Styles
------------------------------
-Supports multiple progress indication approaches:
-- Spinner Animation: Rotating indicators for indeterminate progress
-- Dots Animation: Progressive dots for step-by-step operations
-- Progress Bars: Percentage-based bars for quantifiable progress
-- Status Messages: Text-based updates for complex workflows
-- Silent Mode: Minimal output for automated or production environments
 
 User Interaction Design
 ----------------------
-Implements modern CLI user experience patterns:
+Implements CLI user patterns:
 1. Visual Feedback: Clear indication of system activity and progress
 2. Contextual Information: Relevant details about current operations
-3. Professional Appearance: Consistent styling and visual hierarchy
+3. Appearance: Consistent styling and visual hierarchy
 4. Responsive Design: Adaptive output based on terminal capabilities
 5. Accessibility: Clear, readable output suitable for various environments
 
-Verbosity Management
--------------------
-Flexible verbosity control system:
-- Quiet Mode: Essential information only for minimal output
-- Normal Mode: Standard progress and status information
-- Verbose Mode: Detailed progress with comprehensive updates
-- Debug Mode: Technical details and diagnostic information
-- Silent Mode: No output except critical errors and final results
+Technical Implementation
+-----------------------
+- Thread-safe progress indication with proper synchronization
+- Clean resource management for progress threads
+- Cross-platform compatibility for different terminal environments
+- Memory-efficient operation suitable for long-running processes
 
 Threading Architecture
 ---------------------
@@ -92,23 +81,6 @@ Example Usage
     feedback.show_success("Analysis completed successfully")
     feedback.show_warning("Large dataset detected")
     feedback.show_error("File not found", with_solutions=True)
-
-Visual Design Features
----------------------
-Professional visual design elements:
-- Unicode Icons: Visual elements for quick information recognition
-- Color Coding: Contextual colors for different message types
-- Consistent Spacing: Organized layout with proper alignment
-- Progress Animations: Smooth, non-distracting progress indicators
-- Status Symbols: Clear symbols for success, warning, and error states
-
-Technical Implementation
------------------------
-- Thread-safe progress indication with proper synchronization
-- Efficient animation loops with minimal CPU overhead
-- Clean resource management for progress threads
-- Cross-platform compatibility for different terminal environments
-- Memory-efficient operation suitable for long-running processes
 """
 
 import os

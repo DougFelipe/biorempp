@@ -1,10 +1,10 @@
 """
 BioRemPP Enhanced Error Handling Module.
 
-This module implements a sophisticated error handling system that transforms
+This module implements a error handling system that transforms
 technical exceptions into user-friendly messages with actionable guidance.
 It provides contextual error analysis, solution recommendations, and
-professional error presentation for improved user experience in bioinformatics
+professional error presentation for improved user experience in BioRemPP
 data processing workflows.
 
 Key Features
@@ -13,7 +13,22 @@ Key Features
 - User-Friendly Messages: Technical errors translated to clear explanations
 - Actionable Solutions: Specific guidance for error resolution
 - Example Commands: Practical examples for correcting common issues
-- Professional Presentation: Consistent error formatting and display
+
+Error Message Architecture
+--------------------------
+Structured error presentation system:
+- Primary Message: Clear, non-technical description of the problem
+- Context Information: Relevant details about the operation that failed
+- Solution Steps: Numbered, actionable steps for resolution
+- Example Commands: Practical command-line examples for correction
+- Additional Resources: Links to documentation and support materials
+
+Technical Implementation
+-----------------------
+- Exception type classification with pattern matching
+- Context-aware error message generation
+- Structured solution database with hierarchical organization
+- Integration hooks for logging and user feedback systems
 
 Error Handling Philosophy
 ------------------------
@@ -32,24 +47,6 @@ Implements intelligent context detection:
 - Configuration Errors: Invalid parameters, missing dependencies, setup issues
 - System Errors: Platform-specific issues, resource constraints, permissions
 - Network Errors: Database connectivity, download failures, timeout issues
-
-Solution Recommendation System
------------------------------
-Provides structured solution recommendations:
-- Immediate Actions: Quick fixes for common problems
-- Diagnostic Steps: Systematic troubleshooting approaches
-- Alternative Methods: Different approaches when primary methods fail
-- Prevention Advice: Guidance to avoid similar issues in the future
-- Expert Resources: References to documentation and support channels
-
-Error Message Architecture
---------------------------
-Structured error presentation system:
-- Primary Message: Clear, non-technical description of the problem
-- Context Information: Relevant details about the operation that failed
-- Solution Steps: Numbered, actionable steps for resolution
-- Example Commands: Practical command-line examples for correction
-- Additional Resources: Links to documentation and support materials
 
 Integration Design
 -----------------
@@ -93,14 +90,6 @@ Example Usage
         context="input_validation",
         user_input="invalid_file.txt"
     )
-
-Technical Implementation
------------------------
-- Exception type classification with pattern matching
-- Context-aware error message generation
-- Structured solution database with hierarchical organization
-- Professional error formatting with consistent presentation
-- Integration hooks for logging and user feedback systems
 """
 
 import logging

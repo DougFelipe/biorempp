@@ -64,6 +64,15 @@ Design Principles
 - Error Resilience: Comprehensive error handling with graceful degradation
 - Performance Focus: Efficient operations for large-scale data processing
 
+Technical Features
+-----------------
+- Thread-safe logging operations for concurrent processing
+- Environment variable configuration for deployment flexibility
+- Timestamped file generation for organized output management
+- Progress tracking for long-running computational operations
+- Professional error presentation with technical and user-friendly modes
+- Modular imports enabling selective component utilization
+
 Example Usage
 ------------
     from biorempp.utils import (
@@ -86,15 +95,6 @@ Example Usage
     # User feedback
     feedback = EnhancedFeedbackManager()
     feedback.show_progress("Processing data...")
-
-Technical Features
------------------
-- Thread-safe logging operations for concurrent processing
-- Environment variable configuration for deployment flexibility
-- Timestamped file generation for organized output management
-- Progress tracking for long-running computational operations
-- Professional error presentation with technical and user-friendly modes
-- Modular imports enabling selective component utilization
 """
 
 from .enhanced_user_feedback import EnhancedFeedbackManager
