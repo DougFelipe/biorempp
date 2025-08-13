@@ -2,6 +2,35 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.1](https://github.com/DougFelipe/biorempp/compare/v0.3.0...v0.3.1) (2025-08-13)
+
+
+* Merge pull request #34 from DougFelipe/v0.5.0/simplified-architecture ([bc19fa9](https://github.com/DougFelipe/biorempp/commit/bc19fa9307c8a1411455d895ea928b95c8469a4b)), closes [#34](https://github.com/DougFelipe/biorempp/issues/34)
+
+
+### test
+
+* Add comprehensive tests for enhanced logging, user feedback, error handling, and progress indicators ([5ce8fc4](https://github.com/DougFelipe/biorempp/commit/5ce8fc4a7b92c2432a1d23bcabf19eb778dbaa26))
+
+
+### docs
+
+* enhance documentation clarity and conciseness across multiple modules ([585e72b](https://github.com/DougFelipe/biorempp/commit/585e72b895f159b5e5759bca01e00905d93c9ad6))
+* enhance documentation clarity and conciseness in __init__.py and enhanced_errors.py ([7757f06](https://github.com/DougFelipe/biorempp/commit/7757f067669ef8b3efd79e71c2c09296d651a93f))
+* enhance module docstrings for clarity and conciseness in __init__.py and main.py ([1d4af54](https://github.com/DougFelipe/biorempp/commit/1d4af540753771aa50b7dc1fa39f651c7530fcad))
+* update input_processing.py  database description and enhance pipeline documentation clarity ([fe603f1](https://github.com/DougFelipe/biorempp/commit/fe603f1f260bb438b2a60d1c20b7715adfe492da))
+
+
+### refactor
+
+* enhance clarity and conciseness in logging and user feedback documentation ([7e6d0b8](https://github.com/DougFelipe/biorempp/commit/7e6d0b81df198b264a7d6db093afa4ca6376a723))
+* improve documentation clarity and user experience in CLI modules ([ec19806](https://github.com/DougFelipe/biorempp/commit/ec198068c7b29ab72e98a9926d54454562b290ae))
+* improve documentation clarity by simplifying language and removing unnecessary details ([ab96ae0](https://github.com/DougFelipe/biorempp/commit/ab96ae0b9481d25499ca67a47933a42db682061f))
+* remove author attribution from command module docstrings ([9d26df3](https://github.com/DougFelipe/biorempp/commit/9d26df3e7f7034a84ff3bb685a832c0772051d6e))
+* remove author attribution from module docstrings ([c4c58ce](https://github.com/DougFelipe/biorempp/commit/c4c58ce3010170fd350009bed6aa2ec0df61abd6))
+* simplify language and remove example usage in documentation ([2f946e3](https://github.com/DougFelipe/biorempp/commit/2f946e3343e6478101ca269aec2d34a3544259ad))
+* update database file paths and improve documentation clarity across multiple modules ([584faa5](https://github.com/DougFelipe/biorempp/commit/584faa5aca932ac8182c6976ffd3d104f4de9e66))
+
 ## [0.3.0](https://github.com/DougFelipe/biorempp/compare/v0.2.0...v0.3.0) (2025-08-11)
 
 
