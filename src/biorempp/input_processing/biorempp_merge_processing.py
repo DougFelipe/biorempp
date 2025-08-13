@@ -79,7 +79,8 @@ def merge_input_with_biorempp(
     >>> import pandas as pd
     >>> input_df = pd.DataFrame({'ko': ['K00001', 'K00002'], 'sample': ['S1', 'S2']})
     >>> result = merge_input_with_biorempp(input_df)
-    >>> print(result.shape)    
+    >>> print(result.shape)
+    (2, 5)
     Notes
     -----
     - The database file must use semicolon (;) as the delimiter
