@@ -98,7 +98,6 @@ class BioRemPPLogger:
         file_level: str = "INFO",
         log_dir: str = "outputs/logs",
     ):
-
         self.console_level = console_level.upper()
         self.file_level = file_level.upper()
         self.log_dir = Path(log_dir)

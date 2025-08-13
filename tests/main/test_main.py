@@ -50,6 +50,14 @@ class TestMainModule:
         """Test running module as script (__main__.py)."""
         import subprocess
         import sys
+        import os
+
+        # Set up the environment to include the src directory in PYTHONPATH
+        env = os.environ.copy()
+        src_dir = os.path.abspath(
+            os.path.join(os.path.dirname(__file__), "../../src")
+        )
+        env["PYTHONPATH"] = src_dir
 
         # Test that we can run the module
         result = subprocess.run(
@@ -57,6 +65,7 @@ class TestMainModule:
             capture_output=True,
             text=True,
             timeout=10,
+            env=env,
         )
 
         # Should not crash (return code 0 or help exit code)
