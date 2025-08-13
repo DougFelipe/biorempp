@@ -3,7 +3,72 @@ requires = ["setuptools>=61", "wheel", "setuptools_scm[toml]>=7"]
 build-backend = "setuptools.build_meta"
 
 [project]
+name = "biorempp"
 dynamic = ["version"]
+description = "The Bioremediation Potential Profile (BioRemPP) is designed to explore the biotechnological potential of microbial, fungal, and plant genomes for bioremediation purposes"
+readme = "README.md"
+license-files = ["LICENSE.txt"]
+authors = [
+    { name = "Douglas Felipe", email = "biorempp@gmail.com" }
+]
+requires-python = ">=3.8"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Operating System :: OS Independent",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+]
+dependencies = [
+    "pandas>=2.0.0",
+    "numpy>=1.21.0",
+    "tqdm",
+    "click",
+]
+
+[project.urls]
+Homepage = "https://github.com/DougFelipe/biorempp"
+Documentation = "https://your-docs-url.example"
+Source = "https://github.com/DougFelipe/biorempp"
+Changelog = "https://github.com/DougFelipe/biorempp/releases"
+
+[project.optional-dependencies]
+dev = [
+    "pre-commit",
+    "sphinx",
+    "myst-parser",
+    "black",
+    "jupyterlab",
+    "nbdime",
+    "nbstripout",
+    "tox",
+]
+testing = [
+    "setuptools",
+    "pytest",
+    "pytest-cov",
+    "pandas",
+]
+
+[project.scripts]
+biorempp = "biorempp.main:main"
+
+[tool.setuptools]
+zip-safe = false
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
+exclude = ["tests", "docs", "outputs", "custom_outputs"]
+
+[tool.setuptools.package-data]
+biorempp = ["data/*.csv", "data/*.txt"]
 
 [tool.setuptools_scm]
 version_scheme = "no-guess-dev"
