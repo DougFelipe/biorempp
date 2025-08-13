@@ -25,6 +25,14 @@ The module implements a centralized logging architecture:
 4. Environment Awareness: Configuration adaptation based on execution context
 5. Performance Optimization: Efficient logging with minimal overhead
 
+Technical Implementation
+-----------------------
+- Singleton pattern for configuration consistency
+- Thread-safe logger acquisition and configuration
+- Efficient log formatting with minimal performance impact
+- Proper resource management for file handles and streams
+- Cross-platform compatibility for different operating systems
+
 Configuration Strategy
 ---------------------
 Supports multiple configuration approaches:
@@ -52,15 +60,6 @@ Professional log formatting with comprehensive information:
 - Function Context: Method and line number for precise location
 - Message Content: Detailed description of events and operations
 - Error Details: Exception information with stack traces
-
-Integration Design
------------------
-Designed for seamless integration across BioRemPP components:
-- Package-wide Consistency: Unified logging patterns and formats
-- Component Integration: Easy logger acquisition for any module
-- Pipeline Support: Logging integration for data processing workflows
-- Error Correlation: Consistent error logging and troubleshooting
-- Performance Monitoring: Timing and performance logging capabilities
 
 Environment Configuration
 -------------------------
@@ -92,14 +91,6 @@ Example Usage
         format_type="detailed",
         output_file="analysis.log"
     )
-
-Technical Implementation
------------------------
-- Singleton pattern for configuration consistency
-- Thread-safe logger acquisition and configuration
-- Efficient log formatting with minimal performance impact
-- Proper resource management for file handles and streams
-- Cross-platform compatibility for different operating systems
 """
 
 import logging
@@ -198,8 +189,9 @@ class BioRemPPLogger:
         if log_file:
             # Resolve log file path relative to project root
             from biorempp.utils.io_utils import resolve_log_path
+
             resolved_log_file = resolve_log_path(log_file)
-            
+
             # Create log directory if it doesn't exist
             log_path = Path(resolved_log_file)
             log_path.parent.mkdir(parents=True, exist_ok=True)

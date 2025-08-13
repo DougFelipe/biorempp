@@ -33,26 +33,6 @@ The factory implements a clean routing system:
 - Proper error handling for invalid configurations
 - Support for command type inspection without instantiation
 
-Example Usage
-------------
-    from biorempp.app.command_factory import CommandFactory
-    import argparse
-
-    # Create factory instance
-    factory = CommandFactory()
-
-    # Create command from parsed arguments
-    args = argparse.Namespace(
-        all_databases=True,
-        input='samples.txt',
-        output_dir='results'
-    )
-    command = factory.create_command(args)
-
-    # Get command type for inspection
-    command_type = factory.get_command_type(args)
-    print(f"Command type: {command_type}")
-
 Command Routing Logic
 --------------------
 1. Info commands (highest priority): --list-databases, --database-info
@@ -122,14 +102,6 @@ class CommandFactory:
     ----------
     logger : logging.Logger
         Silent logger for technical debugging and monitoring
-
-    Example
-    -------
-    >>> factory = CommandFactory()
-    >>> args = argparse.Namespace(database='biorempp', input='data.txt')
-    >>> command = factory.create_command(args)
-    >>> isinstance(command, DatabaseMergerCommand)
-    True
     """
 
     def __init__(self):
@@ -147,11 +119,6 @@ class CommandFactory:
         - Enables technical monitoring of command creation
         - Supports debugging and troubleshooting workflows
         - Maintains clean separation from user-facing output
-
-        Example
-        -------
-        >>> factory = CommandFactory()
-        >>> # Factory ready for command creation
         """
         self.logger = get_logger(self.__class__.__name__)
 
@@ -209,23 +176,6 @@ class CommandFactory:
             - Requires: --input file specification
             - Sets: pipeline_type attribute for execution
             - Validates: Database name and input file parameters
-
-        Example
-        -------
-        >>> # Info command creation
-        >>> args = argparse.Namespace(list_databases=True)
-        >>> cmd = CommandFactory.create_command(args)
-        >>> isinstance(cmd, InfoCommand)
-        True
-
-        >>> # Database merger creation
-        >>> args = argparse.Namespace(
-        ...     database='biorempp',
-        ...     input='samples.txt'
-        ... )
-        >>> cmd = CommandFactory.create_command(args)
-        >>> isinstance(cmd, DatabaseMergerCommand)
-        True
 
         Technical Notes
         ---------------
@@ -320,20 +270,6 @@ class CommandFactory:
         2. All databases commands: Returns 'all_databases'
         3. Single database commands: Returns 'single_database'
         4. Invalid configurations: Returns 'unknown'
-
-        Example
-        -------
-        >>> # Test command type detection
-        >>> args = argparse.Namespace(all_databases=True, input='data.txt')
-        >>> cmd_type = CommandFactory.get_command_type(args)
-        >>> print(cmd_type)
-        all_databases
-
-        >>> # Validation without instantiation
-        >>> args = argparse.Namespace(database='biorempp')
-        >>> cmd_type = CommandFactory.get_command_type(args)
-        >>> print(cmd_type)
-        single_database
 
         Use Cases
         ---------

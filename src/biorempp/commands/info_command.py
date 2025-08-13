@@ -31,8 +31,6 @@ Display Features:
     - Practical usage examples and command syntax
     - Schema visualization with column information
     - File size and record count information
-
-Author: BioRemPP Development Team
 """
 
 from typing import Any, Dict
@@ -165,7 +163,7 @@ class InfoCommand(BaseCommand):
             print(f"   Description: {db_info['description']}")
             print(f"   File: {db_info['file']} ({db_info['size']})")
 
-        print("\n[SAMPLE] Sample Input Data:")
+        print("\n[SAMPLE] Example Input Data:")
         print("   File: sample_data.txt (0.18 MB)")
         print("   Content: 10 organisms with 23,663 KO identifiers")
         print("   Format: Organism headers (>) and KO entries")

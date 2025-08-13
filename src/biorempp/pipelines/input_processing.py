@@ -13,7 +13,7 @@ integrating multiple processing components into cohesive, database-specific
 workflows suitable for production use.
 
 Supported Databases:
-    1. BioRemPP: Comprehensive bioremediation gene-compound database
+    1. BioRemPP: Core bioremediation database
     2. KEGG: Degradation pathway information from KEGG
     3. HADEG: Hydrocarbon degradation gene database
     4. ToxCSM: Toxicity prediction and chemical safety database
@@ -334,9 +334,8 @@ def run_hadeg_processing_pipeline(
     Run complete HADEG hydrocarbon degradation processing pipeline.
 
     This pipeline validates, processes, and merges input with the
-    HADEG (Hydrocarbon Degradation Database). HADEG specializes in genes and
-    pathways involved in hydrocarbon degradation, making it essential for
-    petroleum contamination and oil spill bioremediation analysis.
+    HADEG, specialized in genes and pathways involved in hydrocarbon
+    degradation, plastics and biosurfactants.
 
     Parameters
     ----------
@@ -468,8 +467,8 @@ def run_toxcsm_processing_pipeline(
 
     This pipeline performs a two-stage process: first processing input through
     the BioRemPP database to obtain compound identifiers, then merging with
-    the ToxCSM (Toxicity Computational Screening and Modeling) database for
-    comprehensive toxicity predictions and chemical safety assessment.
+    the ToxCSM database for comprehensive toxicity predictions and chemical
+    safety assessment.
 
     Parameters
     ----------

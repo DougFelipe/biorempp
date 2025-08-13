@@ -1,16 +1,16 @@
 """
 output_formatter.py
 ------------------
-Professional Output Formatting and User Feedback System for BioRemPP CLI
+Output Formatting and User Feedback System for BioRemPP CLI
 
-This module implements a sophisticated output formatting system that delivers
-beautiful, informative command-line interfaces following modern CLI design
+This module implements a output formatting system that delivers,
+ informative command-line interfaces following modern CLI design
 principles. It centralizes all presentation logic and provides consistent
 user feedback across all BioRemPP operations.
 
 The formatter implements progressive disclosure patterns, using unicode icons,
 structured layouts, and contextual information to create an engaging and
-professional user experience that scales from simple operations to complex
+ user experience that scales from simple operations to complex
 multi-database workflows.
 
 Formatting Capabilities:
@@ -21,13 +21,12 @@ Formatting Capabilities:
     - Result Summaries: Detailed metrics and file information
 
 Design Principles:
-    - Visual Hierarchy: Clear information organization with icons and spacing
+    - Visual Hierarchy: Clear information organization
     - Progressive Disclosure: Information depth appropriate to operation type
     - Consistency: Uniform formatting patterns across all output types
     - Accessibility: Clear, readable output suitable for various environments
 
 User Experience Features:
-    - Unicode icons for visual appeal and quick recognition
     - Structured layouts with consistent spacing and alignment
     - Contextual information based on operation type and results
     - Performance metrics and timing information
@@ -42,8 +41,6 @@ Extensibility:
     The modular design supports easy addition of new output formats,
     presentation styles, and integration with external reporting systems
     while maintaining backward compatibility and consistent interfaces.
-
-Author: BioRemPP Development Team
 """
 
 import argparse
@@ -57,9 +54,9 @@ from biorempp.utils.silent_logging import get_logger
 
 class OutputFormatter:
     """
-    Professional output formatting system for BioRemPP command-line interface.
+    Output formatting system for BioRemPP command-line interface.
 
-    This formatter provides centralized, beautiful output formatting that
+    This formatter provides centralized, output formatting that
     transforms raw pipeline results into engaging, informative user interfaces
     following modern CLI design patterns with visual hierarchy and contextual
     information disclosure.
@@ -72,7 +69,6 @@ class OutputFormatter:
         - Result Summaries: Detailed metrics and performance information
 
     Design Features:
-        - Unicode Icons: Visual elements for quick information recognition
         - Structured Layouts: Consistent spacing and alignment patterns
         - Progressive Disclosure: Information depth matching operation complexity
         - Contextual Adaptation: Output adaptation based on result types
@@ -94,11 +90,6 @@ class OutputFormatter:
         - Pluggable output destinations for future enhancements
         - Template-based layouts for consistent visual design
         - Integration hooks for external reporting systems
-
-    Usage Examples:
-        >>> formatter = OutputFormatter()
-        >>> formatter.format_output(single_db_result, args)
-        >>> formatter.format_output(multi_db_results, args)
     """
 
     def __init__(self):
@@ -153,7 +144,7 @@ class OutputFormatter:
         Format pipeline output with enhanced design.
 
         Displays clean, user-friendly output following the
-        LOGGING_SYSTEM_DESIGN.md specification for beautiful CLI interface.
+        LOGGING_SYSTEM_DESIGN.md specification for CLI interface.
 
         Parameters
         ----------
@@ -225,8 +216,8 @@ class OutputFormatter:
             - Performance metrics including timing and file sizes
 
         Visual Design:
-            Implements structured layout with unicode icons, progress bars,
-            and consistent spacing to create professional appearance while
+            Implements structured layout, progress bars,
+            and consistent spacing to create appearance while
             delivering comprehensive operation feedback.
         """
         # Determine which database was processed
@@ -285,7 +276,7 @@ class OutputFormatter:
         """
         Format comprehensive output for multi-database processing operations.
 
-        Creates sophisticated presentation for comprehensive analysis workflows
+        Creates presentation for comprehensive analysis workflows
         that process data across all available databases, with aggregated
         metrics, individual database summaries, and coordinated progress
         feedback through the enhanced feedback manager system.

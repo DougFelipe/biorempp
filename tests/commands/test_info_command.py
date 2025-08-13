@@ -31,8 +31,6 @@ Quality Standards:
     - Clear test organization and descriptive naming
     - Proper mocking and dependency isolation
     - Comprehensive assertion coverage
-
-Author: BioRemPP Development Team
 """
 
 from io import StringIO

@@ -1,11 +1,10 @@
 """
 BioRemPP Command Line Interface Package
-======================================
 
 This package provides comprehensive command-line interface components for
 BioRemPP, implementing a clean separation between argument processing and
 output presentation. The CLI package follows modern design principles to
-deliver an intuitive and professional user experience.
+deliver an intuitive and user-friendly experience.
 
 CLI Architecture:
     The package implements a modular approach with specialized components
@@ -29,23 +28,15 @@ Argument Processing:
     comprehensive validation and error handling.
 
 Output Formatting:
-    The output formatter delivers beautiful, informative displays with
+    The output formatter delivers, informative displays with
     progress indicators, result summaries, and error reporting following
-    modern CLI design patterns with unicode icons and structured layouts.
+    modern CLI design patterns and structured layouts.
 
 Integration Points:
     - Command execution pipeline integration
     - Error handling and user feedback systems
     - Logging and debugging infrastructure
     - Result processing and file management
-
-Usage Examples:
-    >>> from biorempp.cli import BioRemPPArgumentParser, OutputFormatter
-    >>> parser = BioRemPPArgumentParser()
-    >>> formatter = OutputFormatter()
-    >>> args = parser.parse_args(['--input', 'data.txt', '--all-databases'])
-
-Author: BioRemPP Development Team
 """
 
 from .argument_parser import BioRemPPArgumentParser

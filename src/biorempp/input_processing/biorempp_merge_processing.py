@@ -49,7 +49,7 @@ def merge_input_with_biorempp(
         orthology identifiers.
     database_filepath : str, optional
         Path to BioRemPP database file (.csv). If None, defaults to
-        'data/database.csv' in the current working directory.
+        'data/database_biorempp.csv' in the current working directory.
     optimize_types : bool, optional
         If True, applies dtype optimization using optimize_dtypes_biorempp
         to reduce memory usage through categorical conversions. Default: True.
@@ -80,8 +80,7 @@ def merge_input_with_biorempp(
     >>> input_df = pd.DataFrame({'ko': ['K00001', 'K00002'], 'sample': ['S1', 'S2']})
     >>> result = merge_input_with_biorempp(input_df)
     >>> print(result.shape)
-    (2, 10)  # Example output
-
+    
     Notes
     -----
     - The database file must use semicolon (;) as the delimiter
@@ -90,7 +89,7 @@ def merge_input_with_biorempp(
     - The merge operation preserves all columns from both DataFrames
     """
     if database_filepath is None:
-        database_filepath = os.path.join("data", "database.csv")
+        database_filepath = os.path.join("data", "database_biorempp.csv")
     logger.info(f"Using database file: {database_filepath}")
 
     # Check file existence
@@ -170,7 +169,7 @@ def optimize_dtypes_biorempp(df: pd.DataFrame) -> pd.DataFrame:
     - 'genename': Full gene names
     - 'cpd': Compound identifiers
     - 'compoundclass': Chemical compound classifications
-    - 'referenceAG': Reference organism information
+    - 'referenceAG': Reference agencies information
     - 'compoundname': Compound names
     - 'enzyme_activity': Enzyme activity descriptions
     - 'sample': Sample identifiers

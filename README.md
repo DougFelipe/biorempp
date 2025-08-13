@@ -159,7 +159,7 @@ biorempp [OPÇÕES] --input ARQUIVO_ENTRADA
 
 ```bash
 # Processamento básico
-biorempp --input sample_data.txt --database biorempp
+biorempp --input src\biorempp\data\sample_data.txt --database biorempp
 
 # Todos os bancos com saída personalizada
 biorempp --input meus_dados.txt --all-databases --output-dir meus_resultados/

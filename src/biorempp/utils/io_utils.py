@@ -2,51 +2,18 @@
 BioRemPP I/O Utilities Module.
 
 This module provides comprehensive file input/output operations and path
-management utilities specifically designed for bioinformatics data processing
-workflows. It implements robust file handling patterns with standardized
-output formats, project-relative path resolution, and timestamped file
-generation for organized result management.
+management utilities. It implements file handling patterns with
+standardized output formats, project-relative path resolution, and
+timestamped file generation for organized result management.
 
 Key Features
 -----------
-- Project-relative path resolution for consistent output organization
+- Current working directory path resolution for command execution context
+- Project-relative path resolution for consistency when needed
 - Timestamped file generation for chronological result tracking
 - DataFrame export with standardized formatting and encoding
 - Robust error handling for file system operations
 - Cross-platform path management with proper encoding support
-
-File Management Capabilities
----------------------------
-The module handles various file operations essential for bioinformatics:
-- Output directory creation with proper permissions
-- Timestamped filename generation for result organization
-- DataFrame serialization with consistent formatting
-- Path resolution relative to project structure
-- Error-resilient file operations with detailed logging
-
-Output Organization
-------------------
-Implements standardized output directory structure:
-- outputs/results_tables/: Main results and analysis outputs
-- Timestamped files: Chronological organization of processing results
-- Project-relative paths: Consistent location regardless of execution context
-- Standardized formats: CSV with UTF-8 encoding and consistent separators
-
-Path Resolution Strategy
------------------------
-The module implements intelligent path resolution:
-1. Project root detection: Automatic identification of project base directory
-2. Relative path construction: Consistent paths from project root
-3. Cross-platform compatibility: Proper handling of Windows/Unix path formats
-4. Error handling: Graceful fallbacks for path resolution failures
-
-Integration Design
------------------
-Designed for seamless integration with BioRemPP pipelines:
-- Logger integration: Technical logging for troubleshooting
-- DataFrame compatibility: Direct pandas DataFrame export support
-- Pipeline integration: Standardized interfaces for processing workflows
-- Error propagation: Consistent error handling patterns
 
 Technical Implementation
 -----------------------
@@ -55,6 +22,30 @@ Technical Implementation
 - Efficient file I/O with proper resource management
 - Comprehensive error handling with informative messages
 - Cross-platform path operations using pathlib
+
+File Management Capabilities
+---------------------------
+The module handles various file operations:
+- Output directory creation with proper permissions
+- Timestamped filename generation for result organization
+- DataFrame serialization with consistent formatting
+- Path resolution relative to project structure
+- Error-resilient file operations with detailed logging
+
+Output Organization
+------------------
+Implements flexible output directory structure:
+- outputs/results_tables/: Main results and analysis outputs
+- Timestamped files: Chronological organization of processing results
+- Current working directory paths: Output files in execution context (default)
+- Standardized formats: CSV with UTF-8 encoding and consistent separators
+
+Path Resolution Strategy
+-----------------------
+The module implements current working directory path resolution:
+1. Current working directory (default): Output files where command is executed
+2. Relative path construction: Consistent paths from current directory
+3. Cross-platform compatibility: Proper handling of Windows/Unix path formats
 
 Example Usage
 ------------
@@ -126,10 +117,10 @@ def get_project_root() -> str:
 
 def resolve_output_path(output_dir: str) -> str:
     """
-    Resolve output directory path relative to project root.
+    Resolve output directory path relative to current working directory.
 
-    This ensures that all outputs are created in the correct location
-    (project_root/outputs/) regardless of the current working directory.
+    This function creates outputs in the current working directory where
+    the command is executed, providing intuitive behavior for users.
 
     Parameters
     ----------
@@ -141,15 +132,14 @@ def resolve_output_path(output_dir: str) -> str:
     str
         Absolute path to the output directory
     """
-    project_root = get_project_root()
-
     # If output_dir is already absolute, use it as-is
     if os.path.isabs(output_dir):
         return output_dir
 
-    # Resolve relative to project root
-    resolved_path = os.path.join(project_root, output_dir)
-    logger.debug(f"Resolved output path: {output_dir} -> {resolved_path}")
+    # Resolve relative to current working directory
+    resolved_path = os.path.join(os.getcwd(), output_dir)
+    logger.debug(f"Resolved output path (CWD): {output_dir} -> {resolved_path}")
+
     return resolved_path
 
 
@@ -236,7 +226,7 @@ def save_dataframe_output(
         The DataFrame to save.
     output_dir : str
         Directory to save the file (created if it doesn't exist).
-        Will be resolved relative to project root.
+        Will be resolved relative to current working directory.
     filename : str
         Name of the output file.
     sep : str
@@ -256,7 +246,7 @@ def save_dataframe_output(
     # Generate timestamped filename if requested
     final_filename = generate_timestamped_filename(filename, add_timestamp)
 
-    # Resolve output directory relative to project root
+    # Resolve output directory relative to current working directory
     resolved_output_dir = resolve_output_path(output_dir)
 
     logger.debug(f"Saving DataFrame to: {resolved_output_dir}/{final_filename}")

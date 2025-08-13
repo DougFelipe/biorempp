@@ -4,7 +4,7 @@ BioRemPP Application Orchestrator Module.
 This module serves as the central application orchestrator for BioRemPP,
 implementing the main entry point and execution flow coordination.
 It provides comprehensive dependency injection, error handling,
-and component orchestration following clean architecture principles.
+and component orchestration.
 
 Key Features
 -----------
@@ -12,7 +12,7 @@ Key Features
 - Centralized error handling with detailed logging and user feedback
 - Clean separation of concerns between parsing, execution, and output
 - Comprehensive exception handling with appropriate exit codes
-- Professional logging system with file-based technical logs
+- Logging system with file-based technical logs
 
 Architecture
 -----------
@@ -20,7 +20,7 @@ The application follows the orchestrator pattern:
 1. BioRemPPArgumentParser: CLI argument parsing and validation
 2. CommandFactory: Command pattern implementation for operations
 3. OutputFormatter: Consistent output formatting and presentation
-4. EnhancedErrorHandler: Professional error handling and recovery
+4. EnhancedErrorHandler: Error handling and recovery
 5. UserFeedbackManager: User-friendly feedback and progress indication
 
 Components Integration
@@ -29,26 +29,6 @@ Components Integration
 - Implements clean dependency injection for testability
 - Provides centralized exception handling with proper exit codes
 - Manages application lifecycle from initialization to completion
-
-Example Usage
-------------
-    from biorempp.app.application import BioRemPPApplication
-
-    # Create and run application
-    app = BioRemPPApplication()
-    result = app.run([
-        '--all-databases',
-        '--input', 'samples.txt',
-        '--output-dir', 'results'
-    ])
-
-    # Custom dependency injection
-    custom_parser = BioRemPPArgumentParser()
-    custom_factory = CommandFactory()
-    app = BioRemPPApplication(
-        parser=custom_parser,
-        command_factory=custom_factory
-    )
 
 Error Handling Strategy
 ----------------------
@@ -80,7 +60,7 @@ class BioRemPPApplication:
 
     Coordinates all components using dependency injection architecture.
     Implements clean separation of concerns and comprehensive error handling
-    for professional bioinformatics data processing workflows.
+    for bioinformatics data processing workflows.
 
     This class serves as the central coordinator that manages:
     - Argument parsing via BioRemPPArgumentParser

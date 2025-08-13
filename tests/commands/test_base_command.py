@@ -31,8 +31,6 @@ Quality Standards:
     - Parametrized testing for multiple input scenarios
     - Clear test organization and descriptive naming
     - Proper mocking and dependency isolation
-
-Author: BioRemPP Development Team
 """
 
 import os

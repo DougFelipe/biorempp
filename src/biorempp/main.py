@@ -1,11 +1,8 @@
 """
 BioRemPP Main Entry Point.
 
-Refactored main module using Command Pattern architecture with
+Main module using Command Pattern architecture with
 dependency injection and clean separation of concerns.
-
-This represents a 95% reduction in complexity from the original 427-line
-monolithic implementation to a clean, testable, and extensible architecture.
 """
 
 from biorempp.app.application import BioRemPPApplication

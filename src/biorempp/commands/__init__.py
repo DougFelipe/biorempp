@@ -1,6 +1,5 @@
 """
 BioRemPP Commands Package
-========================
 
 This package implements the Command Pattern architecture for BioRemPP,
 providing a structured and extensible approach to handling different types
@@ -39,8 +38,6 @@ Usage Examples:
     >>> from biorempp.commands import DatabaseMergerCommand
     >>> command = DatabaseMergerCommand()
     >>> result = command.run(parsed_args)
-
-Author: BioRemPP Development Team
 """
 
 from .all_merger_command import AllDatabasesMergerCommand

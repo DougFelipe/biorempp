@@ -4,9 +4,9 @@ toxcsm_merge_processing.py
 ToxCSM Database Merge Processing Module
 
 This module provides functionality to merge input biological data with the
-ToxCSM (Toxicity Computational Screening and Modeling) database. It
-specializes in connecting compound identifiers (cpd) with toxicity predictions
-and chemical properties for environmental safety assessment.
+ToxCSM database. It specializes in connecting compound identifiers (cpd)
+with toxicity predictions and chemical properties for environmental safety
+assessment.
 
 The module handles CSV-format ToxCSM databases with semicolon delimiters and
 includes advanced memory optimization through categorical data types and
@@ -43,9 +43,10 @@ def merge_input_with_toxcsm(
     """
     Merge input data with ToxCSM database based on 'cpd' column.
 
-    This function performs an inner join between the input data and the ToxCSM
-    database using the 'cpd' column as the merge key. The ToxCSM database
-    contains toxicity predictions for chemical compounds.
+    This function performs an inner join between the input data merged
+    with BioRemPP core database and the ToxCSM database using the 'cpd'
+    column as the merge key. The ToxCSM database contains toxicity
+    predictions for chemical compounds.
 
     Parameters
     ----------
