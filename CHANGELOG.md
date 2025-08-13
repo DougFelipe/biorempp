@@ -2,6 +2,34 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.4.0](https://github.com/DougFelipe/biorempp/compare/v0.3.1...v0.4.0) (2025-08-13)
+
+
+* Merge pull request #36 from DougFelipe/v0.5.0/simplified-architecture ([8968f13](https://github.com/DougFelipe/biorempp/commit/8968f13c2e4bb52c7d5966381101f0dedc59ecd3)), closes [#36](https://github.com/DougFelipe/biorempp/issues/36)
+* Merge pull request #35 from DougFelipe/v0.5.0/simplified-architecture ([1fd9779](https://github.com/DougFelipe/biorempp/commit/1fd977913023a04797353226693cb0eb416ee5e9)), closes [#35](https://github.com/DougFelipe/biorempp/issues/35)
+
+
+### feat
+
+* add missing import and set PYTHONPATH in test for running module as script ([7d8ca80](https://github.com/DougFelipe/biorempp/commit/7d8ca80391c1cfff3479fe27cd976f262d0328a7))
+
+
+### docs
+
+* enhance semantic release configuration comments for clarity and detail ([beeef4e](https://github.com/DougFelipe/biorempp/commit/beeef4eb1b5b1823143bc5767a894ee56c02a421))
+* improve docstring formatting and clarity in multiple modules ([fb72e8f](https://github.com/DougFelipe/biorempp/commit/fb72e8f145d151ee28048458f15220364c8fe843))
+* update docstring example in merge_input_with_biorempp function to include output shape ([849443f](https://github.com/DougFelipe/biorempp/commit/849443f7601beab689b29cb4642d218b8f4bac05))
+
+
+### ci
+
+* update flake8 linting to only check src/ directory ([d6b9c72](https://github.com/DougFelipe/biorempp/commit/d6b9c72679bb47132958e178c098557767a153b8))
+
+
+### test
+
+* remove empty __init__.py file from tests directory ([56bc8dc](https://github.com/DougFelipe/biorempp/commit/56bc8dca2ce5526a0dd3e6173b566ba2430d1c5d))
+
 ## [0.3.1](https://github.com/DougFelipe/biorempp/compare/v0.3.0...v0.3.1) (2025-08-13)
 
 
