@@ -7,7 +7,7 @@ name = "biorempp"
 dynamic = ["version"]
 description = "The Bioremediation Potential Profile (BioRemPP) is designed to explore the biotechnological potential of microbial, fungal, and plant genomes for bioremediation purposes"
 readme = "README.md"
-license-files = ["LICENSE.txt"]
+license = {file = "LICENSE.txt"}
 authors = [
     { name = "Douglas Felipe", email = "biorempp@gmail.com" }
 ]
