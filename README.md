@@ -1,7 +1,7 @@
 # 🧬 BioRemPP - Biological Remediation Pathway Predictor
 
 ## Documentação Completa v0.5.0
-
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/DougFelipe/biorempp)
 ---
 
 ## 📋 Índice
