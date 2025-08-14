@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.5.0](https://github.com/DougFelipe/biorempp/compare/v0.4.0...v0.5.0) (2025-08-14)
+
+
+* Merge pull request #37 from DougFelipe/v0.5.0/simplified-architecture ([3cbd75e](https://github.com/DougFelipe/biorempp/commit/3cbd75e3db8db87e1002d4cd8adc0ff5e05aa927)), closes [#37](https://github.com/DougFelipe/biorempp/issues/37)
+* Fix user experience: remove confusing fallback warning message ([240cbc5](https://github.com/DougFelipe/biorempp/commit/240cbc5c8d619ac455e899c6afea5973b5daf23c))
+* Final TestPyPI configuration: fix license format, add upload script and validation checklist ([4c4a7d5](https://github.com/DougFelipe/biorempp/commit/4c4a7d52c3bc75fe7f1ca85d6e1ac648ffd12514))
+* Fix TestPyPI compatibility: update build config and setuptools_scm ([6fd1931](https://github.com/DougFelipe/biorempp/commit/6fd19316f7137c36c1b9da6f027bce3d4005fd0d))
+
+
+### fix
+
+* remove unnecessary blank lines in io_utils.py for cleaner code ([bbcb032](https://github.com/DougFelipe/biorempp/commit/bbcb0321a4c7c93b7905127454984ea60c049589))
+* update license field format in pyproject.toml and add pypirc_example template for PyPI credentials ([c348d2b](https://github.com/DougFelipe/biorempp/commit/c348d2bc6d5a54115a8a2365f72d12f3aa687448))
+
+
+### feat
+
+* inclide deepwiki badge link in README for improved documentation ([c37bb69](https://github.com/DougFelipe/biorempp/commit/c37bb69525f1463c4f42ede1ba9954af46efb6f3))
+
 ## [0.4.0](https://github.com/DougFelipe/biorempp/compare/v0.3.1...v0.4.0) (2025-08-13)
 
 
