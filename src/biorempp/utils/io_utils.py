@@ -114,7 +114,7 @@ def get_project_root() -> str:
         # Use current working directory for pip-installed packages
         logger.debug("Package installed via pip - using current working directory")
         return os.getcwd()
-    
+
     # Development fallback: assume project root is 3 levels up from utils
     # biorempp/src/biorempp/utils -> biorempp/
     fallback_root = current_file.parent.parent.parent.parent
@@ -175,7 +175,7 @@ def resolve_log_path(log_path: str) -> str:
     # Check if this is a pip-installed package
     current_file = Path(__file__).resolve()
     current_file_str = str(current_file)
-    
+
     if "site-packages" in current_file_str or "dist-packages" in current_file_str:
         # For pip-installed packages, use current working directory
         resolved_path = os.path.join(os.getcwd(), log_path)
@@ -185,7 +185,7 @@ def resolve_log_path(log_path: str) -> str:
         project_root = get_project_root()
         resolved_path = os.path.join(project_root, log_path)
         logger.debug(f"Resolved log path (development): {log_path} -> {resolved_path}")
-    
+
     return resolved_path
 
 
