@@ -4,8 +4,8 @@ include LICENSE.txt
 # Dados usados em runtime
 recursive-include src/biorempp/data *.csv *.txt
 
-# Notebooks essenciais - incluir todos os notebooks
-recursive-include notebooks *.ipynb
+# Notebook essencial para demonstração
+include notebooks/biorempp_demo.ipynb
 
 # Exclui conteúdo não necessário
 prune tests
@@ -13,3 +13,6 @@ prune docs
 prune outputs
 prune custom_outputs
 prune .github
+prune .venv
+global-exclude *.pyc
+global-exclude __pycache__

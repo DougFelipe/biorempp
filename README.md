@@ -1,7 +1,7 @@
 # 🧬 BioRemPP - Biological Remediation Pathway Predictor
 
 ## Documentação Completa v0.5.0
-
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/DougFelipe/biorempp)
 ---
 
 ## 📋 Índice
@@ -48,6 +48,14 @@ O **BioRemPP** (Biological Remediation Pathway Predictor) é uma ferramenta bioi
 
 ```bash
 pip install biorempp
+```
+
+### Instalação de Versões de Desenvolvimento (TestPyPI)
+
+Para testar versões em desenvolvimento:
+
+```bash
+pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ biorempp
 ```
 
 ### Instalação para Desenvolvimento

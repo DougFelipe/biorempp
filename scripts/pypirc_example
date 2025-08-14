@@ -1,6 +1,13 @@
-# Exemplo de arquivo ~/.pypirc para configuração de credenciais PyPI
-# Copie este arquivo para ~/.pypirc (Linux/Mac) ou %USERPROFILE%\.pypirc (Windows)
-# e substitua os tokens pelos seus tokens reais
+# Template de arquivo .pypirc para configuração de credenciais PyPI
+# 
+# INSTRUÇÕES DE USO:
+# 1. Copie este arquivo para:
+#    - Linux/Mac: ~/.pypirc
+#    - Windows: %USERPROFILE%\.pypirc (geralmente C:\Users\SEU_USUARIO\.pypirc)
+# 2. Substitua os placeholders pelos seus tokens reais
+# 3. Salve o arquivo (sem extensão .txt ou similar)
+#
+# CONFIGURAÇÃO:
 
 [distutils]
 index-servers =
@@ -17,11 +24,40 @@ repository = https://test.pypi.org/legacy/
 username = __token__
 password = pypi-SEU_TOKEN_TESTPYPI_AQUI
 
-# Como obter os tokens:
-# 1. PyPI oficial: https://pypi.org/manage/account/#api-tokens
-# 2. TestPyPI: https://test.pypi.org/manage/account/#api-tokens
+# ============================================================================
+# COMO OBTER OS TOKENS:
+# ============================================================================
+# 
+# 1. PyPI oficial (produção):
+#    - Acesse: https://pypi.org/manage/account/#api-tokens
+#    - Clique em "Add API token"
+#    - Nome: biorempp-upload (ou nome de sua escolha)
+#    - Escopo: "Entire account" (para primeiro upload) ou específico do projeto
+#    - Copie o token gerado e substitua "pypi-SEU_TOKEN_PYPI_AQUI"
 #
-# IMPORTANTE:
-# - Mantenha este arquivo seguro e nunca o commite no git
-# - Use escopo "Entire account" para o primeiro upload
-# - Depois pode criar tokens específicos por projeto
+# 2. TestPyPI (testes):
+#    - Acesse: https://test.pypi.org/manage/account/#api-tokens
+#    - Clique em "Add API token"
+#    - Nome: biorempp-test-upload
+#    - Escopo: "Entire account"
+#    - Copie o token gerado e substitua "pypi-SEU_TOKEN_TESTPYPI_AQUI"
+#
+# ============================================================================
+# COMANDOS PARA UPLOAD:
+# ============================================================================
+#
+# Upload para TestPyPI (recomendado primeiro):
+# twine upload --repository testpypi dist/*
+#
+# Upload para PyPI oficial:
+# twine upload --repository pypi dist/*
+# ou simplesmente:
+# twine upload dist/*
+#
+# ============================================================================
+# SEGURANÇA:
+# ============================================================================
+# - NUNCA commite este arquivo no git
+# - Mantenha o arquivo com permissões restritas (chmod 600 no Linux/Mac)
+# - Considere usar tokens específicos por projeto após o primeiro upload
+# - Revogue tokens antigos quando não precisar mais deles
