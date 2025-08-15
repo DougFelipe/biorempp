@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.6.0](https://github.com/DougFelipe/biorempp/compare/v0.5.0...v0.6.0) (2025-08-15)
+
+
+* Merge pull request #39 from DougFelipe/v0.5.0/simplified-architecture ([770d06b](https://github.com/DougFelipe/biorempp/commit/770d06b5b9d7230dde164f7e7d6e55a8c01c2e04)), closes [#39](https://github.com/DougFelipe/biorempp/issues/39)
+
+
+### feat
+
+* add .pypirc template and configuration script for PyPI setup ([42ed60d](https://github.com/DougFelipe/biorempp/commit/42ed60ddf1551fea47065ee7fd5c2f341a720ec8))
+
 ## [0.5.0](https://github.com/DougFelipe/biorempp/compare/v0.4.0...v0.5.0) (2025-08-14)
 
 
