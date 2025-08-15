@@ -1,0 +1,61 @@
+# PyPI Configuration File (.pypirc)
+# 
+# SETUP INSTRUCTIONS:
+# 1. Copy this file to your home directory as .pypirc:
+#    - Windows: C:\Users\USERNAME\.pypirc
+#    - Linux/Mac: ~/.pypirc
+# 2. Replace YOUR_PYPI_TOKEN_HERE and YOUR_TESTPYPI_TOKEN_HERE with your actual tokens
+# 3. Save the file (ensure it has no file extension)
+# 4. Keep this file secure and never commit it to version control
+#
+# TOKEN GENERATION:
+# - PyPI Production: https://pypi.org/manage/account/#api-tokens
+# - TestPyPI: https://test.pypi.org/manage/account/#api-tokens
+
+[distutils]
+index-servers =
+    pypideac
+    testpypi
+
+[pypi]
+repository = https://upload.pypi.org/legacy/
+username = __token__
+password = YOUR_PYPI_TOKEN_HERE
+
+[testpypi]
+repository = https://test.pypi.org/legacy/
+username = __token__
+password = YOUR_TESTPYPI_TOKEN_HERE
+
+# ============================================================================
+# USAGE EXAMPLES:
+# ============================================================================
+#
+# Upload to TestPyPI (recommended for testing):
+# twine upload --repository testpypi dist/*
+#
+# Upload to PyPI (production):
+# twine upload --repository pypi dist/*
+# or simply:
+# twine upload dist/*
+#
+# Install from TestPyPI for testing:
+# pip install --index-url https://test.pypi.org/simple/ biorempp
+#
+# ============================================================================
+# SECURITY NOTES:
+# ============================================================================
+# - This file contains sensitive authentication tokens
+# - Never commit this file to git or share it publicly
+# - Use project-specific tokens when possible (after first upload)
+# - Set appropriate file permissions (chmod 600 on Unix systems)
+# - Regularly rotate your tokens for security
+#
+# ============================================================================
+# TOKEN SCOPES:
+# ============================================================================
+# For first-time uploads, use "Entire account" scope
+# After successful upload, consider creating project-specific tokens:
+# - Scope: "Specific project" 
+# - Project: biorempp
+# This provides better security by limiting token permissions
