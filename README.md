@@ -999,13 +999,35 @@ When using `--debug` flag, BioRemPP provides comprehensive diagnostic informatio
 
 **Debug Output Structure:**
 ```text
-[DEBUG] Input validation: ✓ File exists and readable
-[DEBUG] Format validation: ✓ FASTA-like structure detected
-[DEBUG] KO identifier validation: ✓ 1,247 valid identifiers found
-[DEBUG] Database loading: ✓ BioRemPP database loaded (6,623 records)
-[DEBUG] Memory usage: 245MB allocated, 180MB available
-[DEBUG] Processing time: Input=0.1s, Analysis=2.3s, Output=0.4s
-[DEBUG] Output generation: ✓ 156 matches written to file
+biorempp --debug --input "data/sample_data.txt" --database biorempp
+
+[BIOREMPP] Processing with BIOREMPP Database
+===================================================================
+🔧 [DEBUG] Verbosity level: DEBUG
+🔧 [DEBUG] Target database: biorempp
+🔧 [DEBUG] Display name: BioRemPP
+
+[LOAD] Loading input data...        OK 23,653 identifiers loaded
+🔧 [DEBUG] Input file processing completed
+🔧 [DEBUG] File path: data/sample_data.txt
+🔧 [DEBUG] Total identifiers parsed: 23,653
+
+[CONNECT] Connecting to BIOREMPP...    OK Database available
+🔧 [DEBUG] Database connection established
+🔧 [DEBUG] Database type: biorempp
+[PROCESS] Processing data...          #################### 100%
+🔧 [DEBUG] Processing completed successfully
+🔧 [DEBUG] Output file: BioRemPP_Results.txt
+
+[SUCCESS] Processing completed successfully!
+   [RESULTS] Results: 7,613 matches found
+   [OUTPUT] Output: BioRemPP_Results.txt (921KB)
+   [TIME] Time: 0.2 seconds
+🔧 [DEBUG] ===== TECHNICAL SUMMARY =====
+🔧 [DEBUG] Total processing time: 0.169 seconds
+🔧 [DEBUG] Database: biorempp (BioRemPP)
+🔧 [DEBUG] File size: 921KB
+🔧 [DEBUG] Processing rate: 44918.8 matches/second
 ```
 
 **Log File Location:**

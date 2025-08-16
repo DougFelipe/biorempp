@@ -103,6 +103,13 @@ class EnhancedFeedbackManager:
 
         print("\n[BIOREMPP] Processing with ALL Databases")
         print("=" * 67)
+
+        # Debug mode shows technical details
+        if self.verbosity == "DEBUG":
+            print(f"🔧 [DEBUG] Verbosity level: {self.verbosity}")
+            print(f"🔧 [DEBUG] Available databases: {list(self.db_names.keys())}")
+            print(f"🔧 [DEBUG] Processing order: {self.db_order}")
+
         print()
 
     def show_input_loaded(self, line_count: int) -> None:
@@ -116,8 +123,17 @@ class EnhancedFeedbackManager:
                 f"OK {line_count:,} KO identifiers loaded"
             )
 
+            # Debug mode shows technical details
+            if self.verbosity == "DEBUG":
+                print("🔧 [DEBUG] Input file processing completed")
+                print(f"🔧 [DEBUG] Total KO identifiers parsed: {line_count:,}")
+
         else:
             print("[LOAD] Loading input data...        OK Input loaded")
+
+            if self.verbosity == "DEBUG":
+                print("🔧 [DEBUG] Empty or minimal input detected")
+
         print()
 
     def show_database_processing(self, result: Dict[str, Any]) -> None:
@@ -141,6 +157,19 @@ class EnhancedFeedbackManager:
                         f"Database...      OK {matches:,} matches -> "
                         f"{filename}"
                     )
+
+                    # Debug mode shows technical details
+                    if self.verbosity == "DEBUG":
+                        output_path = pipeline_result.get("output_path", "Unknown")
+                        print(f"🔧 [DEBUG] Database: {db_key}")
+                        print(f"🔧 [DEBUG] Output path: {output_path}")
+                        print(
+                            f"🔧 [DEBUG] Result type: {type(pipeline_result).__name__}"
+                        )
+                        if "processing_time" in pipeline_result:
+                            time_val = pipeline_result["processing_time"]
+                            print(f"🔧 [DEBUG] Processing time: {time_val:.2f}s")
+
                     print()
 
     def show_final_summary(self, result: Dict[str, Any], elapsed_time: float) -> None:
@@ -170,4 +199,22 @@ class EnhancedFeedbackManager:
         )
         print("   [OUTPUT] Location: outputs/results_tables/")
         print(f"   [TIME] Total time: {elapsed_time:.1f} seconds")
+
+        # Debug mode shows technical summary
+        if self.verbosity == "DEBUG":
+            print("🔧 [DEBUG] ===== TECHNICAL SUMMARY =====")
+            db_count = len(self.db_order)
+            print(f"🔧 [DEBUG] Processed databases: {database_count}/{db_count}")
+            print(f"🔧 [DEBUG] Total processing time: {elapsed_time:.3f} seconds")
+            avg_time = elapsed_time / max(database_count, 1)
+            print(f"🔧 [DEBUG] Average time per database: {avg_time:.3f}s")
+            matches_per_sec = total_matches / max(elapsed_time, 0.001)
+            print(f"🔧 [DEBUG] Matches per second: {matches_per_sec:.1f}")
+            for db_key in self.db_order:
+                if db_key in result:
+                    pipeline_result = result[db_key]
+                    if isinstance(pipeline_result, dict):
+                        matches = pipeline_result.get("matches", 0)
+                        print(f"🔧 [DEBUG] {db_key}: {matches:,} matches")
+
         print()
