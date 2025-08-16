@@ -11,6 +11,12 @@ project_dir = docs_dir.parent
 src_dir = project_dir / "src"
 sys.path.insert(0, str(src_dir))
 
+# Debug: Print path information for RTD debugging
+if os.environ.get('READTHEDOCS', None) == 'True':
+    print(f"RTD Build - Project dir: {project_dir}", file=sys.stderr)
+    print(f"RTD Build - Source dir: {src_dir}", file=sys.stderr)
+    print(f"RTD Build - Python path includes: {str(src_dir) in sys.path}", file=sys.stderr)
+
 # -- Project information -----------------------------------------------------
 project = 'BioRemPP'
 copyright = '2025, Douglas Felipe'
@@ -77,6 +83,15 @@ autodoc_mock_imports = [
     'tqdm', 'click', 'dash', 'plotly'
 ]
 
+# Autodoc configuration for better docstring extraction
+autodoc_default_options = {
+    'members': True,
+    'member-order': 'bysource',
+    'special-members': '__init__',
+    'undoc-members': True,
+    'exclude-members': '__weakref__'
+}
+
 # Suppress specific warnings
 suppress_warnings = [
     'myst.header',
@@ -120,6 +135,8 @@ napoleon_include_private_with_doc = False
 autodoc_typehints = 'description'
 autodoc_typehints_description_target = 'documented'
 autosummary_generate = True
+autosummary_generate_overwrite = True
+autodoc_preserve_defaults = True
 
 # Intersphinx
 intersphinx_mapping = {
