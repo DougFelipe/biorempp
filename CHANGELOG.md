@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.6.1](https://github.com/DougFelipe/biorempp/compare/v0.6.0...v0.6.1) (2025-08-16)
+
+
+* Merge pull request #40 from DougFelipe/development ([37ba8b9](https://github.com/DougFelipe/biorempp/commit/37ba8b946396543670117832cde53baaa38b874f)), closes [#40](https://github.com/DougFelipe/biorempp/issues/40)
+
+
+### chore
+
+* Add documentation warnings summary and priority list ([cd3a13f](https://github.com/DougFelipe/biorempp/commit/cd3a13f6cfd195fc8908955a9ff1ac39af49e649))
+
+
+### revert
+
+* volta a configuração original com documentação dando certo ([6162c42](https://github.com/DougFelipe/biorempp/commit/6162c42e0777362dca4d0d8f95db4decb051e2f9))
+
+
+### refactor
+
+* and enhance documentation across multiple modules automatizando os ajustes por scripts python ([05abad1](https://github.com/DougFelipe/biorempp/commit/05abad10085025524c6a721c96bcde8030fdfdfe))
+
+
+### docs
+
+* Add comprehensive API reference documentation and contributor guidelines ([c3e8331](https://github.com/DougFelipe/biorempp/commit/c3e8331590e1c75a3e2dee2ce00ceeba128f4c43))
+* Add comprehensive documentation and build script for BioRemPP ([c504b94](https://github.com/DougFelipe/biorempp/commit/c504b9406f6bb52ede71af6ab09d7ebfd0ca19ab))
+* Add comprehensive test suite documentation outlining testing architecture, methodologies, and metrics ([282ef0e](https://github.com/DougFelipe/biorempp/commit/282ef0e6a25fa39903994c436eb2a9c35b95ee01))
+
 ## [0.6.0](https://github.com/DougFelipe/biorempp/compare/v0.5.0...v0.6.0) (2025-08-15)
 
 
