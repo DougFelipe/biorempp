@@ -1,5 +1,5 @@
 """
-BioRemPP Application Orchestrator Module.
+    BioRemPP Application Orchestrator Module.
 
 This module serves as the central application orchestrator for BioRemPP,
 implementing the main entry point and execution flow coordination.
@@ -7,6 +7,7 @@ It provides comprehensive dependency injection, error handling,
 and component orchestration.
 
 Key Features
+------------
 -----------
 - Dependency injection architecture for all major components
 - Centralized error handling with detailed logging and user feedback
@@ -15,6 +16,7 @@ Key Features
 - Logging system with file-based technical logs
 
 Architecture
+------------
 -----------
 The application follows the orchestrator pattern:
 1. BioRemPPArgumentParser: CLI argument parsing and validation
@@ -24,6 +26,7 @@ The application follows the orchestrator pattern:
 5. UserFeedbackManager: User-friendly feedback and progress indication
 
 Components Integration
+----------------------
 ---------------------
 - Main orchestrator coordinates all BioRemPP components
 - Implements clean dependency injection for testability
@@ -31,6 +34,7 @@ Components Integration
 - Manages application lifecycle from initialization to completion
 
 Error Handling Strategy
+-----------------------
 ----------------------
 - KeyboardInterrupt: Exit code 130 (standard Ctrl+C)
 - ValueError: Exit code 1 (validation and input errors)
@@ -39,6 +43,7 @@ Error Handling Strategy
 - Exception: Exit code 1 (unexpected errors with full logging)
 
 Technical Notes
+---------------
 --------------
 - Uses file-based logging for technical details
 - Implements comprehensive exception handling
@@ -283,6 +288,7 @@ class BioRemPPApplication:
         - Exit codes follow UNIX conventions
         - Supports both interactive and batch execution modes
         """
+
         try:
             self.logger.info("Starting BioRemPP application")
 
@@ -295,6 +301,7 @@ class BioRemPPApplication:
                 self.feedback_manager.set_verbosity("verbose")
             elif hasattr(parsed_args, "debug") and parsed_args.debug:
                 self.feedback_manager.set_verbosity("debug")
+
             else:
                 # Default to quiet mode
                 self.feedback_manager.set_verbosity("quiet")
@@ -407,6 +414,7 @@ class BioRemPPApplication:
         - Supports version checking and debugging workflows
         """
         # Import version from metadata if available
+
         try:
             from biorempp.metadata.version import __version__
 

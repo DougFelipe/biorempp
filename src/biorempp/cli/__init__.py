@@ -1,5 +1,5 @@
 """
-BioRemPP Command Line Interface Package
+    BioRemPP Command Line Interface Package
 
 This package provides comprehensive command-line interface components for
 BioRemPP, implementing a clean separation between argument processing and

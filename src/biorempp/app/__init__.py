@@ -1,5 +1,5 @@
 """
-BioRemPP Application Module.
+    BioRemPP Application Module.
 
 This module serves as the main application package for BioRemPP,
 providing the central orchestration and factory components for
@@ -25,6 +25,7 @@ CommandFactory : class
     operations.
 
 Architecture Overview
+---------------------
 --------------------
 The application follows a layered architecture:
 1. Application Layer: Main orchestrator and entry point
@@ -34,6 +35,7 @@ The application follows a layered architecture:
 5. Data Layer: Input processing and database operations
 
 Integration Features
+--------------------
 -------------------
 - Dependency injection for enhanced testability
 - Centralized error handling with user-friendly messages
@@ -42,6 +44,7 @@ Integration Features
 - Clean separation of concerns across all components
 
 Technical Features
+------------------
 -----------------
 - Clean architecture with dependency injection
 - Command pattern for operation management
@@ -51,6 +54,7 @@ Technical Features
 - Support for both interactive and batch execution modes
 
 Design Patterns
+---------------
 --------------
 - Application Orchestrator: Coordinates all components
 - Factory Pattern: Command creation and routing

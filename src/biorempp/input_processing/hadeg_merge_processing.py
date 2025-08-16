@@ -1,5 +1,5 @@
 """
-hadeg_merge_processing.py
+    hadeg_merge_processing.py
 -------------------------
 HADEG Database Merge Processing Module
 
@@ -123,6 +123,7 @@ def merge_input_with_hadeg(
         raise ValueError("Unsupported file format. Use .csv")
 
     # Load database
+
     try:
         database_df = pd.read_csv(database_filepath, encoding="utf-8", sep=";")
         logger.info(

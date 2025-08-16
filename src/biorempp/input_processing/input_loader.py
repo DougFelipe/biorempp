@@ -1,5 +1,5 @@
 """
-input_loader.py
+    input_loader.py
 ---------------
 Central Input Processing and Database Merging Orchestration Module
 
@@ -104,6 +104,7 @@ def load_and_merge_input(
         return None, f"Input processing error: {error}"
 
     # 2. Merge with reference database
+
     try:
         df_merged = merge_function(
             df_input,

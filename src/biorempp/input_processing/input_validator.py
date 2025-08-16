@@ -1,5 +1,5 @@
 """
-input_validator.py
+    input_validator.py
 ------------------
 Input File Validation and Processing Module
 
@@ -93,6 +93,7 @@ def validate_and_process_input(contents: str, filename: str):
         return None, error
 
     # 2. Decode if necessary
+
     try:
         decoded_content = decode_content_if_base64(contents)
     except Exception as e:

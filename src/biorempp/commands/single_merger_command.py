@@ -1,5 +1,6 @@
 """
-single_merger_command.py
+    single_merger_command.py
+------------------------
 -----------------------
 Single Database Merger Command Implementation
 

@@ -1,46 +1,74 @@
 # BioRemPP Documentation
 
-**Bioremediation Potential Profile (BioRemPP)** - A comprehensive Python package for analyzing biotechnological potential of microbial, fungal, and plant genomes for bioremediation purposes.
+**Bioremediation Potential Profile (BioRemPP)** - A comprehensive computational framework for analyzing biotechnological potential of microbial, fungal, and plant genomes for bioremediation applications in environmental science.
 
-## 🚀 Quick Navigation
+## Overview
 
-Welcome to the complete documentation for BioRemPP! This documentation provides comprehensive information about all modules, APIs, and usage examples.
+BioRemPP provides sophisticated tools for analyzing biological data in the context of environmental remediation processes. The package integrates multiple specialized databases and implements advanced computational methods for comprehensive bioremediation potential assessment.
 
-### 📚 Documentation Sections
+### Key Features
 
-- **Module Reference**: Complete API documentation for all BioRemPP modules
-- **User Guide**: Step-by-step guides and tutorials
-- **Developer Guide**: Information for contributors and developers
+- **Multi-Database Integration**: BioRemPP, KEGG, HADEG, and ToxCSM databases
+- **Advanced Analytics**: Comprehensive pathway analysis and toxicity prediction
+- **Scalable Architecture**: Designed for large-scale genomic data processing
+- **Professional CLI**: Command-line interface with comprehensive functionality
+- **Robust API**: Programmatic access for integration into workflows
 
-## 📖 Contents
+## Documentation Structure
+
+This documentation is organized into logical sections for different user types and use cases:
+
+```{toctree}
+:maxdepth: 2
+:caption: Getting Started
+
+readme
+overview
+```
 
 ```{toctree}
 :maxdepth: 3
 :caption: API Documentation
 
-API Reference <api/modules>
+API_Reference
+api/modules
 ```
 
 ```{toctree}
 :maxdepth: 2
-:caption: User Guide
+:caption: Development & Testing
 
-Overview <overview>
-Documentation Guide <DOCUMENTATION_GUIDE>
-Project README <readme>
+Test_Suite_Documentation
+CONTRIBUTING
 ```
 
 ```{toctree}
 :maxdepth: 2
 :caption: Project Information
 
-Contributions & Help <contributing>
-License <license>
-Authors <authors>
-Changelog <changelog>
+authors
+changelog
+license
 ```
 
-## Indices and tables
+## Quick Navigation
+
+### For Users
+- **Project Overview**: Complete project description and installation
+- **API Reference**: Comprehensive API documentation
+- **[Module Documentation](api/modules.rst)**: Auto-generated API reference
+
+### For Developers
+- **Contributing Guide**: Development workflow and standards
+- **Test Documentation**: Testing framework overview
+- **Development Overview**: Technical architecture information
+
+### For Reference
+- **Authors**: Project contributors and acknowledgments
+- **Changelog**: Version history and updates
+- **License**: License information and terms
+
+## Indices and Tables
 
 * {ref}`genindex`
 * {ref}`modindex`

@@ -1,5 +1,6 @@
 """
-BioRemPP Analysis Pipelines Package
+    BioRemPP Analysis Pipelines Package
+===================================
 ==================================
 
 This package provides high-level pipeline orchestrators for the main BioRemPP

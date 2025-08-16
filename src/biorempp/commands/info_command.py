@@ -1,5 +1,6 @@
 """
-info_command.py
+    info_command.py
+---------------
 --------------
 Information Display Command Implementation
 
@@ -86,6 +87,7 @@ class InfoCommand(BaseCommand):
             return self._list_databases()
         elif self.info_type == "database_info":
             return self._show_database_info(self.target)
+
         else:
             raise ValueError(f"Unsupported info type: {self.info_type}")
 

@@ -1,5 +1,6 @@
 """
-output_formatter.py
+    output_formatter.py
+-------------------
 ------------------
 Output Formatting and User Feedback System for BioRemPP CLI
 
@@ -326,6 +327,7 @@ class OutputFormatter:
 
     def _get_file_size(self, file_path: str) -> str:
         """Get human-readable file size."""
+
         try:
             import os
 
@@ -334,6 +336,7 @@ class OutputFormatter:
                 return f"{size_bytes}B"
             elif size_bytes < 1024 * 1024:
                 return f"{size_bytes // 1024}KB"
+
             else:
                 return f"{size_bytes // (1024 * 1024)}MB"
         except (OSError, FileNotFoundError):

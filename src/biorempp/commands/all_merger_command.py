@@ -1,5 +1,6 @@
 """
-all_merger_command.py
+    all_merger_command.py
+---------------------
 --------------------
 Comprehensive Multi-Database Merger Command Implementation
 

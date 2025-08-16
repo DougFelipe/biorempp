@@ -1,5 +1,5 @@
 """
-BioRemPP Centralized Logging Configuration Module.
+    BioRemPP Centralized Logging Configuration Module.
 
 This module implements a comprehensive logging infrastructure for the BioRemPP
 package, providing unified logging setup, configuration management, and
@@ -8,6 +8,8 @@ levels, output destinations, and environment-based configuration for different
 deployment scenarios.
 
 Key Features
+------------
+------------
 -----------
 - Singleton logging configuration for package-wide consistency
 - Environment-based configuration for development and production
@@ -17,6 +19,8 @@ Key Features
 - Thread-safe logging operations for concurrent processing
 
 Logging Architecture
+--------------------
+--------------------
 -------------------
 The module implements a centralized logging architecture:
 1. Singleton Configuration: Single point of logging setup across the package
@@ -26,6 +30,8 @@ The module implements a centralized logging architecture:
 5. Performance Optimization: Efficient logging with minimal overhead
 
 Technical Implementation
+------------------------
+------------------------
 -----------------------
 - Singleton pattern for configuration consistency
 - Thread-safe logger acquisition and configuration
@@ -34,6 +40,8 @@ Technical Implementation
 - Cross-platform compatibility for different operating systems
 
 Configuration Strategy
+----------------------
+----------------------
 ---------------------
 Supports multiple configuration approaches:
 - Environment Variables: LOG_LEVEL, LOG_FORMAT, LOG_DESTINATION
@@ -43,6 +51,8 @@ Supports multiple configuration approaches:
 - Development Modes: Verbose logging for debugging and troubleshooting
 
 Output Management
+-----------------
+-----------------
 ----------------
 Flexible output destination management:
 - Console Output: Formatted output for interactive debugging
@@ -52,6 +62,8 @@ Flexible output destination management:
 - Technical Logs: Detailed technical information for troubleshooting
 
 Log Formatting Features
+-----------------------
+-----------------------
 ----------------------
 Professional log formatting with comprehensive information:
 - Timestamp: Precise timing information for event correlation
@@ -71,6 +83,8 @@ Supports configuration through environment variables:
 - LOG_ROTATION: Enable log file rotation and archival
 
 Example Usage
+-------------
+-------------
 ------------
     from biorempp.utils.logging_config import get_logger, setup_logging
 
@@ -271,6 +285,7 @@ class BioRemPPLogger:
                     config = yaml.safe_load(f)
                 except ImportError:
                     raise ImportError("PyYAML is required for YAML configuration files")
+
             else:
                 raise ValueError(
                     "Unsupported config file format. Use .json or .yml/.yaml"

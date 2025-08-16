@@ -1,5 +1,6 @@
 """
-base_command.py
+    base_command.py
+---------------
 --------------
 Abstract Base Command Implementation for BioRemPP Command Pattern
 

@@ -1,5 +1,5 @@
 """
-BioRemPP Enhanced Error Handling System Module.
+    BioRemPP Enhanced Error Handling System Module.
 
 This module implements an advanced error handling and recovery system
 specifically designed for BioRemPP command-line applications.
@@ -13,6 +13,8 @@ user guidance, problem resolution, and operational continuity through
 professional error presentation and recovery assistance.
 
 Key Features
+------------
+------------
 -----------
 - Intelligent Error Classification: Automatic categorization by context and type
 - Contextual Solution Engine: Specific guidance based on operational context
@@ -39,6 +41,8 @@ Sophisticated context-aware error handling:
 - Network Context: Connectivity problems, download failures, timeout scenarios
 
 Solution Recommendation Framework
+---------------------------------
+---------------------------------
 --------------------------------
 Structured approach to error resolution guidance:
 - Immediate Actions: Quick fixes for common, easily resolved problems
@@ -48,6 +52,8 @@ Structured approach to error resolution guidance:
 - Expert Resources: References to documentation, support, and community help
 
 Professional Error Presentation
+-------------------------------
+-------------------------------
 ------------------------------
 Error presentation design:
 - Clear Primary Messages: Non-technical, user-friendly problem descriptions
@@ -57,6 +63,8 @@ Error presentation design:
 - Additional Resources: Links to documentation and support materials
 
 Integration Architecture
+------------------------
+------------------------
 -----------------------
 Integration with BioRemPP error handling ecosystem:
 - Exception Translation: Conversion of Python exceptions to user messages
@@ -66,6 +74,8 @@ Integration with BioRemPP error handling ecosystem:
 - Recovery Workflow: Support for graceful error recovery and operation continuation
 
 Error Category Coverage
+-----------------------
+-----------------------
 ----------------------
 Comprehensive error handling across operational domains:
 - File System Errors: Missing files, permissions, path resolution, disk space
@@ -75,6 +85,8 @@ Comprehensive error handling across operational domains:
 - Runtime Errors: Unexpected failures, platform limitations, system interactions
 
 Example Usage
+-------------
+-------------
 ------------
     from biorempp.utils.enhanced_errors import EnhancedErrorHandler
 
@@ -82,6 +94,7 @@ Example Usage
     error_handler = EnhancedErrorHandler()
 
     # Handle errors with context
+
     try:
         process_biological_data(input_file)
     except FileNotFoundError as e:
@@ -286,6 +299,7 @@ class EnhancedErrorHandler:
         elif any(db in error_lower for db in ["biorempp", "hadeg", "kegg", "toxcsm"]):
             if "database" in error_lower or ".csv" in error_lower:
                 return "database_file"
+
             else:
                 return "invalid_database"
 
@@ -303,6 +317,7 @@ class EnhancedErrorHandler:
         elif "empty" in error_lower or "no data" in error_lower:
             if error_type == "ValueError":
                 return "empty_input"
+
             else:
                 return "empty_database"
 
@@ -364,6 +379,7 @@ class EnhancedErrorHandler:
 
         if self.feedback_manager:
             self.feedback_manager.show_error(user_message, solution)
+
         else:
             print(f"[ERROR] Error: {user_message}")
             if solution:
