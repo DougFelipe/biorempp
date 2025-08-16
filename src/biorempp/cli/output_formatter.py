@@ -136,6 +136,11 @@ class OutputFormatter:
             presentation to deliver cohesive user interfaces.
         """
         self.logger.debug("Formatting pipeline output")
+
+        # Check verbosity level - don't show output in quiet mode
+        if hasattr(args, "quiet") and args.quiet:
+            return
+
         self._format_traditional_output(result, args)
 
     def _format_traditional_output(
@@ -155,6 +160,18 @@ class OutputFormatter:
             Command arguments for context
         """
         self.logger.debug("Formatting pipeline output")
+
+        # Configure feedback manager verbosity based on args
+        verbosity = "NORMAL"
+        if hasattr(args, "quiet") and args.quiet:
+            verbosity = "SILENT"
+        elif hasattr(args, "verbose") and args.verbose:
+            verbosity = "VERBOSE"
+        elif hasattr(args, "debug") and args.debug:
+            verbosity = "DEBUG"
+
+        # Create feedback manager with proper verbosity
+        self.feedback_manager = EnhancedFeedbackManager(verbosity)
 
         if isinstance(result, dict):
             # Check if it's a single database result or multiple databases
@@ -221,6 +238,19 @@ class OutputFormatter:
             and consistent spacing to create appearance while
             delivering comprehensive operation feedback.
         """
+        # Determine verbosity level
+        verbosity = "NORMAL"
+        if hasattr(args, "quiet") and args.quiet:
+            verbosity = "SILENT"
+        elif hasattr(args, "verbose") and args.verbose:
+            verbosity = "VERBOSE"
+        elif hasattr(args, "debug") and args.debug:
+            verbosity = "DEBUG"
+
+        # Silent mode - no output
+        if verbosity == "SILENT":
+            return
+
         # Determine which database was processed
         database = getattr(args, "database", "Unknown")
         db_display_name = {
@@ -233,6 +263,13 @@ class OutputFormatter:
         # Show header for single database
         print(f"\n[BIOREMPP] Processing with {db_display_name.upper()} Database")
         print("=" * 67)
+
+        # Debug mode shows technical details
+        if verbosity == "DEBUG":
+            print(f"🔧 [DEBUG] Verbosity level: {verbosity}")
+            print(f"🔧 [DEBUG] Target database: {database}")
+            print(f"🔧 [DEBUG] Display name: {db_display_name}")
+
         print()
 
         # Count identifiers from input
@@ -244,8 +281,19 @@ class OutputFormatter:
                 f"[LOAD] Loading input data...        "
                 f"OK {line_count:,} identifiers loaded"
             )
+
+            # Debug mode shows technical details
+            if verbosity == "DEBUG":
+                print("🔧 [DEBUG] Input file processing completed")
+                print(f"🔧 [DEBUG] File path: {input_file}")
+                print(f"🔧 [DEBUG] Total identifiers parsed: {line_count:,}")
         else:
             print("[LOAD] Loading input data...        OK Input loaded")
+
+            if verbosity == "DEBUG":
+                print("🔧 [DEBUG] Input file not found or empty")
+                print(f"🔧 [DEBUG] Provided path: {input_file}")
+
         print()
 
         # Show database processing
@@ -256,7 +304,22 @@ class OutputFormatter:
             f"[CONNECT] Connecting to {db_display_name.upper()}...    "
             f"OK Database available"
         )
+
+        # Debug mode shows connection details
+        if verbosity == "DEBUG":
+            print("🔧 [DEBUG] Database connection established")
+            print(f"🔧 [DEBUG] Database type: {database}")
+
         print("[PROCESS] Processing data...          #################### 100%")
+
+        # Debug mode shows processing details
+        if verbosity == "DEBUG":
+            output_path = result.get("output_path", "Unknown")
+            print("🔧 [DEBUG] Processing completed successfully")
+            print(f"🔧 [DEBUG] Matches found: {matches:,}")
+            print(f"🔧 [DEBUG] Output file: {filename}")
+            print(f"🔧 [DEBUG] Full output path: {output_path}")
+
         print(f"[SAVE] Saving results...            OK {filename}")
         print()
 
@@ -269,6 +332,18 @@ class OutputFormatter:
         print(f"   [RESULTS] Results: {matches:,} matches found")
         print(f"   [OUTPUT] Output: {filename} ({file_size})")
         print(f"   [TIME] Time: {elapsed_time:.1f} seconds")
+
+        # Debug mode shows technical summary
+        if verbosity == "DEBUG":
+            print("🔧 [DEBUG] ===== TECHNICAL SUMMARY =====")
+            print(f"🔧 [DEBUG] Total processing time: {elapsed_time:.3f} seconds")
+            print(f"🔧 [DEBUG] Database: {database} ({db_display_name})")
+            print(f"🔧 [DEBUG] File size: {file_size}")
+            if matches > 0 and elapsed_time > 0:
+                rate = matches / elapsed_time
+                print(f"🔧 [DEBUG] Processing rate: {rate:.1f} matches/second")
+            print(f"🔧 [DEBUG] Result file: {output_path}")
+
         print()
 
     def _format_multiple_databases_output(
