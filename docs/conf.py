@@ -1,135 +1,113 @@
-# -----------------------------------------------------------------------------
-# Sphinx configuration for BioRemPP
-# - Read the Docs theme
-# - Version derived from installed package (importlib.metadata)
-# - Mocks heavy runtime deps to keep builds fast/stable
-# - Compatible with src/ layout and MSYS2/Windows
-# -----------------------------------------------------------------------------
+# Configuration file for the Sphinx documentation builder.
+# BioRemPP documentation configuration
 
 import os
 import sys
-from importlib.metadata import version as pkg_version, PackageNotFoundError
+from pathlib import Path
 
-# --- Paths -------------------------------------------------------------------
-# Add ../src to sys.path for local builds (RTD typically installs the package)
-__location__ = os.path.dirname(__file__)
-sys.path.insert(0, os.path.join(__location__, "../src"))
+# Add the project source to the path
+docs_dir = Path(__file__).parent
+project_dir = docs_dir.parent
+src_dir = project_dir / "src"
+sys.path.insert(0, str(src_dir))
 
-# --- Project info ------------------------------------------------------------
-project = "biorempp"
-author = "Douglas Felipe"
-language = "en"  # keep docs in English
+# -- Project information -----------------------------------------------------
+project = 'BioRemPP'
+copyright = '2025, Douglas Felipe'
+author = 'Douglas Felipe'
 
-# Derive release/version from the installed package; fall back if not installed
+# Try to get version from package
 try:
-    release = pkg_version("biorempp")
-except PackageNotFoundError:
-    release = "0+unknown"
-version = release  # If you want X.Y only, slice here.
+    from importlib.metadata import version
+    release = version("biorempp")
+except Exception:
+    release = "0.1.0-dev"
 
-# --- General configuration ----------------------------------------------------
+version = release.split('+')[0]  # Short version
+
+# -- General configuration ---------------------------------------------------
 extensions = [
-    # Content & authoring
-    "myst_parser",                # Markdown via MyST
-
-    # API & code docs
-    "sphinx.ext.autodoc",
-    "sphinx.ext.autosummary",
-    "sphinx.ext.napoleon",        # Google/NumPy docstring styles
-    "sphinx.ext.viewcode",
-
-    # Utility & quality gates
-    "sphinx.ext.intersphinx",
-    "sphinx.ext.todo",
-    "sphinx.ext.coverage",
-    "sphinx.ext.doctest",
-    "sphinx.ext.ifconfig",
-    "sphinx.ext.mathjax",
+    'myst_parser',
+    'sphinx.ext.autodoc',
+    'sphinx.ext.autosummary',
+    'sphinx.ext.napoleon',
+    'sphinx.ext.viewcode',
+    'sphinx.ext.intersphinx',
+    'sphinx.ext.mathjax',
 ]
 
-# MyST: enable useful Markdown features
+# MyST configuration
 myst_enable_extensions = [
-    "amsmath", "colon_fence", "deflist", "dollarmath",
-    "html_image", "linkify", "replacements", "smartquotes",
-    "substitution", "tasklist",
+    "colon_fence",
+    "deflist", 
+    "dollarmath",
+    "html_image",
+    "linkify",
+    "smartquotes",
+    "substitution",
+    "tasklist",
 ]
 
-# Accepted source file types
-source_suffix = [".rst", ".md"]
+# Source parsers
+source_suffix = ['.rst', '.md']
 
-# Root document (replaces deprecated `master_doc`)
-root_doc = "index"
+# Master document
+master_doc = 'index'
+root_doc = 'index'
 
-# Templates and excludes
-templates_path = ["_templates"]
-exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", ".venv"]
+# Exclude patterns
+exclude_patterns = [
+    '_build', 
+    'Thumbs.db', 
+    '.DS_Store',
+    '.venv',
+    'temp_md',
+    'outputs'
+]
 
-# Autodoc / Napoleon / Autosummary for cleaner API docs
-autodoc_typehints = "description"
-autoclass_content = "class"         # only class docstring (not __init__)
-autosummary_generate = True
-autosummary_imported_members = True
-todo_emit_warnings = True
+# Templates
+templates_path = ['_templates']
 
-# --- Mock heavy dependencies --------------------------------------------------
-# Keep this aligned with your install_requires / optional extras.
-# This avoids importing heavy C extensions on RTD or local minimal envs.
+# Internationalization
+language = 'en'
+
+# Mock imports for documentation
 autodoc_mock_imports = [
-    "numpy", "pandas", "scipy", "matplotlib", "sklearn",
-    "tqdm", "click", "dash", "dash_bootstrap_components",
+    'numpy', 'pandas', 'scipy', 'matplotlib', 'sklearn',
+    'tqdm', 'click', 'dash', 'plotly'
 ]
 
-# --- HTML output --------------------------------------------------------------
-html_theme = "sphinx_rtd_theme"   # make sure it's in requirements.txt
-html_static_path = ["_static"]
+# -- Options for HTML output -------------------------------------------------
+html_theme = 'sphinx_rtd_theme'
+html_static_path = ['_static']
+
+# Theme options
 html_theme_options = {
-    # Example options (uncomment/tune as needed):
-    # "collapse_navigation": False,
-    # "navigation_depth": 3,
+    'collapse_navigation': False,
+    'navigation_depth': 4,
+    'includehidden': True,
+    'titles_only': False
 }
-htmlhelp_basename = "biorempp-doc"
 
-# --- LaTeX (PDF) output -------------------------------------------------------
-latex_elements = {}
-latex_documents = [
-    ("index", "user_guide.tex", "biorempp Documentation", author, "manual")
-]
+# -- Extension configuration -------------------------------------------------
+# Napoleon settings
+napoleon_google_docstring = True
+napoleon_numpy_docstring = True
+napoleon_include_init_with_doc = False
+napoleon_include_private_with_doc = False
 
-# --- Intersphinx mappings -----------------------------------------------------
-python_version = ".".join(map(str, sys.version_info[0:2]))
+# Autodoc settings
+autodoc_typehints = 'description'
+autodoc_typehints_description_target = 'documented'
+autosummary_generate = True
+
+# Intersphinx
 intersphinx_mapping = {
-    "sphinx": ("https://www.sphinx-doc.org/en/master", None),
-    "python": (f"https://docs.python.org/{python_version}", None),
-    "matplotlib": ("https://matplotlib.org/stable", None),
-    "numpy": ("https://numpy.org/doc/stable", None),
-    "sklearn": ("https://scikit-learn.org/stable", None),
-    "pandas": ("https://pandas.pydata.org/pandas-docs/stable", None),
-    "scipy": ("https://docs.scipy.org/doc/scipy/reference", None),
-    "setuptools": ("https://setuptools.pypa.io/en/stable/", None),
+    'python': ('https://docs.python.org/3', None),
+    'numpy': ('https://numpy.org/doc/stable', None),
+    'pandas': ('https://pandas.pydata.org/docs', None),
+    'matplotlib': ('https://matplotlib.org/stable', None),
 }
 
-# --- Optional: auto-generate API stubs on config load -------------------------
-# Prefer Makefile target `api`, but this is handy on RTD/CI if you set env var.
-# Set RUN_SPHINX_APIDOC=1 to enable (default on).
-if os.environ.get("RUN_SPHINX_APIDOC", "1") == "1":
-    try:
-        from sphinx.ext.apidoc import main as apidoc_main
-    except Exception:
-        try:
-            from sphinx.apidoc import main as apidoc_main  # type: ignore[assignment]
-        except Exception:
-            apidoc_main = None
-
-    if apidoc_main:
-        import shutil
-        out = os.path.join(__location__, "api")
-        # Source path for src layout:
-        src = os.path.join(__location__, "../src/biorempp")
-        try:
-            shutil.rmtree(out)
-        except FileNotFoundError:
-            pass
-        apidoc_main(["-f", "-o", out, src, "--implicit-namespaces"])
-
-# Log to stderr to confirm config loaded (useful to debug RTD/CI)
-print(f"loading configurations for {project} {version} ...", file=sys.stderr)
+# Print configuration loaded
+print(f"Sphinx configuration loaded for {project} {version}", file=sys.stderr)
