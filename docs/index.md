@@ -31,7 +31,7 @@ overview
 :caption: API Documentation
 
 API_Reference
-api/modules
+api/index
 ```
 
 ```{toctree}
@@ -56,7 +56,7 @@ license
 ### For Users
 - **Project Overview**: Complete project description and installation
 - **API Reference**: Comprehensive API documentation
-- **[Module Documentation](api/modules.rst)**: Auto-generated API reference
+- **[Module Documentation](api/index.html)**: Auto-generated API reference
 
 ### For Developers
 - **Contributing Guide**: Development workflow and standards

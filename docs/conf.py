@@ -40,7 +40,31 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.intersphinx',
     'sphinx.ext.mathjax',
+    'autoapi.extension',  # sphinx-autoapi for automatic API documentation
 ]
+
+# AutoAPI configuration
+autoapi_dirs = ['../src']  # Point to src directory containing biorempp package
+autoapi_type = 'python'
+autoapi_root = 'api'
+autoapi_add_toctree_entry = True  # Automatically add to toctree
+autoapi_options = [
+    'members',
+    'undoc-members',
+    'show-inheritance',
+    'show-module-summary',
+    'special-members',
+    'imported-members',
+]
+autoapi_ignore = [
+    '*/tests/*',
+    '*/test_*',
+    '*/_version.py',
+    '*/setup.py',
+]
+autoapi_python_class_content = 'both'  # Include both class and __init__ docstrings
+autoapi_member_order = 'bysource'
+autoapi_keep_files = True  # Keep generated files for debugging
 
 # MyST configuration
 myst_enable_extensions = [
