@@ -1,5 +1,6 @@
 """
-kegg_merge_processing.py
+    kegg_merge_processing.py
+------------------------
 -----------------------
 KEGG Degradation Pathways Database Merge Processing Module
 
@@ -110,6 +111,7 @@ def merge_input_with_kegg(
         raise ValueError("Unsupported file format. Use .csv")
 
     # Load KEGG database
+
     try:
         kegg_df = pd.read_csv(kegg_filepath, encoding="utf-8", sep=";")
         logger.info(

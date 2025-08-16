@@ -665,8 +665,8 @@ Contributors will be recognized through:
 
 ### Documentation Resources
 
-- [Main README](README.md): Comprehensive usage guide
-- [CLI Reference](CLI_Reference.md): Complete command-line documentation
+- Main README: Comprehensive usage guide
+- CLI Reference: Complete command-line documentation
 - [API Documentation](https://biorempp.readthedocs.io): Detailed API reference
 
 ### Support Channels

@@ -1,5 +1,6 @@
 """
-toxcsm_merge_processing.py
+    toxcsm_merge_processing.py
+--------------------------
 -------------------------
 ToxCSM Database Merge Processing Module
 
@@ -94,6 +95,7 @@ def merge_input_with_toxcsm(
         raise ValueError("Unsupported file format. Use .csv")
 
     # Load ToxCSM database
+
     try:
         database_df = pd.read_csv(database_filepath, encoding="utf-8", sep=";")
         logger.info(

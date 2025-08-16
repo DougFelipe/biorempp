@@ -1,5 +1,5 @@
 """
-BioRemPP Enhanced Error Handling Module.
+    BioRemPP Enhanced Error Handling Module.
 
 This module implements a error handling system that transforms
 technical exceptions into user-friendly messages with actionable guidance.
@@ -8,6 +8,8 @@ professional error presentation for improved user experience in BioRemPP
 data processing workflows.
 
 Key Features
+------------
+------------
 -----------
 - Contextual Error Analysis: Intelligent error classification and context detection
 - User-Friendly Messages: Technical errors translated to clear explanations
@@ -24,6 +26,8 @@ Structured error presentation system:
 - Additional Resources: Links to documentation and support materials
 
 Technical Implementation
+------------------------
+------------------------
 -----------------------
 - Exception type classification with pattern matching
 - Context-aware error message generation
@@ -31,6 +35,8 @@ Technical Implementation
 - Integration hooks for logging and user feedback systems
 
 Error Handling Philosophy
+-------------------------
+-------------------------
 ------------------------
 The module follows a user-centric error handling approach:
 1. Error Classification: Categorize errors by type and context
@@ -40,6 +46,8 @@ The module follows a user-centric error handling approach:
 5. Recovery Assistance: Help users quickly resolve issues and continue work
 
 Contextual Intelligence
+-----------------------
+-----------------------
 ----------------------
 Implements intelligent context detection:
 - File Operation Errors: Input files, database files, permission issues
@@ -49,6 +57,8 @@ Implements intelligent context detection:
 - Network Errors: Database connectivity, download failures, timeout issues
 
 Integration Design
+------------------
+------------------
 -----------------
 Seamlessly integrates with BioRemPP error handling:
 - Exception Translation: Convert Python exceptions to user messages
@@ -58,6 +68,8 @@ Seamlessly integrates with BioRemPP error handling:
 - Recovery Guidance: Help users understand and resolve operational issues
 
 Error Categories
+----------------
+----------------
 ---------------
 Handles comprehensive error categories:
 - File System Errors: Missing files, permission issues, path problems
@@ -67,6 +79,8 @@ Handles comprehensive error categories:
 - Runtime Errors: Unexpected failures, system limitations, platform issues
 
 Example Usage
+-------------
+-------------
 ------------
     from biorempp.utils.error_handler import EnhancedErrorHandler
 
@@ -74,6 +88,7 @@ Example Usage
     error_handler = EnhancedErrorHandler()
 
     # Handle specific error with context
+
     try:
         process_data(input_file)
     except FileNotFoundError as e:
@@ -220,6 +235,7 @@ class EnhancedErrorHandler:
         elif any(db in error_lower for db in ["biorempp", "hadeg", "kegg", "toxcsm"]):
             if "database" in error_lower or ".csv" in error_lower:
                 return "database_file"
+
             else:
                 return "invalid_database"
         elif "output" in error_lower or "results" in error_lower:

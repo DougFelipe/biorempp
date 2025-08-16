@@ -1,11 +1,12 @@
 """
-Command Factory Module for BioRemPP Command Pattern Implementation.
+    Command Factory Module for BioRemPP Command Pattern Implementation.
 
 This module implements the Factory Pattern for creating appropriate
 command instances based on parsed CLI arguments. It serves as the
 central command creation and routing system for BioRemPP operations.
 
 Key Features
+------------
 -----------
 - Factory Pattern implementation for command creation
 - Intelligent command routing based on CLI arguments
@@ -14,6 +15,7 @@ Key Features
 - Clean separation between command creation and execution
 
 Supported Commands
+------------------
 -----------------
 1. InfoCommand: Database information and listing operations
    - --list-databases: List all available databases
@@ -26,6 +28,7 @@ Supported Commands
    - --database <name>: Single database processing and analysis
 
 Architecture
+------------
 -----------
 The factory implements a clean routing system:
 - Command type detection based on CLI arguments
@@ -34,6 +37,7 @@ The factory implements a clean routing system:
 - Support for command type inspection without instantiation
 
 Command Routing Logic
+---------------------
 --------------------
 1. Info commands (highest priority): --list-databases, --database-info
 2. All databases merger: --all-databases with required --input
@@ -41,6 +45,7 @@ Command Routing Logic
 4. Error handling: Invalid configurations raise ValueError
 
 Technical Notes
+---------------
 --------------
 - Uses silent logging for technical details
 - Implements static methods for stateless operation
@@ -293,5 +298,6 @@ class CommandFactory:
             return "all_databases"
         elif getattr(args, "database", None):
             return "single_database"
+
         else:
             return "unknown"

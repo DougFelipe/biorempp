@@ -1,5 +1,5 @@
 """
-BioRemPP Utilities Module.
+    BioRemPP Utilities Module.
 
 This module serves as the comprehensive utility collection for BioRemPP,
 providing essential infrastructure components for I/O operations, logging
@@ -39,6 +39,8 @@ Enhanced Systems : module
     progress tracking, contextual error reporting.
 
 Architecture Overview
+---------------------
+---------------------
 --------------------
 The utilities module follows a layered architecture design:
 1. Core Utilities: Basic I/O and file management operations
@@ -48,6 +50,8 @@ The utilities module follows a layered architecture design:
 5. Enhanced Layer: Advanced UX and sophisticated feedback systems
 
 Integration Features
+--------------------
+--------------------
 -------------------
 - Consistent API design across all utility components
 - Environment-aware configuration for different deployment contexts
@@ -57,6 +61,8 @@ Integration Features
 - Modular design enabling selective component usage
 
 Design Principles
+-----------------
+-----------------
 ----------------
 - Clean Architecture: Clear separation of concerns and responsibilities
 - Dependency Injection: Configurable components for enhanced testability
@@ -65,6 +71,8 @@ Design Principles
 - Performance Focus: Efficient operations for large-scale data processing
 
 Technical Features
+------------------
+------------------
 -----------------
 - Thread-safe logging operations for concurrent processing
 - Environment variable configuration for deployment flexibility
@@ -74,6 +82,8 @@ Technical Features
 - Modular imports enabling selective component utilization
 
 Example Usage
+-------------
+-------------
 ------------
     from biorempp.utils import (
         save_dataframe_output,

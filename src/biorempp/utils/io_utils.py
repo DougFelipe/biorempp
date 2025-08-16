@@ -1,5 +1,5 @@
 """
-BioRemPP I/O Utilities Module.
+    BioRemPP I/O Utilities Module.
 
 This module provides comprehensive file input/output operations and path
 management utilities. It implements file handling patterns with
@@ -7,6 +7,8 @@ standardized output formats, project-relative path resolution, and
 timestamped file generation for organized result management.
 
 Key Features
+------------
+------------
 -----------
 - Current working directory path resolution for command execution context
 - Project-relative path resolution for consistency when needed
@@ -16,6 +18,8 @@ Key Features
 - Cross-platform path management with proper encoding support
 
 Technical Implementation
+------------------------
+------------------------
 -----------------------
 - UTF-8 encoding for international character support
 - Thread-safe operations for concurrent processing environments
@@ -24,6 +28,8 @@ Technical Implementation
 - Cross-platform path operations using pathlib
 
 File Management Capabilities
+----------------------------
+----------------------------
 ---------------------------
 The module handles various file operations:
 - Output directory creation with proper permissions
@@ -33,6 +39,8 @@ The module handles various file operations:
 - Error-resilient file operations with detailed logging
 
 Output Organization
+-------------------
+-------------------
 ------------------
 Implements flexible output directory structure:
 - outputs/results_tables/: Main results and analysis outputs
@@ -41,6 +49,8 @@ Implements flexible output directory structure:
 - Standardized formats: CSV with UTF-8 encoding and consistent separators
 
 Path Resolution Strategy
+------------------------
+------------------------
 -----------------------
 The module implements current working directory path resolution:
 1. Current working directory (default): Output files where command is executed
@@ -48,6 +58,8 @@ The module implements current working directory path resolution:
 3. Cross-platform compatibility: Proper handling of Windows/Unix path formats
 
 Example Usage
+-------------
+-------------
 ------------
     from biorempp.utils.io_utils import (
         save_dataframe_output,
@@ -180,6 +192,7 @@ def resolve_log_path(log_path: str) -> str:
         # For pip-installed packages, use current working directory
         resolved_path = os.path.join(os.getcwd(), log_path)
         logger.debug(f"Resolved log path (pip install): {log_path} -> {resolved_path}")
+
     else:
         # For development, use project root
         project_root = get_project_root()

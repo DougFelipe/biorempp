@@ -1,5 +1,5 @@
 """
-BioRemPP Module Entry Point.
+    BioRemPP Module Entry Point.
 
 This module allows BioRemPP to be executed as a Python module
 using `python -m biorempp` or `python -m src.biorempp`.

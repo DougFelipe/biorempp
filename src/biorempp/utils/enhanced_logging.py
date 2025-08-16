@@ -1,5 +1,5 @@
 """
-BioRemPP Enhanced Logging System Module
+    BioRemPP Enhanced Logging System Module
 
 This module implements a dual-output logging system that
 provides comprehensive technical logging for debugging and monitoring
@@ -7,6 +7,8 @@ while maintaining clean user interfaces for command-line
 applications.
 
 Key Features
+------------
+------------
 -----------
 - Dual Output: Simultaneous technical logging and user feedback
 - User Interface: Clean, console output without spam
@@ -24,6 +26,8 @@ Dual-output logging design:
 5. Integration Layer: Coordination between all logging components
 
 Technical Logging Features
+--------------------------
+--------------------------
 -------------------------
 Comprehensive technical documentation capabilities:
 - File-Based Logging: Detailed logs with rotation and archival support
@@ -52,6 +56,8 @@ Comprehensive configuration management:
 
 
 Logging Levels and Control
+--------------------------
+--------------------------
 -------------------------
 Level management:
 - SILENT: No console output, minimal file logging
@@ -59,6 +65,8 @@ Level management:
 - DEBUG: Full diagnostic output, complete technical documentation
 
 Example Usage
+-------------
+-------------
 ------------
     from biorempp.utils.enhanced_logging import BioRemPPLogger
 
@@ -156,6 +164,7 @@ class BioRemPPLogger:
 
         if show_spinner:
             self._start_spinner(f"{icon} {message}")
+
         else:
             print(f"{icon} {message}")
 
@@ -269,5 +278,6 @@ def set_console_level(level: str):
     global _global_logger
     if _global_logger:
         _global_logger.console_level = level.upper()
+
     else:
         _global_logger = BioRemPPLogger(level.upper())

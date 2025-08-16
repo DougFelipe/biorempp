@@ -1,5 +1,5 @@
 """
-BioRemPP Silent Logging Configuration Module.
+    BioRemPP Silent Logging Configuration Module.
 
 This module implements a specialized logging configuration designed for
 command-line interface applications where console output must be clean
@@ -12,6 +12,8 @@ CLI user experience with full debugging capabilities for developers
 and system administrators.
 
 Key Features
+------------
+------------
 -----------
 - Complete Console Silence: Zero technical output to console
 - Comprehensive File Logging: Detailed technical logs with full context
@@ -20,6 +22,8 @@ Key Features
 - Technical Detail Preservation: Full logging context for troubleshooting
 
 Silent Logging Architecture
+---------------------------
+---------------------------
 --------------------------
 The module implements a dual-layer logging approach:
 1. Console Layer: Complete silence for CLI experience
@@ -29,6 +33,8 @@ The module implements a dual-layer logging approach:
 5. Error Separation: Critical errors through separate feedback channels
 
 Technical Implementation
+------------------------
+------------------------
 -----------------------
 - Root logger reconfiguration for package-wide silence
 - File handler with formatting and encoding
@@ -37,6 +43,8 @@ Technical Implementation
 - Memory-efficient logging with proper resource management
 
 CLI Design Philosophy
+---------------------
+---------------------
 --------------------
 Follows modern CLI design principles:
 - Clean Output: User sees only relevant, formatted information
@@ -46,6 +54,8 @@ Follows modern CLI design principles:
 - Operational Transparency: Silent operation with complete audit trail
 
 File Logging Features
+---------------------
+---------------------
 --------------------
 Comprehensive file-based logging system:
 - Daily Rotation: New log file for each day of operation
@@ -55,6 +65,8 @@ Comprehensive file-based logging system:
 - Error Documentation: Complete exception traces and error context
 
 Integration Strategy
+--------------------
+--------------------
 -------------------
 Designed for seamless CLI integration:
 - Early Initialization: Setup before any other logging operations
@@ -63,6 +75,8 @@ Designed for seamless CLI integration:
 - Debug Mode Support: Easy switching between silent and verbose modes
 
 Log Organization
+----------------
+----------------
 ---------------
 Implements organized log file structure:
 - Location: outputs/logs/ directory for centralized log management
@@ -72,6 +86,8 @@ Implements organized log file structure:
 - Rotation: Daily rotation prevents oversized log files
 
 Example Usage
+-------------
+-------------
 ------------
     from biorempp.utils.silent_logging import (
         setup_silent_logging,

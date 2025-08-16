@@ -1,5 +1,5 @@
 """
-BioRemPP Main Entry Point.
+    BioRemPP Main Entry Point.
 
 Main module using Command Pattern architecture with
 dependency injection and clean separation of concerns.

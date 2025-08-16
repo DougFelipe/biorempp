@@ -97,7 +97,8 @@ function Build-Html {
     Write-Status "Building HTML documentation..." $InfoColor
 
     try {
-        $cmd = "sphinx-build -b html -n -T `"$SourceDir`" `"$BuildDir\html`""
+        # Build com warnings filtrados
+        $cmd = "sphinx-build -b html -q -W --keep-going `"$SourceDir`" `"$BuildDir\html`""
         Write-Status "Running: $cmd" $InfoColor
         Invoke-Expression $cmd
 
@@ -109,8 +110,18 @@ function Build-Html {
             }
             return $true
         } else {
-            Write-Status "HTML build failed with exit code $LASTEXITCODE" $ErrorColor
-            return $false
+            # Se falhou com -W, tenta sem -W para ver warnings
+            Write-Status "Build failed with warnings as errors. Rebuilding to show warnings..." $WarningColor
+            $cmd = "sphinx-build -b html -n `"$SourceDir`" `"$BuildDir\html`""
+            Invoke-Expression $cmd
+
+            if ($LASTEXITCODE -eq 0) {
+                Write-Status "HTML documentation built with warnings" $WarningColor
+                return $true
+            } else {
+                Write-Status "HTML build failed with exit code $LASTEXITCODE" $ErrorColor
+                return $false
+            }
         }
     }
     catch {

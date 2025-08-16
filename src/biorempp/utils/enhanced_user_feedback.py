@@ -1,5 +1,5 @@
 """
-BioRemPP Enhanced User Feedback Manager Module.
+    BioRemPP Enhanced User Feedback Manager Module.
 
 This module implements an user feedback system specifically designed
 for command-line interface.
@@ -8,12 +8,16 @@ presentation following CLI design principles with,
 informative user interfaces.
 
 Key Features
+------------
+------------
 -----------
 - CLI Interface: design with visual hierarchy
 - Multi-Database Support: Specialized feedback for complex workflow coordination
 - Progressive Disclosure: Information depth appropriate to operation complexity
 
 Multi-Database Workflow Support
+-------------------------------
+-------------------------------
 ------------------------------
 Specialized feedback for complex processing scenarios:
 - Database Processing: Individual database progress and status tracking
@@ -23,6 +27,8 @@ Specialized feedback for complex processing scenarios:
 - Performance Metrics: Timing and efficiency information display
 
 Visual Design Elements
+----------------------
+----------------------
 ---------------------
 Visual design components:
 - Structured Headers: Clear section delineation with visual appeal
@@ -31,6 +37,8 @@ Visual design components:
 - Status Messages:  Status communication with clear messaging
 
 Interface Architecture
+----------------------
+----------------------
 ---------------------
 Design for flexible interface composition:
 - Header Components: Headers with branding and context
@@ -41,6 +49,8 @@ Design for flexible interface composition:
 
 
 Example Usage
+-------------
+-------------
 ------------
     from biorempp.utils.enhanced_user_feedback import EnhancedFeedbackManager
 
@@ -98,6 +108,7 @@ class EnhancedFeedbackManager:
                 f"[LOAD] Loading input data...        "
                 f"OK {line_count:,} KO identifiers loaded"
             )
+
         else:
             print("[LOAD] Loading input data...        OK Input loaded")
         print()

@@ -1,5 +1,6 @@
 """
-Input Processing and Database Integration Module for BioRemPP
+    Input Processing and Database Integration Module for BioRemPP
+=============================================================
 ============================================================
 
 This package provides comprehensive functionality for processing biological
@@ -33,6 +34,7 @@ Expected input follows structure:
     K00003
 
 Public Interface
+----------------
 ---------------
 Main pipeline functions:
     - load_and_merge_input: Complete validation and merge pipeline

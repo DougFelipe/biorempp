@@ -1034,7 +1034,7 @@ Debug logs are automatically saved to: `outputs/logs/biorempp_YYYYMMDD_HHMMSS.lo
 ### Getting Additional Support
 
 **Documentation Resources:**
-- [Complete CLI Reference](CLI_Reference.md)
+- Complete CLI Reference
 - [GitHub Issues](https://github.com/DougFelipe/biorempp/issues)
 - [API Documentation](https://biorempp.readthedocs.io)
 
@@ -1135,7 +1135,7 @@ pytest tests/test_cli.py
 pytest tests/test_databases.py
 ```
 
-For detailed contribution guidelines, code of conduct, and development workflows, see [CONTRIBUTING.md](CONTRIBUTING.md).
+For detailed contribution guidelines, code of conduct, and development workflows, see CONTRIBUTING.md.
 
 ---
 

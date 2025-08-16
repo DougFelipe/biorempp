@@ -77,6 +77,26 @@ autodoc_mock_imports = [
     'tqdm', 'click', 'dash', 'plotly'
 ]
 
+# Suppress specific warnings
+suppress_warnings = [
+    'myst.header',
+    'myst.xref_missing',
+    'myst.iref_ambiguous',
+    'autodoc.import_object',
+]
+
+# Nitpicky mode configuration
+nitpicky = False
+nitpick_ignore = [
+    ('py:class', 'optional'),
+    ('py:class', 'callable'),
+    ('py:class', 'pd.DataFrame'),
+    ('py:class', 'default=None'),
+    ('py:class', 'default "INFO"'),
+    ('py:class', 'default True'),
+    ('py:class', 'default "detailed"'),
+]
+
 # -- Options for HTML output -------------------------------------------------
 html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']

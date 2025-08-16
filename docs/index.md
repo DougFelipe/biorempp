@@ -54,19 +54,19 @@ license
 ## Quick Navigation
 
 ### For Users
-- **[Project Overview](readme.md)**: Complete project description and installation
-- **[API Reference](API_Reference.md)**: Comprehensive API documentation
+- **Project Overview**: Complete project description and installation
+- **API Reference**: Comprehensive API documentation
 - **[Module Documentation](api/modules.rst)**: Auto-generated API reference
 
 ### For Developers
-- **[Contributing Guide](CONTRIBUTING.md)**: Development workflow and standards
-- **[Test Documentation](Test_Suite_Documentation.md)**: Testing framework overview
-- **[Development Overview](overview.md)**: Technical architecture information
+- **Contributing Guide**: Development workflow and standards
+- **Test Documentation**: Testing framework overview
+- **Development Overview**: Technical architecture information
 
 ### For Reference
-- **[Authors](authors.md)**: Project contributors and acknowledgments
-- **[Changelog](changelog.md)**: Version history and updates
-- **[License](license.md)**: License information and terms
+- **Authors**: Project contributors and acknowledgments
+- **Changelog**: Version history and updates
+- **License**: License information and terms
 
 ## Indices and Tables
 
