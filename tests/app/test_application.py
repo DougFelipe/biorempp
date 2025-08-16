@@ -289,11 +289,11 @@ class TestBioRemPPApplicationExecution:
                         # Assert
                         mock_verbosity.assert_called_once_with("debug")
 
-    def test_verbosity_configuration_quiet_default(self):
+    def test_verbosity_configuration_normal_default(self):
         """
-        Test verbosity configuration for quiet (default) mode.
+        Test verbosity configuration for normal (default) mode.
 
-        Verifies that the application defaults to quiet mode when no
+        Verifies that the application defaults to normal mode when no
         verbosity flags are specified.
         """
         # Arrange
@@ -322,6 +322,44 @@ class TestBioRemPPApplicationExecution:
 
                         # Act
                         app.run(['--list-databases'])
+
+                        # Assert
+                        mock_verbosity.assert_called_once_with("normal")
+
+    def test_verbosity_configuration_quiet_explicit(self):
+        """
+        Test verbosity configuration for explicit quiet mode.
+
+        Verifies that the application configures quiet mode when the
+        --quiet flag is specified.
+        """
+        # Arrange
+        app = BioRemPPApplication()
+        mock_args = argparse.Namespace(
+            list_databases=True,
+            quiet=True,
+            verbose=False,
+            debug=False
+        )
+
+        with patch.object(app.parser, 'parse_args', return_value=mock_args):
+            with patch.object(
+                app.command_factory, 'create_command'
+            ) as mock_create:
+                with patch.object(
+                    app.command_factory,
+                    'get_command_type',
+                    return_value='info'
+                ):
+                    with patch.object(
+                        app.feedback_manager, 'set_verbosity'
+                    ) as mock_verbosity:
+                        mock_command = Mock()
+                        mock_command.run.return_value = {}
+                        mock_create.return_value = mock_command
+
+                        # Act
+                        app.run(['--list-databases', '--quiet'])
 
                         # Assert
                         mock_verbosity.assert_called_once_with("quiet")
