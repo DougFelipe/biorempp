@@ -16,7 +16,7 @@ sphinx:
 
   # Optional: Treat warnings as errors (fails the build if there are warnings)
   # Recommended when docs are stable, to keep quality high.
-  # fail_on_warning: true
+  fail_on_warning: false
 
 # -----------------------------------------------------------------------------
 # Extra output formats in addition to the default HTML
@@ -38,13 +38,13 @@ build:
 # -----------------------------------------------------------------------------
 python:
   install:
-    # 1) Documentation-specific dependencies
-    #    This should contain what Sphinx and its extensions require
-    - requirements: docs/requirements.txt
-
-    # 2) Install the package itself (also installs runtime dependencies)
+    # 1) Install the package itself first (also installs runtime dependencies)
     #    This allows autodoc and imports from the package in the docs.
     - { path: ., method: pip }
+
+    # 2) Documentation-specific dependencies
+    #    This should contain what Sphinx and its extensions require
+    - requirements: docs/requirements.txt
 
     # TIP:
     # - If your docs import heavy dependencies (e.g., numpy, pandas) and
