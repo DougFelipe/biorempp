@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.0](https://github.com/DougFelipe/biorempp/compare/v0.6.1...v0.7.0) (2025-08-16)
+
+
+* Merge pull request #43 from DougFelipe/development ([e974f52](https://github.com/DougFelipe/biorempp/commit/e974f52c6c27a1555300f6db7bda64cc8d8ce5cc)), closes [#43](https://github.com/DougFelipe/biorempp/issues/43)
+* Refactor CLI verbosity handling and enhance output formatting ([04ea83c](https://github.com/DougFelipe/biorempp/commit/04ea83cc4d154611060224e58fa97943f3ae64ab))
+* Merge pull request #42 from DougFelipe/development ([d026553](https://github.com/DougFelipe/biorempp/commit/d026553eb9665aa03619d11fd9e0fdc5a57e4e18)), closes [#42](https://github.com/DougFelipe/biorempp/issues/42)
+* Merge pull request #41 from DougFelipe/development ([248ffc9](https://github.com/DougFelipe/biorempp/commit/248ffc9a810571c76cbdd9da643d3257aa5a3177)), closes [#41](https://github.com/DougFelipe/biorempp/issues/41)
+
+
+### test
+
+* Update verbosity configuration tests for default and explicit modes ([e8f93b9](https://github.com/DougFelipe/biorempp/commit/e8f93b9a46dea2d1a5c2c2d47d90a58b198785d6))
+
+
+### feat
+
+* Enhance debug output and verbosity handling in CLI and feedback manager ([4c39421](https://github.com/DougFelipe/biorempp/commit/4c39421a881e0a54bad22ed532eafdb05e8284f7))
+
+
+### docs
+
+* Implement code changes to enhance functionality and improve performance e API REFERENCE APARECENDO ([0a1f4ca](https://github.com/DougFelipe/biorempp/commit/0a1f4ca1c26c92c105c57b8066a245d097ed9271))
+* Improve Read the Docs configuration and debugging support ([26ede03](https://github.com/DougFelipe/biorempp/commit/26ede0311c7dd2bd8173f5fea0a1dc1e942c4ef4))
+
 ## [0.6.1](https://github.com/DougFelipe/biorempp/compare/v0.6.0...v0.6.1) (2025-08-16)
 
 
