@@ -1,0 +1,55 @@
+RESUMO DOS WARNINGS DA DOCUMENTAÇÃO SPHINX
+==========================================
+
+STATUS: Build bem-sucedido ✅
+TOTAL DE WARNINGS: 161
+
+PRINCIPAIS TIPOS DE WARNINGS:
+============================
+
+1. REFERÊNCIAS CRUZADAS DUPLICADAS (Cross-reference warnings)
+   - Múltiplos targets encontrados para classes como:
+     * BioRemPPArgumentParser
+     * OutputFormatter
+     * EnhancedErrorHandler
+     * UserFeedbackManager
+     * CommandFactory
+     * BaseCommand
+
+2. LEXER PYGMENTS DESCONHECIDO
+   - WARNING: Pygments lexer name 'nextflow' is not known
+   - Localização: docs\readme.md:848
+
+ANÁLISE:
+========
+
+✅ RESOLVIDO:
+- Erros de sintaxe nos arquivos __init__.py
+- Problemas de importação de módulos
+- Erros de parsing RST críticos
+- Build agora completa com sucesso
+
+⚠️ WARNINGS RESTANTES:
+- 161 warnings são principalmente sobre referências cruzadas duplicadas
+- Estes são warnings de qualidade, não erros que impedem o build
+- O lexer 'nextflow' precisa ser mudado para 'groovy' ou similar
+
+RECOMENDAÇÕES:
+=============
+
+1. PRIORIDADE BAIXA: Corrigir referências cruzadas duplicadas
+   - Usar nomes completos de módulos nas referências
+   - Exemplo: :class:`biorempp.cli.argument_parser.BioRemPPArgumentParser`
+
+2. PRIORIDADE BAIXA: Corrigir lexer nextflow
+   - Mudar 'nextflow' para 'groovy' no readme.md linha 848
+
+3. PRIORIDADE ALTA: ✅ CONCLUÍDO
+   - Todos os erros críticos foram resolvidos
+   - Build funciona corretamente
+   - Documentação é gerada com sucesso
+
+CONCLUSÃO:
+==========
+A documentação está agora funcional e pode ser construída sem erros.
+Os 161 warnings são melhorias de qualidade que podem ser abordadas futuramente.
