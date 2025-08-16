@@ -977,35 +977,9 @@ Valid options: biorempp, hadeg, kegg, toxcsm
 
 ### Diagnostic Tools and Commands
 
-**System compatibility check:**
-```bash
-biorempp --list-databases --debug
-```
-
 **Input validation test:**
 ```bash
 biorempp --input src/biorempp/data/sample_data.txt --database biorempp --verbose
-```
-
-**Memory usage monitoring:**
-```bash
-biorempp --input large_file.txt --database biorempp --debug
-# Monitor output for memory usage statistics
-```
-
-### Debug Mode Information
-
-When using `--debug` flag, BioRemPP provides comprehensive diagnostic information:
-
-**Debug Output Structure:**
-```text
-[DEBUG] Input validation: ✓ File exists and readable
-[DEBUG] Format validation: ✓ FASTA-like structure detected
-[DEBUG] KO identifier validation: ✓ 1,247 valid identifiers found
-[DEBUG] Database loading: ✓ BioRemPP database loaded (6,623 records)
-[DEBUG] Memory usage: 245MB allocated, 180MB available
-[DEBUG] Processing time: Input=0.1s, Analysis=2.3s, Output=0.4s
-[DEBUG] Output generation: ✓ 156 matches written to file
 ```
 
 **Log File Location:**

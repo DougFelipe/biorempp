@@ -136,6 +136,11 @@ class OutputFormatter:
             presentation to deliver cohesive user interfaces.
         """
         self.logger.debug("Formatting pipeline output")
+
+        # Check verbosity level - don't show output in quiet mode
+        if hasattr(args, "quiet") and args.quiet:
+            return
+
         self._format_traditional_output(result, args)
 
     def _format_traditional_output(
@@ -155,6 +160,18 @@ class OutputFormatter:
             Command arguments for context
         """
         self.logger.debug("Formatting pipeline output")
+
+        # Configure feedback manager verbosity based on args
+        verbosity = "NORMAL"
+        if hasattr(args, "quiet") and args.quiet:
+            verbosity = "SILENT"
+        elif hasattr(args, "verbose") and args.verbose:
+            verbosity = "VERBOSE"
+        elif hasattr(args, "debug") and args.debug:
+            verbosity = "DEBUG"
+
+        # Create feedback manager with proper verbosity
+        self.feedback_manager = EnhancedFeedbackManager(verbosity)
 
         if isinstance(result, dict):
             # Check if it's a single database result or multiple databases

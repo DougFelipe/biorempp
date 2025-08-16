@@ -85,8 +85,9 @@ class EnhancedFeedbackManager:
     specification from LOGGING_SYSTEM_DESIGN.md.
     """
 
-    def __init__(self):
+    def __init__(self, verbosity: str = "NORMAL"):
         """Initialize feedback manager."""
+        self.verbosity = verbosity.upper()
         self.db_order = ["biorempp", "hadeg", "kegg", "toxcsm"]
         self.db_names = {
             "biorempp": "BioRemPP",
@@ -97,12 +98,18 @@ class EnhancedFeedbackManager:
 
     def show_header(self) -> None:
         """Display the header."""
+        if self.verbosity == "SILENT":
+            return
+
         print("\n[BIOREMPP] Processing with ALL Databases")
         print("=" * 67)
         print()
 
     def show_input_loaded(self, line_count: int) -> None:
         """Display input loading status."""
+        if self.verbosity == "SILENT":
+            return
+
         if line_count > 0:
             print(
                 f"[LOAD] Loading input data...        "
@@ -115,6 +122,9 @@ class EnhancedFeedbackManager:
 
     def show_database_processing(self, result: Dict[str, Any]) -> None:
         """Display database processing steps with real data."""
+        if self.verbosity == "SILENT":
+            return
+
         for i, db_key in enumerate(self.db_order, 1):
             if db_key in result:
                 pipeline_result = result[db_key]
@@ -135,6 +145,9 @@ class EnhancedFeedbackManager:
 
     def show_final_summary(self, result: Dict[str, Any], elapsed_time: float) -> None:
         """Display final summary with real data."""
+        if self.verbosity == "SILENT":
+            return
+
         # Calculate total matches
         total_matches = 0
         database_count = 0

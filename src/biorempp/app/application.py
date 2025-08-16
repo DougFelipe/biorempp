@@ -301,10 +301,11 @@ class BioRemPPApplication:
                 self.feedback_manager.set_verbosity("verbose")
             elif hasattr(parsed_args, "debug") and parsed_args.debug:
                 self.feedback_manager.set_verbosity("debug")
-
-            else:
-                # Default to quiet mode
+            elif hasattr(parsed_args, "quiet") and parsed_args.quiet:
                 self.feedback_manager.set_verbosity("quiet")
+            else:
+                # Default to normal mode (not quiet)
+                self.feedback_manager.set_verbosity("normal")
 
             # Step 2: Create appropriate command
             command = self.command_factory.create_command(parsed_args)
