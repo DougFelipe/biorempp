@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.8.0](https://github.com/DougFelipe/biorempp/compare/v0.7.0...v0.8.0) (2025-08-16)
+
+
+* Merge pull request #44 from DougFelipe/development ([3b6b992](https://github.com/DougFelipe/biorempp/commit/3b6b9920cb84b0430e71b1b94f9b7d8aab93a25d)), closes [#44](https://github.com/DougFelipe/biorempp/issues/44)
+
+
+### feat
+
+* Add placeholder for additional fixes in changelog ([b783e3e](https://github.com/DougFelipe/biorempp/commit/b783e3eb26be046bfe328761abe6b9090e070970))
+
 ## [0.7.0](https://github.com/DougFelipe/biorempp/compare/v0.6.1...v0.7.0) (2025-08-16)
 
 
