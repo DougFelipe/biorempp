@@ -1,5 +1,7 @@
 # BioRemPP API Reference Documentation
 
+> **⚠️ IMPORTANT NOTE**: This documentation has been updated to reflect the current API implementation. The main pipeline functions are now named `run_*_processing_pipeline()` and work with file paths rather than raw content strings. See the [API Summary](#api-summary-current-implementation) section for quick reference.
+
 ## Table of Contents
 
 1. [Overview](#overview)
@@ -91,59 +93,110 @@ The pipelines module provides high-level orchestration functions for complete da
 ### Core Pipeline Functions
 
 ```python
-from biorempp.pipelines import biorempp, kegg, hadeg, toxcsm
+from biorempp.pipelines import (
+    run_biorempp_processing_pipeline,
+    run_kegg_processing_pipeline,
+    run_hadeg_processing_pipeline,
+    run_toxcsm_processing_pipeline
+)
 ```
 
 #### BioRemPP Pipeline
 
 ```python
-def biorempp(input_data: str, input_file: str, output_directory: str = None) -> tuple:
+def run_biorempp_processing_pipeline(
+    input_path: str,
+    database_path: str = None,
+    output_dir: str = "outputs/results_tables",
+    output_filename: str = "BioRemPP_Results.txt",
+    sep: str = ";",
+    optimize_types: bool = True,
+    add_timestamp: bool = False
+) -> dict:
     """
     Complete BioRemPP database processing pipeline.
 
     Parameters:
     -----------
-    input_data : str
-        Raw input content with sample IDs and gene annotations
-    input_file : str
-        Input file path for reference and logging
-    output_directory : str, optional
-        Target directory for output files (default: current directory)
+    input_path : str
+        Path to the input .txt file containing biological data in
+        format with sample IDs and KO entries.
+    database_path : str, optional
+        Path to the BioRemPP database CSV file. If None, uses default path
+        '../data/database_biorempp.csv' relative to module location.
+    output_dir : str, optional
+        Directory where the merged DataFrame will be saved. Directory will
+        be created if it doesn't exist. Default: 'outputs/results_tables'.
+    output_filename : str, optional
+        Name of the output file. Default: 'BioRemPP_Results.txt'.
+    sep : str, optional
+        Field separator for output file. Default: ';'.
+    optimize_types : bool, optional
+        Whether to optimize DataFrame dtypes using categorical conversions
+        for memory efficiency. Default: True.
+    add_timestamp : bool, optional
+        Whether to add timestamp to output filename. Default: False.
 
     Returns:
     --------
-    tuple[pandas.DataFrame, str]
-        Processed DataFrame with merged data and output file path
+    dict
+        Processing results containing:
+        - 'output_path' (str): Full path to the generated output file
+        - 'matches' (int): Number of successful database matches
+        - 'filename' (str): Base name of the output file
 
     Raises:
     -------
-    ValidationError
-        When input format is invalid
-    DatabaseError
-        When BioRemPP database integration fails
+    FileNotFoundError
+        When input file does not exist
+    RuntimeError
+        When processing or validation fails
     """
 ```
 
 #### KEGG Pipeline
 
 ```python
-def kegg(input_data: str, input_file: str, output_directory: str = None) -> tuple:
+def run_kegg_processing_pipeline(
+    input_path: str,
+    kegg_database_path: str = None,
+    output_dir: str = "outputs/results_tables",
+    output_filename: str = "KEGG_Results.txt",
+    sep: str = ";",
+    optimize_types: bool = True,
+    add_timestamp: bool = False
+) -> dict:
     """
     KEGG pathway database processing pipeline.
 
     Parameters:
     -----------
-    input_data : str
-        Raw input content with KEGG identifiers
-    input_file : str
-        Input file path for reference and logging
-    output_directory : str, optional
-        Target directory for output files (default: current directory)
+    input_path : str
+        Path to the input .txt file containing biological data in
+        format with sample IDs and KO entries.
+    kegg_database_path : str, optional
+        Path to the KEGG database CSV file. If None, uses default path
+        '../data/kegg_degradation_pathways.csv' relative to module location.
+    output_dir : str, optional
+        Directory where the merged DataFrame will be saved. Directory will
+        be created if it doesn't exist. Default: 'outputs/results_tables'.
+    output_filename : str, optional
+        Name of the output file. Default: 'KEGG_Results.txt'.
+    sep : str, optional
+        Field separator for output file. Default: ';'.
+    optimize_types : bool, optional
+        Whether to optimize DataFrame dtypes using categorical conversions
+        for memory efficiency. Default: True.
+    add_timestamp : bool, optional
+        Whether to add timestamp to output filename. Default: False.
 
     Returns:
     --------
-    tuple[pandas.DataFrame, str]
-        Processed DataFrame with KEGG pathway data and output file path
+    dict
+        Processing results containing:
+        - 'output_path' (str): Full path to the generated output file
+        - 'matches' (int): Number of successful KEGG pathway matches
+        - 'filename' (str): Base name of the output file
 
     Features:
     ---------
@@ -156,23 +209,46 @@ def kegg(input_data: str, input_file: str, output_directory: str = None) -> tupl
 #### HADEG Pipeline
 
 ```python
-def hadeg(input_data: str, input_file: str, output_directory: str = None) -> tuple:
+def run_hadeg_processing_pipeline(
+    input_path: str,
+    hadeg_database_path: str = None,
+    output_dir: str = "outputs/results_tables",
+    output_filename: str = "HADEG_Results.txt",
+    sep: str = ";",
+    optimize_types: bool = True,
+    add_timestamp: bool = False
+) -> dict:
     """
     HADEG database processing pipeline for hydrocarbon degradation genes.
 
     Parameters:
     -----------
-    input_data : str
-        Raw input content with gene identifiers
-    input_file : str
-        Input file path for reference and logging
-    output_directory : str, optional
-        Target directory for output files (default: current directory)
+    input_path : str
+        Path to the input .txt file containing biological data in
+        format with sample IDs and KO entries.
+    hadeg_database_path : str, optional
+        Path to the HADEG database CSV file. If None, uses default path
+        '../data/database_hadeg.csv' relative to module location.
+    output_dir : str, optional
+        Directory where the merged DataFrame will be saved. Directory will
+        be created if it doesn't exist. Default: 'outputs/results_tables'.
+    output_filename : str, optional
+        Name of the output file. Default: 'HADEG_Results.txt'.
+    sep : str, optional
+        Field separator for output file. Default: ';'.
+    optimize_types : bool, optional
+        Whether to optimize DataFrame dtypes using categorical conversions
+        for memory efficiency. Default: True.
+    add_timestamp : bool, optional
+        Whether to add timestamp to output filename. Default: False.
 
     Returns:
     --------
-    tuple[pandas.DataFrame, str]
-        Processed DataFrame with HADEG data and output file path
+    dict
+        Processing results containing:
+        - 'output_path' (str): Full path to the generated output file
+        - 'matches' (int): Number of successful HADEG database matches
+        - 'filename' (str): Base name of the output file
 
     Specialization:
     --------------
@@ -180,34 +256,60 @@ def hadeg(input_data: str, input_file: str, output_directory: str = None) -> tup
     - Environmental remediation focus
     - Gene function annotation and classification
     """
+    - Gene function annotation and classification
+    """
 ```
 
 #### ToxCSM Pipeline
 
 ```python
-def toxcsm(input_data: str, input_file: str, output_directory: str = None) -> tuple:
+def run_toxcsm_processing_pipeline(
+    input_path: str,
+    toxcsm_database_path: str = None,
+    output_dir: str = "outputs/results_tables",
+    output_filename: str = "ToxCSM.txt",
+    sep: str = ";",
+    optimize_types: bool = True,
+    add_timestamp: bool = False
+) -> dict:
     """
     ToxCSM toxicity prediction pipeline.
 
     Parameters:
     -----------
-    input_data : str
-        Raw input content with chemical identifiers
-    input_file : str
-        Input file path for reference and logging
-    output_directory : str, optional
-        Target directory for output files (default: current directory)
+    input_path : str
+        Path to the input .txt file containing biological data in
+        format with sample IDs and KO entries.
+    toxcsm_database_path : str, optional
+        Path to the ToxCSM database CSV file. If None, uses default path
+        '../data/database_toxcsm.csv' relative to module location.
+    output_dir : str, optional
+        Directory where the merged DataFrame will be saved. Directory will
+        be created if it doesn't exist. Default: 'outputs/results_tables'.
+    output_filename : str, optional
+        Name of the output file. Default: 'ToxCSM.txt'.
+    sep : str, optional
+        Field separator for output file. Default: ';'.
+    optimize_types : bool, optional
+        Whether to optimize DataFrame dtypes using categorical conversions
+        for memory efficiency. Default: True.
+    add_timestamp : bool, optional
+        Whether to add timestamp to output filename. Default: False.
 
     Returns:
     --------
-    tuple[pandas.DataFrame, str]
-        Processed DataFrame with toxicity predictions and output file path
+    dict
+        Processing results containing:
+        - 'output_path' (str): Full path to the generated output file
+        - 'matches' (int): Number of successful database matches
+        - 'filename' (str): Base name of the output file
 
     Capabilities:
     ------------
     - Chemical toxicity prediction
     - ADMET property analysis
     - Environmental impact assessment
+    - Two-stage processing (BioRemPP + ToxCSM)
     """
 ```
 
@@ -215,27 +317,63 @@ def toxcsm(input_data: str, input_file: str, output_directory: str = None) -> tu
 
 ```python
 # Single database processing
-from biorempp.pipelines import kegg
+from biorempp.pipelines import run_kegg_processing_pipeline
 
-input_content = """
->Sample_1
-K00001
-K00002
->Sample_2
-K00003
-"""
+# Process input file with KEGG database
+result = run_kegg_processing_pipeline(
+    input_path="sample_data.txt",
+    output_dir="results/",
+    optimize_types=True
+)
 
-result_df, output_path = kegg(input_content, "input.txt", "/output/directory")
-print(f"Results saved to: {output_path}")
-print(f"Processed {len(result_df)} records")
+print(f"Results saved to: {result['output_path']}")
+print(f"Processed {result['matches']} records")
+print(f"Output filename: {result['filename']}")
 
 # Multi-database workflow
-from biorempp.pipelines import biorempp, kegg, hadeg
+from biorempp.pipelines import (
+    run_biorempp_processing_pipeline,
+    run_kegg_processing_pipeline,
+    run_hadeg_processing_pipeline,
+    run_toxcsm_processing_pipeline
+)
 
-datasets = {}
-for pipeline_func in [biorempp, kegg, hadeg]:
-    df, path = pipeline_func(input_content, "input.txt")
-    datasets[pipeline_func.__name__] = df
+# Function to run all pipelines
+def run_all_processing_pipelines(input_path, output_dir, optimize_types=True):
+    """Execute all available processing pipelines."""
+    results = {}
+
+    pipelines = {
+        'biorempp': run_biorempp_processing_pipeline,
+        'kegg': run_kegg_processing_pipeline,
+        'hadeg': run_hadeg_processing_pipeline,
+        'toxcsm': run_toxcsm_processing_pipeline
+    }
+
+    for name, pipeline_func in pipelines.items():
+        try:
+            result = pipeline_func(
+                input_path=input_path,
+                output_dir=output_dir,
+                optimize_types=optimize_types
+            )
+            results[name] = result
+        except Exception as e:
+            results[name] = {'error': str(e), 'matches': 0}
+
+    return results
+
+# Execute all pipelines
+all_results = run_all_processing_pipelines(
+    input_path="sample_data.txt",
+    output_dir="comprehensive_results/"
+)
+
+for database, result in all_results.items():
+    if 'error' not in result:
+        print(f"{database.upper()}: {result['matches']} matches")
+    else:
+        print(f"{database.upper()}: Error - {result['error']}")
 ```
 
 ## Input Processing Module
@@ -931,23 +1069,26 @@ class ProgressIndicator:
 
 ```python
 # High-level pipeline usage
-from biorempp.pipelines import biorempp, kegg
+from biorempp.pipelines import run_biorempp_processing_pipeline, run_kegg_processing_pipeline
 
-# Process single sample
-input_data = """
->Sample_001
-K00001
-K00002
-K00003
-"""
+# Process single sample file
+sample_file = "sample_data.txt"
 
 # BioRemPP analysis
-biorempp_df, output_path = biorempp(input_data, "sample.txt")
-print(f"BioRemPP results: {len(biorempp_df)} genes analyzed")
+biorempp_result = run_biorempp_processing_pipeline(
+    input_path=sample_file,
+    output_dir="results/"
+)
+print(f"BioRemPP results: {biorempp_result['matches']} genes analyzed")
+print(f"Output saved to: {biorempp_result['output_path']}")
 
 # KEGG pathway analysis
-kegg_df, kegg_path = kegg(input_data, "sample.txt")
-print(f"KEGG results: {len(kegg_df)} pathways identified")
+kegg_result = run_kegg_processing_pipeline(
+    input_path=sample_file,
+    output_dir="results/"
+)
+print(f"KEGG results: {kegg_result['matches']} pathways identified")
+print(f"Output saved to: {kegg_result['output_path']}")
 ```
 
 ### Advanced Workflow Integration
@@ -955,51 +1096,112 @@ print(f"KEGG results: {len(kegg_df)} pathways identified")
 ```python
 # Multi-database comprehensive analysis
 from biorempp.input_processing import validate_and_process_input
-from biorempp.pipelines import biorempp, kegg, hadeg, toxcsm
-from biorempp.utils import save_dataframe_output, get_logger
+from biorempp.pipelines import (
+    run_biorempp_processing_pipeline,
+    run_kegg_processing_pipeline,
+    run_hadeg_processing_pipeline,
+    run_toxcsm_processing_pipeline
+)
+from biorempp.utils.logging_config import get_logger
+import pandas as pd
 
 # Setup logging
 logger = get_logger("analysis_workflow")
 
-# Input validation
-input_df, error = validate_and_process_input(input_data, "input.txt")
+# Input file path
+input_file = "sample_data.txt"
+
+# Read and validate input
+with open(input_file, 'r') as f:
+    input_content = f.read()
+
+input_df, error = validate_and_process_input(input_content, input_file)
 if error:
     logger.error(f"Input validation failed: {error}")
     raise ValueError(error)
 
 # Multi-database processing
-databases = [biorempp, kegg, hadeg, toxcsm]
+pipelines = {
+    'biorempp': run_biorempp_processing_pipeline,
+    'kegg': run_kegg_processing_pipeline,
+    'hadeg': run_hadeg_processing_pipeline,
+    'toxcsm': run_toxcsm_processing_pipeline
+}
+
 results = {}
+output_dataframes = {}
 
-for db_func in databases:
+for db_name, pipeline_func in pipelines.items():
     try:
-        df, path = db_func(input_data, "input.txt", "output/")
-        results[db_func.__name__] = {
-            'dataframe': df,
-            'output_path': path,
-            'gene_count': len(df['Gene_ID'].unique()),
-            'sample_count': len(df['Sample_ID'].unique())
-        }
-        logger.info(f"Completed {db_func.__name__} analysis: {len(df)} records")
-    except Exception as e:
-        logger.error(f"Failed {db_func.__name__} analysis: {e}")
-        results[db_func.__name__] = {'error': str(e)}
+        result = pipeline_func(
+            input_path=input_file,
+            output_dir="comprehensive_analysis/"
+        )
 
-# Generate summary report
+        # Load the generated output file as DataFrame
+        df = pd.read_csv(result['output_path'], sep=';')
+
+        results[db_name] = {
+            'result_info': result,
+            'record_count': len(df),
+            'unique_ko_ids': df['KO_ID'].nunique() if 'KO_ID' in df.columns else 0,
+            'unique_samples': df.get('sample', pd.Series()).nunique()
+        }
+        output_dataframes[db_name] = df
+
+        logger.info(f"Completed {db_name} analysis: {result['matches']} matches")
+
+    except Exception as e:
+        logger.error(f"Failed {db_name} analysis: {e}")
+        results[db_name] = {
+            'error': str(e),
+            'record_count': 0,
+            'unique_ko_ids': 0,
+            'unique_samples': 0
+        }
+
+# Generate analysis summary
 summary_data = []
 for db_name, result in results.items():
     if 'error' not in result:
         summary_data.append({
             'Database': db_name,
-            'Records': len(result['dataframe']),
-            'Genes': result['gene_count'],
-            'Samples': result['sample_count'],
-            'Output_File': result['output_path']
+            'Records': result['record_count'],
+            'Unique_KO_IDs': result['unique_ko_ids'],
+            'Unique_Samples': result['unique_samples'],
+            'Output_File': result['result_info']['filename'],
+            'Status': 'Success'
+        })
+    else:
+        summary_data.append({
+            'Database': db_name,
+            'Records': 0,
+            'Unique_KO_IDs': 0,
+            'Unique_Samples': 0,
+            'Output_File': 'N/A',
+            'Status': f"Error: {result['error']}"
         })
 
 summary_df = pd.DataFrame(summary_data)
-summary_path = save_dataframe_output(summary_df, "analysis_summary")
+summary_path = "comprehensive_analysis/analysis_summary.csv"
+summary_df.to_csv(summary_path, index=False)
 print(f"Analysis summary saved to: {summary_path}")
+
+# Cross-database comparison
+if len(output_dataframes) > 1:
+    ko_sets = {}
+    for db_name, df in output_dataframes.items():
+        if 'KO_ID' in df.columns:
+            ko_sets[db_name] = set(df['KO_ID'].unique())
+
+    print("\nCross-database KO overlap analysis:")
+    db_names = list(ko_sets.keys())
+    for i, db1 in enumerate(db_names):
+        for db2 in db_names[i+1:]:
+            overlap = len(ko_sets[db1] & ko_sets[db2])
+            total = len(ko_sets[db1] | ko_sets[db2])
+            percentage = (overlap / total * 100) if total > 0 else 0
+            print(f"  {db1} ∩ {db2}: {overlap}/{total} ({percentage:.1f}%)")
 ```
 
 ### Custom Error Handling
@@ -1189,9 +1391,11 @@ except DatabaseError as e:
 1. **High-Level Pipeline Usage**
    ```python
    # Use pipeline functions for complete workflows
-   from biorempp.pipelines import biorempp
+   from biorempp.pipelines import run_biorempp_processing_pipeline
 
-   result_df, output_path = biorempp(input_data, "file.txt")
+   result = run_biorempp_processing_pipeline(input_path="file.txt")
+   print(f"Processed {result['matches']} records")
+   print(f"Output saved to: {result['output_path']}")
    ```
 
 2. **Low-Level Component Usage**
@@ -1221,13 +1425,99 @@ except DatabaseError as e:
 2. **Integration Testing**
    ```python
    # Test complete workflows
-   from biorempp.pipelines import kegg
+   from biorempp.pipelines import run_kegg_processing_pipeline
 
-   test_input = create_test_input()
-   result_df, output_path = kegg(test_input, "test.txt")
-   assert len(result_df) > 0
-   assert output_path.exists()
+   test_input_file = "test_data.txt"
+   result = run_kegg_processing_pipeline(test_input_file)
+   assert result['matches'] > 0
+   assert Path(result['output_path']).exists()
    ```
+
+---
+
+## API Summary (Current Implementation)
+
+### Available Pipeline Functions
+
+The BioRemPP package currently provides these main pipeline functions:
+
+```python
+from biorempp.pipelines import (
+    run_biorempp_processing_pipeline,
+    run_kegg_processing_pipeline,
+    run_hadeg_processing_pipeline,
+    run_toxcsm_processing_pipeline
+)
+
+# All functions follow the same signature pattern:
+def run_*_processing_pipeline(
+    input_path: str,                           # Required: path to input file
+    *_database_path: str = None,              # Optional: custom database path
+    output_dir: str = "outputs/results_tables", # Optional: output directory
+    output_filename: str = "*_Results.txt",    # Optional: output filename
+    sep: str = ";",                           # Optional: field separator
+    optimize_types: bool = True,              # Optional: memory optimization
+    add_timestamp: bool = False               # Optional: timestamp in filename
+) -> dict:
+    """
+    Returns:
+    --------
+    dict with keys:
+        - 'output_path': str (full path to output file)
+        - 'matches': int (number of successful matches)
+        - 'filename': str (base filename)
+    """
+```
+
+### Quick Start Examples
+
+```python
+# Single database analysis
+from biorempp.pipelines import run_biorempp_processing_pipeline
+
+result = run_biorempp_processing_pipeline("my_data.txt")
+print(f"Analysis complete: {result['matches']} matches found")
+print(f"Results saved to: {result['output_path']}")
+
+# Multi-database analysis
+from biorempp.pipelines import (
+    run_biorempp_processing_pipeline,
+    run_kegg_processing_pipeline,
+    run_hadeg_processing_pipeline,
+    run_toxcsm_processing_pipeline
+)
+
+input_file = "my_data.txt"
+output_directory = "analysis_results/"
+
+pipelines = {
+    'BioRemPP': run_biorempp_processing_pipeline,
+    'KEGG': run_kegg_processing_pipeline,
+    'HADEG': run_hadeg_processing_pipeline,
+    'ToxCSM': run_toxcsm_processing_pipeline
+}
+
+for name, pipeline in pipelines.items():
+    try:
+        result = pipeline(input_path=input_file, output_dir=output_directory)
+        print(f"{name}: {result['matches']} matches -> {result['filename']}")
+    except Exception as e:
+        print(f"{name}: Error - {e}")
+```
+
+### Application Interface
+
+```python
+# CLI application interface
+from biorempp.app.application import BioRemPPApplication
+
+app = BioRemPPApplication()
+
+# Run with command-line style arguments
+result = app.run(['--list-databases'])  # List available databases
+result = app.run(['--database', 'biorempp', '--input', 'data.txt'])  # Single DB
+result = app.run(['--all-databases', '--input', 'data.txt'])  # All databases
+```
 
 ---
 
